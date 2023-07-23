@@ -1,0 +1,6 @@
+name: RealPermissions
+version: '${project.version}'
+main: pt.josegamerpt.realpermissions.RealPermissions
+api-version: '1.13'
+authors: [JoseGamer_PT]
+description: Fast and Flexible User Permission Management plugin.
