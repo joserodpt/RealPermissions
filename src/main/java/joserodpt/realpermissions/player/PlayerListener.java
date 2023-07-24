@@ -1,10 +1,10 @@
-package pt.josegamerpt.realpermissions.player;
+package joserodpt.realpermissions.player;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import pt.josegamerpt.realpermissions.RealPermissions;
+import joserodpt.realpermissions.RealPermissions;
 
 public class PlayerListener implements Listener {
     RealPermissions rp;

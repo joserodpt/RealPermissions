@@ -1,16 +1,15 @@
-package pt.josegamerpt.realpermissions.utils;
+package joserodpt.realpermissions.utils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-@SuppressWarnings("serial")
 public class Pagination<T> extends ArrayList<T> {
 
     private int pageSize;
 
     public Pagination(int pageSize) {
-        this(pageSize, new ArrayList<T>());
+        this(pageSize, new ArrayList<>());
     }
 
     @SafeVarargs

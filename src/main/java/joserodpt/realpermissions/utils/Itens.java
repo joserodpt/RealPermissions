@@ -1,4 +1,4 @@
-package pt.josegamerpt.realpermissions.utils;
+package joserodpt.realpermissions.utils;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;

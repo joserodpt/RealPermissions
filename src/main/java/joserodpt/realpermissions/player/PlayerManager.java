@@ -1,8 +1,8 @@
-package pt.josegamerpt.realpermissions.player;
+package joserodpt.realpermissions.player;
 
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionAttachment;
-import pt.josegamerpt.realpermissions.RealPermissions;
+import joserodpt.realpermissions.RealPermissions;
 
 import java.util.HashMap;
 import java.util.UUID;

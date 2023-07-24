@@ -1,16 +1,13 @@
-package pt.josegamerpt.realpermissions.rank;
+package joserodpt.realpermissions.rank;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
-import pt.josegamerpt.realpermissions.RealPermissions;
-import pt.josegamerpt.realpermissions.config.Ranks;
-import pt.josegamerpt.realpermissions.permission.Permission;
+import joserodpt.realpermissions.RealPermissions;
+import joserodpt.realpermissions.config.Ranks;
+import joserodpt.realpermissions.permission.Permission;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class RankManager {
@@ -31,9 +28,9 @@ public class RankManager {
             String suffix = rankSection.getString("Suffix");
             String chat = rankSection.getString("Chat");
 
-            List<Permission> permissions = rankSection.getStringList("Permissions").stream()
+            Map<String, Permission> permissions = rankSection.getStringList("Permissions").stream()
                     .map(permissionName -> new Permission(permissionName, rankName))
-                    .collect(Collectors.toList());
+                    .collect(Collectors.toMap(Permission::getPermissionString, p -> p));
 
             List<Rank> inheritances = new ArrayList<>();
             List<String> inheritanceNames = rankSection.getStringList("Inheritance");
@@ -49,17 +46,12 @@ public class RankManager {
             Rank rank = new Rank(icon, rankName, prefix, suffix, chat, permissions, inheritances);
             ranks.put(rankName, rank);
         }
-
-        //load inheritance ranks permissions
-        for (Rank rank : getRanks()) {
-            for (Rank inheritance : rank.getInheritances()) {
-                inheritance.getPermissions().forEach(rank::addPermission);
-            }
-        }
     }
 
     public List<Rank> getRanks() {
-        return new ArrayList<>(ranks.values());
+        List<Rank> tmp = new ArrayList<>(this.ranks.values());
+        tmp.sort(Comparator.comparingInt(o -> o.getPermissions().size()));
+        return tmp;
     }
 
     public Rank getRank(String string) {

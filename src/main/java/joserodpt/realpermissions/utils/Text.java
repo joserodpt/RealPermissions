@@ -1,4 +1,4 @@
-package pt.josegamerpt.realpermissions.utils;
+package joserodpt.realpermissions.utils;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -10,7 +10,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import pt.josegamerpt.realpermissions.config.Config;
+import joserodpt.realpermissions.config.Config;
 
 public class Text {
 
