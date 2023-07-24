@@ -4,6 +4,7 @@ import joserodpt.realpermissions.RealPermissions;
 import joserodpt.realpermissions.rank.Rank;
 import joserodpt.realpermissions.utils.Itens;
 import joserodpt.realpermissions.utils.Pagination;
+import joserodpt.realpermissions.utils.PlayerInput;
 import joserodpt.realpermissions.utils.Text;
 import org.bukkit.*;
 import org.bukkit.entity.HumanEntity;
@@ -42,7 +43,7 @@ public class RankGUI {
     public RankGUI(Player as, Rank r, RealPermissions rp) {
         this.rp = rp;
         this.uuid = as.getUniqueId();
-        this.inv = Bukkit.getServer().createInventory(null, 54, Text.color("&8Real&bPermissions &8| &9" + r.getPrefix()));
+        this.inv = Bukkit.getServer().createInventory(null, 54, Text.color("&fReal&bPermissions &8| &9" + r.getPrefix()));
 
         this.r = r;
         load();
@@ -95,9 +96,6 @@ public class RankGUI {
         this.inv.setItem(41, Itens.createItem(Material.GREEN_STAINED_GLASS, 1, "&aNext",
                 Arrays.asList("&fCurrent Page: &b" + (pageNumber + 1) + "&7/&b" + p.totalPages(), "&fClick here to go to the next page.")));
 
-
-
-
         this.inv.setItem(43, close);
     }
 
@@ -147,60 +145,39 @@ public class RankGUI {
                                 backPage(current);
                                 p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BELL, 1, 50);
                                 break;
+                            case 39:
+                                new PlayerInput(p, input -> {
+                                    //continue
+                                    current.r.addPermission(input);
+                                    current.rp.getRankManager().reloadInheritances();
+                                    Text.send(p, "&fPermission " + input + " added to " + current.r.getPrefix());
+
+                                    RankGUI g = new RankGUI(p, current.r, current.rp);
+                                    g.openInventory(p);
+                                }, input -> {
+                                    RankGUI wv = new RankGUI(p, current.r, current.rp);
+                                    wv.openInventory(p);
+                                });
+                                break;
                         }
 
                         if (current.display.containsKey(e.getRawSlot())) {
+                            Permission perm = current.display.get(e.getRawSlot());
 
-                            /*
                             switch (e.getClick()) {
-                                case RIGHT:
-                                    p.closeInventory();
-                                    a.toggleVisual(p);
-                                    break;
-                                case LEFT:
-                                    p.closeInventory();
-                                    new BukkitRunnable() {
-                                        public void run() {
-                                            RegionGUI fg = new RegionGUI(p, a);
-                                            fg.openInventory(p);
-                                        }
-                                    }.runTaskLater(RealRegions.getPlugin(), 2);
-                                    break;
-                                case SHIFT_LEFT:
-                                    p.closeInventory();
-                                    new BukkitRunnable() {
-                                        public void run() {
-                                            MaterialPicker mp = new MaterialPicker(a, p, MaterialPicker.PickType.ICON_REG);
-                                            mp.openInventory(p);
-                                        }
-                                    }.runTaskLater(RealRegions.getPlugin(), 2);
-                                    break;
                                 case DROP:
-                                    p.closeInventory();
-                                    RealRegions.getPlugin().getWorldManager().getRegionManager().deleteRegion(p, a);
-                                    break;
-                                case SHIFT_RIGHT:
-                                    new PlayerInput(p, input -> {
-                                        //continue
-                                        a.setDisplayName(input);
-                                        a.saveData(Region.RegionData.SETTINGS);
-                                        Text.send(p, "&fRegion displayname changed to " + Text.color(input));
-                                        new BukkitRunnable() {
-                                            public void run() {
-                                                RankGUI g = new RankGUI(p, current.r);
-                                                g.openInventory(p);
-                                            }
-                                        }.runTaskLater(RealRegions.getPlugin(), 2);
-                                    }, input -> {
-                                        RankGUI wv = new RankGUI(p, current.r);
-                                        wv.openInventory(p);
-                                    });
-                                    break;
-                                default:
+                                    if (perm.getAssociatedRank().equalsIgnoreCase(current.r.getName())) {
+                                        current.r.removePermission(perm);
+                                        current.rp.getRankManager().reloadInheritances();
+                                        Text.send(p, "&fPermission " + perm.getPermissionString() + " removed.");
+
+                                        current.load();
+                                    } else {
+                                        Text.send(p, "&fThis permission is associated with the rank: " + perm.getAssociatedRank() + ". Remove it in the corresponding rank.");
+                                    }
+
                                     break;
                             }
-
-                             */
                         }
                     }
                 }

@@ -1,7 +1,9 @@
 package joserodpt.realpermissions;
 
 import joserodpt.realpermissions.config.Config;
+import joserodpt.realpermissions.config.Players;
 import joserodpt.realpermissions.config.Ranks;
+import joserodpt.realpermissions.gui.RPGUI;
 import joserodpt.realpermissions.gui.RankViewer;
 import joserodpt.realpermissions.rank.Rank;
 import joserodpt.realpermissions.gui.RankGUI;
@@ -24,7 +26,14 @@ public class RealPermissionsCMD extends CommandBase {
 
     @Default
     public void defaultCommand(final CommandSender commandSender) {
-        Text.sendList(commandSender, Arrays.asList("         &fReal&bPermissions", "         &7Release &a" + rp.getDescription().getVersion()));
+        if (commandSender instanceof Player) {
+            Player p = (Player) commandSender;
+
+            RPGUI rg = new RPGUI(p, rp);
+            rg.openInventory(p);
+        } else {
+            Text.sendList(commandSender, Arrays.asList("         &fReal&bPermissions", "         &7Release &a" + rp.getDescription().getVersion()));
+        }
     }
 
     @SubCommand("reload")
@@ -33,6 +42,7 @@ public class RealPermissionsCMD extends CommandBase {
     public void reloadcmd(final CommandSender commandSender) {
         Config.reload();
         Ranks.reload();
+        Players.reload();
         rp.getRankManager().loadRanks();
        Text.send(commandSender, "&aReloaded.");
     }
@@ -68,7 +78,43 @@ public class RealPermissionsCMD extends CommandBase {
             rv.openInventory(p);
         } else {
             rp.getRankManager().getRanks().forEach(rank -> Text.send(commandSender, " " + rank.getName() + " &f[" + rank.getPrefix() + "&f]"));
-
         }
     }
+
+    @SubCommand("setrank")
+    @Alias("sr")
+    @Completion({"#players","#ranks"})
+    @Permission("realpermissions.admin")
+    public void setrankcmd(final CommandSender commandSender, final Player p, final String rank) {
+        if (p == null) {
+            Text.send(commandSender, "There is no player named like provided.");
+            return;
+        }
+
+        Rank r = rp.getRankManager().getRank(rank);
+        if (r == null) {
+            Text.send(commandSender, "There is no rank named &c" + rank);
+            return;
+        }
+
+        rp.getPlayerManager().getPlayerAttatchment(p).setRank(r);
+        Text.send(commandSender, p.getName() + "'s &frank is now: " + r.getPrefix());
+    }
+
+    @SubCommand("deleterank")
+    @Alias("delr")
+    @Completion("#ranks")
+    @Permission("realpermissions.admin")
+    public void delrankcmd(final CommandSender commandSender, final String rank) {
+        Rank r = rp.getRankManager().getRank(rank);
+        if (r == null) {
+            Text.send(commandSender, "There is no rank named &c" + rank);
+            return;
+        }
+
+        rp.getRankManager().rankDeletion(r);
+        Text.send(commandSender, r.getPrefix() + " &frank &cdeleted.");
+    }
+
+    //TODO: more commands
 }

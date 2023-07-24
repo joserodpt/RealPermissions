@@ -1,5 +1,6 @@
 package joserodpt.realpermissions.rank;
 
+import joserodpt.realpermissions.player.PlayerAttatchment;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -11,6 +12,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class RankManager {
+
+    private Rank def;
     RealPermissions rp;
     public RankManager(RealPermissions rp) {
         this.rp = rp;
@@ -25,7 +28,6 @@ public class RankManager {
             ConfigurationSection rankSection = Ranks.getConfig().getConfigurationSection("Ranks." + rankName);
             Material icon = Material.matchMaterial(rankSection.getString("Icon"));
             String prefix = rankSection.getString("Prefix");
-            String suffix = rankSection.getString("Suffix");
             String chat = rankSection.getString("Chat");
 
             Map<String, Permission> permissions = rankSection.getStringList("Permissions").stream()
@@ -43,9 +45,12 @@ public class RankManager {
                 }
             }
 
-            Rank rank = new Rank(icon, rankName, prefix, suffix, chat, permissions, inheritances);
+            Rank rank = new Rank(icon, rankName, prefix, chat, permissions, inheritances);
             ranks.put(rankName, rank);
         }
+
+        //load default rank
+        def = rp.getRankManager().getRank(Ranks.getConfig().getString("Default-Rank"));
     }
 
     public List<Rank> getRanks() {
@@ -56,5 +61,25 @@ public class RankManager {
 
     public Rank getRank(String string) {
         return ranks.get(string);
+    }
+
+    public void reloadInheritances() {
+        this.getRanks().forEach(Rank::loadPermissionsFromInheritances);
+    }
+
+    public Rank getDefaultRank() {
+        return this.def;
+    }
+
+    public void rankDeletion(Rank a) {
+        //set players that have the rank to the default rank
+        for (PlayerAttatchment value : rp.getPlayerManager().getPlayerAttatchment().values()) {
+            if (value.getRank().equals(a)) {
+                value.setRank(this.getDefaultRank());
+            }
+        }
+
+        a.deleteConfig();
+        this.ranks.remove(a.getName());
     }
 }

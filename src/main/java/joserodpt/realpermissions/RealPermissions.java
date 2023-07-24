@@ -1,12 +1,15 @@
 package joserodpt.realpermissions;
 
 import joserodpt.realpermissions.config.Config;
+import joserodpt.realpermissions.config.Players;
 import joserodpt.realpermissions.config.Ranks;
+import joserodpt.realpermissions.gui.RPGUI;
 import joserodpt.realpermissions.gui.RankViewer;
 import joserodpt.realpermissions.player.PlayerListener;
 import joserodpt.realpermissions.player.PlayerManager;
 import joserodpt.realpermissions.gui.RankGUI;
 import joserodpt.realpermissions.rank.RankManager;
+import joserodpt.realpermissions.utils.PlayerInput;
 import me.mattstudios.mf.base.CommandManager;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
@@ -29,8 +32,16 @@ public final class RealPermissions extends JavaPlugin {
         return pm;
     }
 
+    private static RealPermissions rp;
+
+    public static RealPermissions getPlugin() {
+        return rp;
+    }
+
     @Override
     public void onEnable() {
+        rp = this;
+
         getLogger().info("<------------------ RealPermissions PT ------------------>".replace("PT", "| " +
                 this.getDescription().getVersion()));
 
@@ -38,12 +49,26 @@ public final class RealPermissions extends JavaPlugin {
         Config.setup(this);
         Ranks.setup(this);
 
+        //load ranks
+        getLogger().info("Loading Ranks.");
+        rm.loadRanks();
+
+        if (rm.getDefaultRank() == null) {
+            rp.getLogger().severe("Default Rank for new Players doesn't exist. RealPermissions will stop.");
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
+
+        getLogger().info("Loaded " + rm.getRanks().size() + " ranks.");
+
+        Players.setup(this);
+
         //register commands
         CommandManager cm = new CommandManager(this);
 
         cm.hideTabComplete(true);
         cm.getCompletionHandler().register("#ranks", input ->
-              rm.getRanks()
+                rm.getRanks()
                         .stream()
                         .map(Rank::getName)
                         .collect(Collectors.toList())
@@ -51,21 +76,13 @@ public final class RealPermissions extends JavaPlugin {
 
         cm.register(new RealPermissionsCMD(this));
 
-        //load ranks
-        getLogger().info("Loading Ranks.");
-        rm.loadRanks();
-        getLogger().info("Loaded " + rm.getRanks().size() + " ranks.");
-
-        //check if default rank exists
-        if (rm.getRank(Ranks.getConfig().getString("Default-Rank")) == null) {
-            getLogger().warning("Default Rank for new Players doesn't exist.");
-        }
-
         //register events
         PluginManager pm = Bukkit.getPluginManager();
         pm.registerEvents(new PlayerListener(this), this);
+        pm.registerEvents(PlayerInput.getListener(), this);
         pm.registerEvents(RankGUI.getListener(), this);
         pm.registerEvents(RankViewer.getListener(this), this);
+        pm.registerEvents(RPGUI.getListener(), this);
 
         getLogger().info("Plugin has been loaded.");
         getLogger().info("Author: JoseGamer_PT | " + this.getDescription().getWebsite());

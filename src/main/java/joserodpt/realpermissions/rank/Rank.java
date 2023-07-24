@@ -17,15 +17,15 @@ public class Rank {
     public enum RankData { ICON, PREFIX, SUFFIX, CHAT, PERMISSIONS, INHERITANCES }
 
     private Material icon;
-    private String name, prefix, suffix, chat;
+    private String name, prefix, chat;
     Map<String, Permission> permissions;
     List<Rank> inheritances;
 
-    public Rank(Material icon, String name, String prefix, String suffix, String chat, Map<String, Permission> permissions, List<Rank> inheritances) {
+    //TODO: ranks with time
+    public Rank(Material icon, String name, String prefix, String chat, Map<String, Permission> permissions, List<Rank> inheritances) {
         this.icon = icon;
         this.name = name;
         this.prefix = prefix;
-        this.suffix = suffix;
         this.chat = chat;
         this.permissions = permissions;
         this.inheritances = inheritances;
@@ -50,13 +50,9 @@ public class Rank {
     }
 
     public void loadPermissionsFromInheritances() {
-        //remove old permissions
-
-        for (Permission permission : this.permissions.values()) {
-            if (!permission.getAssociatedRank().equalsIgnoreCase(this.getName())) {
-                this.permissions.remove(permission);
-            }
-        }
+        //remove old permissions from inheritance
+        List<Permission> tmp = this.getInheritancePermissions();
+        tmp.forEach(permission -> this.getMapPermissions().remove(permission.getPermissionString()));
 
         loadFromInheritances();
     }
@@ -95,15 +91,6 @@ public class Rank {
         this.prefix = prefix;
     }
 
-
-    public String getSuffix() {
-        return suffix;
-    }
-
-    public void setSuffix(String suffix) {
-        this.suffix = suffix;
-    }
-
     public String getChat() {
         return chat;
     }
@@ -139,23 +126,9 @@ public class Rank {
     }
 
     public List<String> getRankPermissionStrings() {
-        List<String> perms = new ArrayList<>();
-        for (Permission value : this.getMapPermissions().values()) {
-            if (isRankPermission(value)) {
-                perms.add(value.getPermissionString());
-            }
-        }
-        return perms;
-    }
-
-    public List<String> getInheritancePermissionStrings() {
-        List<String> perms = new ArrayList<>();
-        for (Permission value : this.getMapPermissions().values()) {
-            if (!isRankPermission(value)) {
-                perms.add(value.getPermissionString());
-            }
-        }
-        return perms;
+       return this.getRankPermissions().stream()
+               .map(Permission::getPermissionString)
+               .collect(Collectors.toList());
     }
 
     private boolean isRankPermission(Permission value) {
@@ -177,9 +150,6 @@ public class Rank {
             case PREFIX:
                 Ranks.getConfig().set("Ranks." + this.getName() + ".Prefix", this.getPrefix());
                 break;
-            case SUFFIX:
-                Ranks.getConfig().set("Ranks." + this.getName() + ".Suffix", this.getSuffix());
-                break;
             case PERMISSIONS:
                 Ranks.getConfig().set("Ranks." + this.getName() + ".Permissions", this.getRankPermissionStrings());
                 break;
@@ -192,8 +162,22 @@ public class Rank {
         Ranks.save();
     }
 
+    public void addPermission(String perm) {
+        this.addPermission(new Permission(perm, this.getName()));
+    }
+
+
     public void addPermission(Permission p) {
         this.getMapPermissions().put(p.getPermissionString(), p);
         this.saveData(RankData.PERMISSIONS);
+    }
+
+    public void removePermission(Permission permission) {
+        this.getMapPermissions().remove(permission.getPermissionString());
+        this.saveData(RankData.PERMISSIONS);
+    }
+
+    public void deleteConfig() {
+        Ranks.getConfig().set("Ranks." + this.getName(), null);
     }
 }

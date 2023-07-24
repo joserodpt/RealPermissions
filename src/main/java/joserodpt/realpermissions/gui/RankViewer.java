@@ -42,15 +42,21 @@ public class RankViewer {
 
     public enum RankSort { MOST_PERMS, MOST_PLAYERS }
     private RankSort ws; //TODO rank sorting
+    private RealPermissions rp;
 
     public RankViewer(Player pl, RealPermissions rp) {
-        this.inv = Bukkit.getServer().createInventory(null, 54, Text.color("&8Real&bPermissions &8| Ranks"));
+        this.rp = rp;
+        this.inv = Bukkit.getServer().createInventory(null, 54, Text.color("&fReal&bPermissions &8| Ranks"));
         this.uuid = pl.getUniqueId();
 
-        this.p = new Pagination<>(28,rp.getRankManager().getRanks());
-        fillChest(p.getPage(this.pageNumber));
+       this.load();
 
         this.register();
+    }
+
+    public void load() {
+        this.p = new Pagination<>(28,rp.getRankManager().getRanks());
+        fillChest(p.getPage(this.pageNumber));
     }
 
     public void fillChest(List<Rank> items) {
@@ -118,6 +124,9 @@ public class RankViewer {
          */
 
         this.inv.setItem(49, close);
+
+        this.inv.setItem(51, Itens.createItem(Material.EXPERIENCE_BOTTLE, 1, "&a&lRank Paths"));
+
     }
 
     public void openInventory(Player target) {
@@ -184,6 +193,8 @@ public class RankViewer {
                                  */
                             case 49:
                                 p.closeInventory();
+                                RPGUI rp = new RPGUI(p, current.rp);
+                                rp.openInventory(p);
                                 break;
                             case 26:
                             case 35:
@@ -201,7 +212,9 @@ public class RankViewer {
                             Rank a = current.display.get(e.getRawSlot());
                             p.closeInventory();
                             if (Objects.requireNonNull(e.getClick()) == ClickType.RIGHT) { //TODO: delete rank
-
+                                rp.getRankManager().rankDeletion(a);
+                                Text.send(p, a.getPrefix() + " &frank &cdeleted.");
+                                current.load();
                             } else {
                                 RankGUI rg = new RankGUI(p, a, rp);
                                 rg.openInventory(p);

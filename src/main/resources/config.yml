@@ -1,2 +1,4 @@
 RealPermissions:
   Prefix: "&fReal&bPermissions &7>"
+  Chat-Formatting: true
+  Prefix-In-Tablist: true

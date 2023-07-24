@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import joserodpt.realpermissions.rank.Rank;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -40,16 +41,11 @@ public class Text {
 		return color;
 	}
 
-	public static String cords(Location l) {
-		return "X: " + l.getBlockX() + " Y: " + l.getBlockY() + " Z: "
-				+ l.getBlockZ();
-	}
-
 	public static void send(Player p, String string) {
-		p.sendMessage(Text.color(Config.getConfig().getString("RealPermissions.Prefix") + "&r" + string));
+		p.sendMessage(Text.color(Config.getConfig().getString("RealPermissions.Prefix") + "&r " + string));
 	}
 	public static void send(CommandSender p, String string) {
-		p.sendMessage(Text.color(Config.getConfig().getString("RealPermissions.Prefix") + "&r" + string));
+		p.sendMessage(Text.color(Config.getConfig().getString("RealPermissions.Prefix") + "&r " + string));
 	}
 
     public static String locToTex(Location pos) {
@@ -60,4 +56,8 @@ public class Text {
 		String[] s = string.split("%");
 		return new Location(w, Double.parseDouble(s[0]), Double.parseDouble(s[1]), Double.parseDouble(s[2]));
 	}
+
+    public static String formatChat(Player player, String message, Rank r) {
+		return Text.color(r.getChat().replace("%prefix%", r.getPrefix()).replace("%player%", player.getDisplayName()).replace("%message%", message));
+    }
 }
