@@ -2,21 +2,20 @@ package joserodpt.realpermissions.gui;
 
 import joserodpt.realpermissions.RealPermissions;
 import joserodpt.realpermissions.rank.Rank;
-import joserodpt.realpermissions.utils.Itens;
-import joserodpt.realpermissions.utils.Pagination;
-import joserodpt.realpermissions.utils.PlayerInput;
-import joserodpt.realpermissions.utils.Text;
+import joserodpt.realpermissions.utils.*;
 import org.bukkit.*;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import joserodpt.realpermissions.permission.Permission;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
 
@@ -86,7 +85,11 @@ public class RankGUI {
         }
 
         //16, 25, 34
+        this.inv.setItem(16, Itens.createItem(r.getIcon(), 1, "&eChange Rank's Icon", Collections.singletonList("Click here to change this rank's icon.")));
 
+        this.inv.setItem(25, Itens.createItem(Material.NAME_TAG, 1, "&eChange Rank's Prefix", Collections.singletonList("Click here to change this rank's prefix.")));
+
+        this.inv.setItem(34, Itens.createItem(Material.FILLED_MAP, 1, "&eRename this Rank", Collections.singletonList("Click here to rename this rank.")));
 
         this.inv.setItem(37, Itens.createItem(Material.YELLOW_STAINED_GLASS, 1, "&6Back",
                 Arrays.asList("&fCurrent Page: &b" + (pageNumber + 1) + "&7/&b" + p.totalPages(), "&fClick here to go back to the next page.")));
@@ -132,6 +135,43 @@ public class RankGUI {
                         e.setCancelled(true);
 
                         switch (e.getRawSlot()) {
+                            case 16:
+                                p.closeInventory();
+                                new BukkitRunnable() {
+                                    @Override
+                                    public void run() {
+                                        MaterialPicker mp = new MaterialPicker(p, current.r, current.rp);
+                                        mp.openInventory(p);
+                                    }
+                                }.runTaskLater(current.rp, 2);
+                                break;
+                            case 25:
+                                p.closeInventory();
+                                new PlayerInput(p, input -> {
+                                    current.r.setPrefix(input);
+                                    Text.send(p, "The rank's prefix is now " + input);
+
+                                    RankGUI wv = new RankGUI(p, current.r, current.rp);
+                                    wv.openInventory(p);
+                                }, input -> {
+                                    RankGUI wv = new RankGUI(p, current.r, current.rp);
+                                    wv.openInventory(p);
+                                });
+                                break;
+                            case 34:
+                                p.closeInventory();
+                                new PlayerInput(p, input -> {
+                                    current.rp.getRankManager().renameRank(current.r, input);
+                                    Text.send(p, "The rank's name is now " + input);
+
+                                    RankGUI wv = new RankGUI(p, current.rp.getRankManager().getRank(input), current.rp);
+                                    wv.openInventory(p);
+                                }, input -> {
+                                    RankGUI wv = new RankGUI(p, current.r, current.rp);
+                                    wv.openInventory(p);
+                                });
+                                break;
+
                             case 43:
                                 p.closeInventory();
                                 RankViewer rv = new RankViewer(p, current.rp);
@@ -148,12 +188,16 @@ public class RankGUI {
                             case 39:
                                 new PlayerInput(p, input -> {
                                     //continue
-                                    current.r.addPermission(input);
-                                    current.rp.getRankManager().reloadInheritances();
-                                    Text.send(p, "&fPermission " + input + " added to " + current.r.getPrefix());
+                                    if (current.r.hasPermission(input)) {
+                                        Text.send(p, "The rank already has the " + input + " permission.");
+                                    } else {
+                                        current.r.addPermission(input);
+                                        current.rp.getRankManager().reloadInheritances();
+                                        Text.send(p, "&fPermission " + input + " added to " + current.r.getPrefix());
 
-                                    RankGUI g = new RankGUI(p, current.r, current.rp);
-                                    g.openInventory(p);
+                                        RankGUI g = new RankGUI(p, current.r, current.rp);
+                                        g.openInventory(p);
+                                    }
                                 }, input -> {
                                     RankGUI wv = new RankGUI(p, current.r, current.rp);
                                     wv.openInventory(p);
@@ -164,19 +208,16 @@ public class RankGUI {
                         if (current.display.containsKey(e.getRawSlot())) {
                             Permission perm = current.display.get(e.getRawSlot());
 
-                            switch (e.getClick()) {
-                                case DROP:
-                                    if (perm.getAssociatedRank().equalsIgnoreCase(current.r.getName())) {
-                                        current.r.removePermission(perm);
-                                        current.rp.getRankManager().reloadInheritances();
-                                        Text.send(p, "&fPermission " + perm.getPermissionString() + " removed.");
+                            if (Objects.requireNonNull(e.getClick()) == ClickType.DROP) {
+                                if (perm.getAssociatedRank().equalsIgnoreCase(current.r.getName())) {
+                                    current.r.removePermission(perm);
+                                    current.rp.getRankManager().reloadInheritances();
+                                    Text.send(p, "&fPermission " + perm.getPermissionString() + " removed.");
 
-                                        current.load();
-                                    } else {
-                                        Text.send(p, "&fThis permission is associated with the rank: " + perm.getAssociatedRank() + ". Remove it in the corresponding rank.");
-                                    }
-
-                                    break;
+                                    current.load();
+                                } else {
+                                    Text.send(p, "&fThis permission is associated with the rank: " + perm.getAssociatedRank() + ". Remove it in the corresponding rank.");
+                                }
                             }
                         }
                     }

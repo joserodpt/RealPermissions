@@ -4,6 +4,7 @@ Ranks:
     Icon: LEATHER_HELMET
     Prefix: "&7Player"
     Chat: "%prefix% %player% &7- %message%"
+    Inheritance: []
     Permissions:
       - essentials.motd
   VIP:
@@ -24,7 +25,7 @@ Ranks:
   Moderator:
     Icon: REDSTONE
     Prefix: "&eModerator"
-    Chat: "%prefix% %player% %suffix% &7- &f%message%"
+    Chat: "%prefix% %player% &7- &f%message%"
     Inheritance:
       - Player
       - VIP

@@ -81,10 +81,11 @@ public class RealPermissionsCMD extends CommandBase {
         }
     }
 
-    @SubCommand("setrank")
-    @Alias("sr")
+    @SubCommand("set")
+    @Alias("s")
     @Completion({"#players","#ranks"})
     @Permission("realpermissions.admin")
+    @WrongUsage("/rp set <player> <rank>")
     public void setrankcmd(final CommandSender commandSender, final Player p, final String rank) {
         if (p == null) {
             Text.send(commandSender, "There is no player named like provided.");
@@ -101,10 +102,32 @@ public class RealPermissionsCMD extends CommandBase {
         Text.send(commandSender, p.getName() + "'s &frank is now: " + r.getPrefix());
     }
 
-    @SubCommand("deleterank")
-    @Alias("delr")
+    @SubCommand("rename")
+    @Alias("ren")
     @Completion("#ranks")
     @Permission("realpermissions.admin")
+    @WrongUsage("/rp ren <rank> <new name>")
+    public void renamecmd(final CommandSender commandSender, final String rank, final String name) {
+        Rank r = rp.getRankManager().getRank(rank);
+        if (r == null) {
+            Text.send(commandSender, "There is no rank named &c" + rank);
+            return;
+        }
+
+        if (name.isEmpty()) {
+            Text.send(commandSender, "New rank name is empty.");
+            return;
+        }
+
+        rp.getRankManager().renameRank(r, name);
+        Text.send(commandSender, "The rank's name is now " + name);
+    }
+
+    @SubCommand("delete")
+    @Alias("del")
+    @Completion("#ranks")
+    @Permission("realpermissions.admin")
+    @WrongUsage("/rp del <rank>")
     public void delrankcmd(final CommandSender commandSender, final String rank) {
         Rank r = rp.getRankManager().getRank(rank);
         if (r == null) {
@@ -112,8 +135,58 @@ public class RealPermissionsCMD extends CommandBase {
             return;
         }
 
-        rp.getRankManager().rankDeletion(r);
+        rp.getRankManager().deleteRank(r);
         Text.send(commandSender, r.getPrefix() + " &frank &cdeleted.");
+    }
+
+    //TODO: modify wrong command prefix
+
+    @SubCommand("permission")
+    @Alias("perm")
+    @Completion({"#permOperations","#ranks"})
+    @Permission("realpermissions.admin")
+    @WrongUsage("/rp perm <add/remove> <rank> <permission>")
+    public void permcmd(final CommandSender commandSender, final String operation, final String rank, final String perm) {
+        boolean add = true;
+        switch (operation.toLowerCase()) {
+            case "add":
+                break;
+            case "remove":
+                add = false;
+                break;
+            default:
+                Text.send(commandSender, "There is no operation like that. Use add/remove.");
+                return;
+        }
+
+        Rank r = rp.getRankManager().getRank(rank);
+        if (r == null) {
+            Text.send(commandSender, "There is no rank named &c" + rank);
+            return;
+        }
+
+        if (add) {
+            if (r.hasPermission(perm)) {
+                Text.send(commandSender, "The rank already has the " + perm + " permission.");
+            } else {
+                r.addPermission(perm);
+                rp.getRankManager().reloadInheritances();
+                Text.send(commandSender, "&fPermission " + perm + " &aadded &fto " + r.getPrefix());
+            }
+        } else {
+            if (!r.hasPermission(perm)) {
+                Text.send(commandSender, "The rank doesn't have the " + perm + " permission.");
+            } else {
+                joserodpt.realpermissions.permission.Permission p = r.getPermission(perm);
+                if (!p.getAssociatedRank().equalsIgnoreCase(r.getName())) {
+                    Text.send(commandSender, "&fThis permission is associated with the rank: " + p.getAssociatedRank() + ". Remove it in the corresponding rank.");
+                } else {
+                    r.removePermission(perm);
+                    rp.getRankManager().reloadInheritances();
+                    Text.send(commandSender, "&fPermission " + perm + " &cremoved &ffrom " + r.getPrefix());
+                }
+            }
+        }
     }
 
     //TODO: more commands

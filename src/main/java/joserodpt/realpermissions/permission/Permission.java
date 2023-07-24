@@ -29,4 +29,8 @@ public class Permission {
     public ItemStack getPermissionIcon(String rank) {
         return Itens.createItem(Material.PAPER, 1, "&f" + this.getPermissionString(), Arrays.asList(this.getAssociatedRank().equalsIgnoreCase(rank) ? "" : "Permission inherited from &b" + this.getAssociatedRank(), "","&fQ (Drop) to &cremove"));
     }
+
+    public void setAssociatedRank(String input) {
+        this.associatedRank = input;
+    }
 }

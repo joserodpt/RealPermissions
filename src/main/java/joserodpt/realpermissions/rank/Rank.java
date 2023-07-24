@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 public class Rank {
 
-    public enum RankData { ICON, PREFIX, SUFFIX, CHAT, PERMISSIONS, INHERITANCES }
+    public enum RankData { ICON, PREFIX, CHAT, PERMISSIONS, INHERITANCES, ALL}
 
     private Material icon;
     private String name, prefix, chat;
@@ -35,7 +35,7 @@ public class Rank {
     }
 
     public ItemStack getItem() {
-        return Itens.createItem(icon, 1, this.getPrefix(), this.getItemDescription());
+        return Itens.createItem(icon, 1, this.getPrefix() + " &f[" + this.getName() + "&f]", this.getItemDescription());
     }
 
     private List<String> getItemDescription() {
@@ -67,8 +67,12 @@ public class Rank {
         }
     }
 
-    private boolean hasPermission(String permissionString) {
+    public boolean hasPermission(String permissionString) {
         return this.getMapPermissions().containsKey(permissionString);
+    }
+
+    public Permission getPermission(String perm) {
+        return this.getMapPermissions().get(perm);
     }
 
     public Material getIcon() {
@@ -77,6 +81,7 @@ public class Rank {
 
     public void setIcon(Material icon) {
         this.icon = icon;
+        this.saveData(RankData.ICON);
     }
 
     public String getName() {
@@ -89,6 +94,7 @@ public class Rank {
 
     public void setPrefix(String prefix) {
         this.prefix = prefix;
+        this.saveData(RankData.PREFIX);
     }
 
     public String getChat() {
@@ -158,6 +164,15 @@ public class Rank {
                         .map(Rank::getName)
                         .collect(Collectors.toList()));
                 break;
+            case ALL:
+                Ranks.getConfig().set("Ranks." + this.getName() + ".Icon", this.getIcon().name());
+                Ranks.getConfig().set("Ranks." + this.getName() + ".Prefix", this.getPrefix());
+                Ranks.getConfig().set("Ranks." + this.getName() + ".Chat", this.getChat());
+                Ranks.getConfig().set("Ranks." + this.getName() + ".Inheritance", this.getInheritances().stream()
+                        .map(Rank::getName)
+                        .collect(Collectors.toList()));
+                Ranks.getConfig().set("Ranks." + this.getName() + ".Permissions", this.getRankPermissionStrings());
+                break;
         }
         Ranks.save();
     }
@@ -172,6 +187,11 @@ public class Rank {
         this.saveData(RankData.PERMISSIONS);
     }
 
+    public void removePermission(String permission) {
+        this.getMapPermissions().remove(permission);
+        this.saveData(RankData.PERMISSIONS);
+    }
+
     public void removePermission(Permission permission) {
         this.getMapPermissions().remove(permission.getPermissionString());
         this.saveData(RankData.PERMISSIONS);
@@ -179,5 +199,6 @@ public class Rank {
 
     public void deleteConfig() {
         Ranks.getConfig().set("Ranks." + this.getName(), null);
+        Ranks.save();
     }
 }

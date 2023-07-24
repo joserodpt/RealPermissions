@@ -5,7 +5,9 @@ import joserodpt.realpermissions.rank.Rank;
 import org.bukkit.entity.Player;
 import joserodpt.realpermissions.RealPermissions;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 
 public class PlayerManager {
@@ -30,7 +32,17 @@ public class PlayerManager {
         Rank player_rank;
         if (Players.getConfig().getConfigurationSection(p.getUniqueId().toString()) != null) {
             //load player rank
-            player_rank = rp.getRankManager().getRank(Players.getConfig().getString(p.getUniqueId() + ".Rank"));
+            String rankName = Players.getConfig().getString(p.getUniqueId() + ".Rank");
+            player_rank = rp.getRankManager().getRank(rankName);
+
+            if (player_rank == null) {
+                rp.getLogger().severe("There is something wrong with " + p.getName() + "'s rank.");
+                rp.getLogger().severe("It appears that the rank he has: " + rankName + " doesn't exist anymore.");
+                player_rank = rp.getRankManager().getDefaultRank();
+                Players.getConfig().set(p.getUniqueId() + ".Rank", player_rank.getName());
+                Players.save();
+                rp.getLogger().severe("The player's rank is now the default rank.");
+            }
         } else {
             //save new player with default rank
             player_rank = rp.getRankManager().getDefaultRank();
@@ -47,5 +59,15 @@ public class PlayerManager {
     public void playerLeave(Player player) {
         this.getPlayerAttatchment().get(player.getUniqueId()).logout();
         this.getPlayerAttatchment().remove(player.getUniqueId());
+    }
+
+    public List<Player> getPlayersWithRank(String name) {
+        List<Player> p = new ArrayList<>();
+        for (PlayerAttatchment value : this.getPlayerAttatchment().values()) {
+            if (value.getRank().getName().equalsIgnoreCase(name)) {
+                p.add(value.getPlayer());
+            }
+        }
+        return p;
     }
 }

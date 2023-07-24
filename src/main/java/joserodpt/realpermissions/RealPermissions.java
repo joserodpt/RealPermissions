@@ -9,6 +9,7 @@ import joserodpt.realpermissions.player.PlayerListener;
 import joserodpt.realpermissions.player.PlayerManager;
 import joserodpt.realpermissions.gui.RankGUI;
 import joserodpt.realpermissions.rank.RankManager;
+import joserodpt.realpermissions.utils.MaterialPicker;
 import joserodpt.realpermissions.utils.PlayerInput;
 import me.mattstudios.mf.base.CommandManager;
 import org.bukkit.Bukkit;
@@ -16,6 +17,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import joserodpt.realpermissions.rank.Rank;
 
+import java.util.Arrays;
 import java.util.stream.Collectors;
 
 public final class RealPermissions extends JavaPlugin {
@@ -73,6 +75,9 @@ public final class RealPermissions extends JavaPlugin {
                         .map(Rank::getName)
                         .collect(Collectors.toList())
         );
+        cm.getCompletionHandler().register("#permOperations", input ->
+                Arrays.asList("add", "remove")
+        );
 
         cm.register(new RealPermissionsCMD(this));
 
@@ -83,6 +88,7 @@ public final class RealPermissions extends JavaPlugin {
         pm.registerEvents(RankGUI.getListener(), this);
         pm.registerEvents(RankViewer.getListener(this), this);
         pm.registerEvents(RPGUI.getListener(), this);
+        pm.registerEvents(MaterialPicker.getListener(), this);
 
         getLogger().info("Plugin has been loaded.");
         getLogger().info("Author: JoseGamer_PT | " + this.getDescription().getWebsite());

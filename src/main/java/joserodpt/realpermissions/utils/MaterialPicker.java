@@ -1,10 +1,10 @@
-package joserodpt.realpermissions.gui;
+package joserodpt.realpermissions.utils;
+
+import java.util.*;
 
 import joserodpt.realpermissions.RealPermissions;
+import joserodpt.realpermissions.gui.RankGUI;
 import joserodpt.realpermissions.rank.Rank;
-import joserodpt.realpermissions.utils.Itens;
-import joserodpt.realpermissions.utils.Pagination;
-import joserodpt.realpermissions.utils.Text;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -12,18 +12,15 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.*;
+public class MaterialPicker {
 
-public class RankViewer {
-
-    private static Map<UUID, RankViewer> inventories = new HashMap<>();
+    private static Map<UUID, MaterialPicker> inventories = new HashMap<>();
     private Inventory inv;
 
     private ItemStack placeholder = Itens.createItem(Material.BLACK_STAINED_GLASS_PANE, 1, "");
@@ -32,40 +29,78 @@ public class RankViewer {
     private ItemStack back = Itens.createItem(Material.YELLOW_STAINED_GLASS, 1, "&6Back",
             Collections.singletonList("&fClick here to go back to the next page."));
     private ItemStack close = Itens.createItem(Material.ACACIA_DOOR, 1, "&cGo Back",
-            Collections.singletonList("&fClick here to close this menu."));
+            Collections.singletonList("&fClick here to go back."));
+    private ItemStack search = Itens.createItem(Material.SIGN, 1, "&9Search",
+            Collections.singletonList("&fClick here to search for a block."));
 
     private UUID uuid;
-    private HashMap<Integer, Rank> display = new HashMap<>();
+    private ArrayList<Material> items;
+    private HashMap<Integer, Material> display = new HashMap<>();
 
     int pageNumber = 0;
-    Pagination<Rank> p;
-
-    public enum RankSort { MOST_PERMS, MOST_PLAYERS }
-    private RankSort ws; //TODO: rank sorting
+    Pagination<Material> p;
+    private Rank r;
     private RealPermissions rp;
 
-    public RankViewer(Player pl, RealPermissions rp) {
+    public MaterialPicker(Player pl, Rank r, RealPermissions rp) {
         this.rp = rp;
-        this.inv = Bukkit.getServer().createInventory(null, 54, Text.color("&fReal&bPermissions &8| Ranks"));
         this.uuid = pl.getUniqueId();
+        this.r = r;
 
-       this.load();
+        inv = Bukkit.getServer().createInventory(null, 54, Text.color("Select icon for " + r.getPrefix()));
+
+        this.items = getIcons();
+
+        this.p = new Pagination<>(28, this.items);
+        fillChest(this.p.getPage(this.pageNumber));
 
         this.register();
     }
 
-    public void load() {
-        this.p = new Pagination<>(28,rp.getRankManager().getRanks());
-        fillChest(p.getPage(this.pageNumber));
+    public MaterialPicker(Player pl, Rank m, String search, RealPermissions rp) {
+        this.rp = rp;
+        this.uuid = pl.getUniqueId();
+        this.r = m;
+        inv = Bukkit.getServer().createInventory(null, 54, Text.color("Select icon for " + r.getPrefix()));
+
+
+        this.items = searchMaterial(search);
+        this.p = new Pagination<>(28, this.items);
+        fillChest(this.p.getPage(this.pageNumber));
+
+        this.register();
     }
 
-    public void fillChest(List<Rank> items) {
+    private ArrayList<Material> getIcons() {
+        ArrayList<Material> ms = new ArrayList<>();
+        for (Material m : Material.values()) {
+            if (!m.equals(Material.AIR)) {
+                ms.add(m);
+            }
+        }
+        return ms;
+    }
+
+    private ArrayList<Material> searchMaterial(String s) {
+        ArrayList<Material> ms = new ArrayList<>();
+        for (Material m : getIcons()) {
+            if (m.name().toLowerCase().contains(s.toLowerCase())) {
+                ms.add(m);
+            }
+        }
+        return ms;
+    }
+
+    public void fillChest(List<Material> items) {
+
         this.inv.clear();
         this.display.clear();
 
         for (int i = 0; i < 9; ++i) {
             this.inv.setItem(i, placeholder);
         }
+
+        this.inv.setItem(4, search);
 
         this.inv.setItem(45, placeholder);
         this.inv.setItem(46, placeholder);
@@ -98,35 +133,20 @@ public class RankViewer {
         }
 
         int slot = 0;
-        for (ItemStack i : this.inv.getContents()) {
+        for (ItemStack i : inv.getContents()) {
             if (i == null) {
                 if (items.size() != 0) {
-                    Rank e = items.get(0);
-                    this.inv.setItem(slot, e.getItem());
-                    this.display.put(slot, e);
+                    Material s = items.get(0);
+                    this.inv.setItem(slot,
+                            Itens.createItem(s, 1, "§f" + s.name(), Collections.singletonList("&fClick to pick this.")));
+                    this.display.put(slot, s);
                     items.remove(0);
                 }
             }
             slot++;
         }
 
-        /*
-        switch (ws)
-        {
-            case SIZE:
-                this.inv.setItem(47, Itens.createItem(Material.CHEST, 1, "&fSorted by &aSize", Collections.singletonList("&fClick here to sort by &bRegistration Date")));
-                break;
-            case TIME:
-                this.inv.setItem(47, Itens.createItem(Material.CLOCK, 1, "&fSorted by &aRegistration Date", Collections.singletonList("&fClick here to sort by &bSize")));
-                break;
-        }
-
-         */
-
         this.inv.setItem(49, close);
-
-        this.inv.setItem(51, Itens.createItem(Material.EXPERIENCE_BOTTLE, 1, "&a&lRank Paths"));
-
     }
 
     public void openInventory(Player target) {
@@ -142,7 +162,7 @@ public class RankViewer {
         }
     }
 
-    public static Listener getListener(RealPermissions rp) {
+    public static Listener getListener() {
         return new Listener() {
             @EventHandler
             public void onClick(InventoryClickEvent e) {
@@ -153,48 +173,35 @@ public class RankViewer {
                     }
                     UUID uuid = clicker.getUniqueId();
                     if (inventories.containsKey(uuid)) {
-                        RankViewer current = inventories.get(uuid);
+                        MaterialPicker current = inventories.get(uuid);
                         if (e.getInventory().getHolder() != current.getInventory().getHolder()) {
                             return;
                         }
 
                         Player p = (Player) clicker;
-
                         e.setCancelled(true);
 
                         switch (e.getRawSlot())
                         {
-                            case 47:
-                                p.closeInventory();
-                                /*
-                                switch (current.ws) {
-                                    case TIME:
-                                        new BukkitRunnable()
-                                        {
-                                            public void run()
-                                            {
-                                                RankViewer v = new RankViewer(p, WorldSort.SIZE);
-                                                v.openInventory(p);
-                                            }
-                                        }.runTaskLater(RealRegions.getPlugin(), 2);
-                                        break;
-                                    case SIZE:
-                                        new BukkitRunnable()
-                                        {
-                                            public void run()
-                                            {
-                                                RankViewer v = new RankViewer(p, WorldSort.TIME);
-                                                v.openInventory(p);
-                                            }
-                                        }.runTaskLater(RealRegions.getPlugin(), 2);
-                                        break;
-                                }
+                            case 4:
+                                new PlayerInput(p, input -> {
+                                    if (current.searchMaterial(input).size() == 0) {
+                                        Text.send(p, "&fNothing found for your search terms.");
 
-                                 */
+                                        current.exit(p, current.r, current.rp);
+                                        return;
+                                    }
+                                    MaterialPicker df = new MaterialPicker(p,current.r, input, current.rp);
+                                    df.openInventory(p);
+                                }, input -> {
+                                    p.closeInventory();
+
+                                    RankGUI rg = new RankGUI(p, current.r, current.rp);
+                                    rg.openInventory(p);
+                                });
+                                break;
                             case 49:
-                                p.closeInventory();
-                                RPGUI rp = new RPGUI(p, current.rp);
-                                rp.openInventory(p);
+                                current.exit(p, current.r, current.rp);
                                 break;
                             case 26:
                             case 35:
@@ -209,22 +216,19 @@ public class RankViewer {
                         }
 
                         if (current.display.containsKey(e.getRawSlot())) {
-                            Rank a = current.display.get(e.getRawSlot());
+                            Material a = current.display.get(e.getRawSlot());
+
+                            current.r.setIcon(a);
+
                             p.closeInventory();
-                            if (Objects.requireNonNull(e.getClick()) == ClickType.RIGHT) {
-                                rp.getRankManager().deleteRank(a);
-                                Text.send(p, a.getPrefix() + " &frank &cdeleted.");
-                                current.load();
-                            } else {
-                                RankGUI rg = new RankGUI(p, a, rp);
-                                rg.openInventory(p);
-                            }
+                            RankGUI rg = new RankGUI(p, current.r, current.rp);
+                            rg.openInventory(p);
                         }
                     }
                 }
             }
 
-            private void backPage(RankViewer asd) {
+            private void backPage(MaterialPicker asd) {
                 if (asd.p.exists(asd.pageNumber - 1)) {
                     asd.pageNumber--;
                 }
@@ -232,7 +236,7 @@ public class RankViewer {
                 asd.fillChest(asd.p.getPage(asd.pageNumber));
             }
 
-            private void nextPage(RankViewer asd) {
+            private void nextPage(MaterialPicker asd) {
                 if (asd.p.exists(asd.pageNumber + 1)) {
                     asd.pageNumber++;
                 }
@@ -264,6 +268,11 @@ public class RankViewer {
         return pageNumber == 0;
     }
 
+    protected void exit(Player p, Rank r, RealPermissions rp) {
+        p.closeInventory();
+        RankGUI rg = new RankGUI(p, r, rp);
+        rg.openInventory(p);
+    }
 
     public Inventory getInventory() {
         return inv;

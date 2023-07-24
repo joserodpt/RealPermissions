@@ -7,13 +7,14 @@ import org.bukkit.configuration.ConfigurationSection;
 import joserodpt.realpermissions.RealPermissions;
 import joserodpt.realpermissions.config.Ranks;
 import joserodpt.realpermissions.permission.Permission;
+import org.bukkit.entity.Player;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class RankManager {
 
-    private Rank def;
+    private Rank defaultRank;
     RealPermissions rp;
     public RankManager(RealPermissions rp) {
         this.rp = rp;
@@ -45,12 +46,11 @@ public class RankManager {
                 }
             }
 
-            Rank rank = new Rank(icon, rankName, prefix, chat, permissions, inheritances);
-            ranks.put(rankName, rank);
+            this.addRank(icon, rankName, prefix, chat, permissions, inheritances);
         }
 
         //load default rank
-        def = rp.getRankManager().getRank(Ranks.getConfig().getString("Default-Rank"));
+        this.defaultRank = this.rp.getRankManager().getRank(Ranks.getConfig().getString("Default-Rank"));
     }
 
     public List<Rank> getRanks() {
@@ -68,10 +68,10 @@ public class RankManager {
     }
 
     public Rank getDefaultRank() {
-        return this.def;
+        return this.defaultRank;
     }
 
-    public void rankDeletion(Rank a) {
+    public void deleteRank(Rank a) {
         //set players that have the rank to the default rank
         for (PlayerAttatchment value : rp.getPlayerManager().getPlayerAttatchment().values()) {
             if (value.getRank().equals(a)) {
@@ -81,5 +81,55 @@ public class RankManager {
 
         a.deleteConfig();
         this.ranks.remove(a.getName());
+    }
+
+    private Rank addRank(Material icon, String rankName, String prefix, String chat, Map<String, Permission> permissions, List<Rank> inheritances) {
+        Rank rank = new Rank(icon, rankName, prefix, chat, permissions, inheritances);
+        this.ranks.put(rankName, rank);
+        return rank;
+    }
+
+    public void renameRank(Rank r, String input) {
+        //get list of players in old rank
+        List<Player> pls = rp.getPlayerManager().getPlayersWithRank(r.getName());
+
+        //remove old rank
+        this.deleteRank(r);
+
+        //treat the permissions map correctly, change the old rank's permission to the new rank's permissions
+        for (Permission value : r.getMapPermissions().values()) {
+            if (value.getAssociatedRank().equalsIgnoreCase(r.getName())) {
+                value.setAssociatedRank(input);
+                r.getMapPermissions().put(value.getPermissionString(), value);
+            }
+        }
+
+        //add new rank
+        Rank newR = this.addRank(r.getIcon(), input, r.getPrefix(), r.getChat(), r.getMapPermissions(), r.getInheritances());
+
+        //add players to this new rank
+        pls.forEach(player -> rp.getPlayerManager().getPlayerAttatchment(player).setRank(newR));
+
+        newR.saveData(Rank.RankData.ALL);
+
+        //check if the rank being renamed is default rank, if it is, we set it to the default
+        if (rp.getRankManager().getDefaultRank() == r) {
+            rp.getRankManager().setDefaultRank(newR);
+        }
+
+        //check if previous rank was in any other rank's inheritances, if it was we swap it
+        for (Rank rank : this.getRanks()) {
+            if (rank.getInheritances().contains(r)) {
+                rank.getInheritances().remove(r);
+                rank.getInheritances().add(newR);
+                rank.saveData(Rank.RankData.INHERITANCES);
+            }
+        }
+    }
+
+    private void setDefaultRank(Rank newR) {
+        this.defaultRank = newR;
+        Ranks.getConfig().set("Default-Rank", newR.getName());
+        Ranks.save();
     }
 }
