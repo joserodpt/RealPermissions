@@ -9,6 +9,11 @@ import java.util.Arrays;
 public class Permission {
     private String permissionString, associatedRank;
 
+    public Permission(String perm) {
+        //for player permissions
+        this.permissionString = perm;
+    }
+
     public Permission(String permission, String associatedRank) {
         this.permissionString = permission;
         this.associatedRank = associatedRank;
@@ -20,10 +25,6 @@ public class Permission {
 
     public String getAssociatedRank() {
         return this.associatedRank;
-    }
-
-    public void setPermissionString(String permissionString) {
-        this.permissionString = permissionString;
     }
 
     public ItemStack getPermissionIcon(String rank) {

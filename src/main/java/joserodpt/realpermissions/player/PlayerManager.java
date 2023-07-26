@@ -5,10 +5,7 @@ import joserodpt.realpermissions.rank.Rank;
 import org.bukkit.entity.Player;
 import joserodpt.realpermissions.RealPermissions;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class PlayerManager {
     RealPermissions rp;
@@ -29,7 +26,8 @@ public class PlayerManager {
 
     public void playerJoin(Player p) {
         //check if player exists in DB
-        Rank player_rank;
+        Rank player_rank = null;
+        List<String> permissions = Collections.emptyList();
         if (Players.getConfig().getConfigurationSection(p.getUniqueId().toString()) != null) {
             //load player rank
             String rankName = Players.getConfig().getString(p.getUniqueId() + ".Rank");
@@ -43,17 +41,21 @@ public class PlayerManager {
                 Players.save();
                 rp.getLogger().severe("The player's rank is now the default rank.");
             }
+
+            //load player permissions
+            permissions = Players.getConfig().getStringList(p.getUniqueId() + "Permissions");
         } else {
             //save new player with default rank
             player_rank = rp.getRankManager().getDefaultRank();
 
             Players.getConfig().set(p.getUniqueId() + ".Rank", player_rank.getName());
             Players.getConfig().set(p.getUniqueId() + ".Name", p.getName());
+            Players.getConfig().set(p.getUniqueId() + ".Super-User", false);
+            Players.getConfig().set(p.getUniqueId() + ".Permissions", Collections.emptyList());
             Players.save();
         }
 
-        this.getPlayerAttatchment().put(p.getUniqueId(), new PlayerAttatchment(p, player_rank,rp));
-
+        this.getPlayerAttatchment().put(p.getUniqueId(), new PlayerAttatchment(p, player_rank, permissions, Players.getConfig().getBoolean(p.getUniqueId() + ".Super-User"),rp));
     }
 
     public void playerLeave(Player player) {
@@ -69,5 +71,13 @@ public class PlayerManager {
             }
         }
         return p;
+    }
+
+    public boolean isSuperUser(Player commandSender) {
+        return this.getPlayerAttatchment(commandSender).isSuperUser();
+    }
+
+    public void refreshPermissions() {
+        this.getPlayerAttatchment().values().forEach(PlayerAttatchment::refreshPlayerPermissions);
     }
 }

@@ -11,6 +11,7 @@ import joserodpt.realpermissions.gui.RankGUI;
 import joserodpt.realpermissions.rank.RankManager;
 import joserodpt.realpermissions.utils.MaterialPicker;
 import joserodpt.realpermissions.utils.PlayerInput;
+import joserodpt.realpermissions.utils.Text;
 import me.mattstudios.mf.base.CommandManager;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
@@ -67,6 +68,11 @@ public final class RealPermissions extends JavaPlugin {
 
         //register commands
         CommandManager cm = new CommandManager(this);
+
+        cm.getMessageHandler().register("cmd.no.permission", (sender) -> Text.send(sender, " &cYou don't have permission to execute this command!"));
+        cm.getMessageHandler().register("cmd.no.exists", (sender) -> Text.send(sender, " &cThe command you're trying to use doesn't exist"));
+        cm.getMessageHandler().register("cmd.wrong.usage", (sender) -> Text.send(sender, " &cWrong usage for the command!"));
+        cm.getMessageHandler().register("cmd.no.console", sender -> Text.send(sender, " &cCommand can't be used in the console!"));
 
         cm.hideTabComplete(true);
         cm.getCompletionHandler().register("#ranks", input ->

@@ -63,8 +63,9 @@ public class RankManager {
         return ranks.get(string);
     }
 
-    public void reloadInheritances() {
+    public void refreshPermsAndPlayers() {
         this.getRanks().forEach(Rank::loadPermissionsFromInheritances);
+        rp.getPlayerManager().refreshPermissions();
     }
 
     public Rank getDefaultRank() {

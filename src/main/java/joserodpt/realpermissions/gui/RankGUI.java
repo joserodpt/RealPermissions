@@ -186,22 +186,7 @@ public class RankGUI {
                                 p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BELL, 1, 50);
                                 break;
                             case 39:
-                                new PlayerInput(p, input -> {
-                                    //continue
-                                    if (current.r.hasPermission(input)) {
-                                        Text.send(p, "The rank already has the " + input + " permission.");
-                                    } else {
-                                        current.r.addPermission(input);
-                                        current.rp.getRankManager().reloadInheritances();
-                                        Text.send(p, "&fPermission " + input + " added to " + current.r.getPrefix());
-
-                                        RankGUI g = new RankGUI(p, current.r, current.rp);
-                                        g.openInventory(p);
-                                    }
-                                }, input -> {
-                                    RankGUI wv = new RankGUI(p, current.r, current.rp);
-                                    wv.openInventory(p);
-                                });
+                                //TODO: anvil gui ou outra coisa qualquer
                                 break;
                         }
 
@@ -211,7 +196,7 @@ public class RankGUI {
                             if (Objects.requireNonNull(e.getClick()) == ClickType.DROP) {
                                 if (perm.getAssociatedRank().equalsIgnoreCase(current.r.getName())) {
                                     current.r.removePermission(perm);
-                                    current.rp.getRankManager().reloadInheritances();
+                                    current.rp.getRankManager().refreshPermsAndPlayers();
                                     Text.send(p, "&fPermission " + perm.getPermissionString() + " removed.");
 
                                     current.load();

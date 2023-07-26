@@ -18,8 +18,8 @@ public class Rank {
 
     private Material icon;
     private String name, prefix, chat;
-    Map<String, Permission> permissions;
-    List<Rank> inheritances;
+    private Map<String, Permission> permissions;
+    private List<Rank> inheritances;
 
     //TODO: ranks with time
     public Rank(Material icon, String name, String prefix, String chat, Map<String, Permission> permissions, List<Rank> inheritances) {
@@ -108,7 +108,7 @@ public class Rank {
     public List<Permission> getPermissions() {
         List<Permission> tmp = this.getRankPermissions();
         tmp.addAll(this.getInheritancePermissions());
-       return tmp;
+        return tmp;
     }
 
     public List<Permission> getRankPermissions() {
@@ -132,6 +132,7 @@ public class Rank {
     }
 
     public List<String> getRankPermissionStrings() {
+
        return this.getRankPermissions().stream()
                .map(Permission::getPermissionString)
                .collect(Collectors.toList());
@@ -180,7 +181,6 @@ public class Rank {
     public void addPermission(String perm) {
         this.addPermission(new Permission(perm, this.getName()));
     }
-
 
     public void addPermission(Permission p) {
         this.getMapPermissions().put(p.getPermissionString(), p);
