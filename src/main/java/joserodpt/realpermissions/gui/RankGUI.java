@@ -3,6 +3,7 @@ package joserodpt.realpermissions.gui;
 import joserodpt.realpermissions.RealPermissions;
 import joserodpt.realpermissions.rank.Rank;
 import joserodpt.realpermissions.utils.*;
+import net.wesjd.anvilgui.AnvilGUI;
 import org.bukkit.*;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -186,7 +187,41 @@ public class RankGUI {
                                 p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BELL, 1, 50);
                                 break;
                             case 39:
-                                //TODO: anvil gui ou outra coisa qualquer
+                                p.closeInventory();
+                                new AnvilGUI.Builder()
+                                        .onClose(stateSnapshot -> new BukkitRunnable() {
+                                            @Override
+                                            public void run() {
+                                                RankGUI rg = new RankGUI(p, current.r, current.rp);
+                                                rg.openInventory(p);
+                                            }
+                                        }.runTaskLater(current.rp, 2))
+                                        .onClick((slot, stateSnapshot) -> { // Either use sync or async variant, not both
+                                            if(slot != AnvilGUI.Slot.OUTPUT) {
+                                                return Collections.emptyList();
+                                            }
+
+                                            String perm = stateSnapshot.getText();
+
+                                            if (perm.isEmpty()) {
+                                                return Collections.singletonList(AnvilGUI.ResponseAction.replaceInputText("Invalid"));
+                                            } else {
+                                                if (current.r.hasPermission(perm)) {
+                                                    Text.send(p, "The rank already has the " + perm + " permission.");
+                                                } else {
+                                                    current.r.addPermission(perm);
+                                                    current.rp.getRankManager().refreshPermsAndPlayers();
+                                                    Text.send(p, "&fPermission " + perm + " &aadded &fto " + current.r.getPrefix());
+                                                }
+
+                                                return Collections.singletonList(AnvilGUI.ResponseAction.close());
+                                            }
+
+                                        })
+                                        .text("Permission")
+                                        .title("New permission:")
+                                        .plugin(current.rp)
+                                        .open(p);
                                 break;
                         }
 

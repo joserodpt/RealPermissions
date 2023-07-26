@@ -229,6 +229,4 @@ public class RealPermissionsCMD extends CommandBase {
             }
         }
     }
-
-    //TODO: more commands
 }
