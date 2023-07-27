@@ -45,7 +45,7 @@ public class Rank {
             this.getInheritances().forEach(rank -> desc.add(" &f- &b" + rank.getName() + " &f(&b" + rank.getRankPermissions().size() + " &fperms)"));
         }
 
-        desc.addAll(Arrays.asList("","&b" + this.getPermissions().size() + " &ftotal permissions","&bClick &fto view this rank in detail.", "&bRight-Click to &cremove &fthis rank"));
+        desc.addAll(Arrays.asList("","&b" + this.getPermissions().size() + " &ftotal permissions","","&bClick &fto view this rank in detail.", "&bRight-Click to &cremove &fthis rank"));
         return desc;
     }
 
@@ -132,7 +132,6 @@ public class Rank {
     }
 
     public List<String> getRankPermissionStrings() {
-
        return this.getRankPermissions().stream()
                .map(Permission::getPermissionString)
                .collect(Collectors.toList());

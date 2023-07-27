@@ -5,8 +5,10 @@ import joserodpt.realpermissions.config.Players;
 import joserodpt.realpermissions.config.Ranks;
 import joserodpt.realpermissions.gui.RPGUI;
 import joserodpt.realpermissions.gui.RankViewer;
+import joserodpt.realpermissions.player.PlayerAttatchment;
+import joserodpt.realpermissions.player.PlayersGUI;
 import joserodpt.realpermissions.rank.Rank;
-import joserodpt.realpermissions.gui.RankGUI;
+import joserodpt.realpermissions.rank.RankGUI;
 import joserodpt.realpermissions.utils.Text;
 import me.mattstudios.mf.annotations.*;
 import me.mattstudios.mf.base.CommandBase;
@@ -28,7 +30,6 @@ public class RealPermissionsCMD extends CommandBase {
     @Permission("realpermissions.admin")
     public void defaultCommand(final CommandSender commandSender) {
         if (commandSender instanceof Player) {
-
             Player p = (Player) commandSender;
 
             RPGUI rg = new RPGUI(p, rp);
@@ -64,6 +65,21 @@ public class RealPermissionsCMD extends CommandBase {
             }
 
             RankGUI rg = new RankGUI(p, r, rp);
+            rg.openInventory(p);
+        } else {
+            commandSender.sendMessage("[RealPermissions] Only players can run this command.");
+        }
+    }
+
+    @SubCommand("players")
+    @Alias("p")
+    @Completion("#ranks")
+    @Permission("realpermissions.admin")
+    public void playerscmd(final CommandSender commandSender) {
+        if (commandSender instanceof Player) {
+            Player p = (Player) commandSender;
+
+            PlayersGUI rg = new PlayersGUI(p, rp);
             rg.openInventory(p);
         } else {
             commandSender.sendMessage("[RealPermissions] Only players can run this command.");
@@ -226,6 +242,57 @@ public class RealPermissionsCMD extends CommandBase {
                     rp.getRankManager().refreshPermsAndPlayers();
                     Text.send(commandSender, "&fPermission " + perm + " &cremoved &ffrom " + r.getPrefix());
                 }
+            }
+        }
+    }
+
+    @SubCommand("playerperm")
+    @Alias("pperm")
+    @Completion({"#permOperations","#players"})
+    @WrongUsage("/rp pperm <add/remove> <player> <permission>")
+    @Permission("realpermissions.admin")
+    public void permcmd(final CommandSender commandSender, final String operation, final Player p, final String perm) {
+        if (commandSender instanceof Player) {
+            if (!rp.getPlayerManager().isSuperUser((Player) commandSender)) {
+                Text.send(commandSender, " &cYou don't have permission to execute this command!");
+                return;
+            }
+        }
+
+        boolean add = true;
+        switch (operation.toLowerCase()) {
+            case "add":
+                break;
+            case "remove":
+                add = false;
+                break;
+            default:
+                Text.send(commandSender, "There is no operation like that. Use add/remove.");
+                return;
+        }
+
+        if (p == null) {
+            Text.send(commandSender, "There is no player named like provided.");
+            return;
+        }
+
+        PlayerAttatchment pa = rp.getPlayerManager().getPlayerAttatchment(p);
+
+        if (add) {
+            if (pa.hasPermission(perm)) {
+                Text.send(commandSender, "The player already has the " + perm + " permission.");
+            } else {
+                pa.addPermission(perm);
+                //                    rp.getRankManager().refreshPermsAndPlayers();
+                Text.send(commandSender, "&fPermission " + perm + " &aadded &fto " + p.getName());
+            }
+        } else {
+            if (!pa.hasPermission(perm)) {
+                Text.send(commandSender, "The player doesn't have the " + perm + " permission.");
+            } else {
+                pa.removePermission(perm);
+                //rp.getRankManager().refreshPermsAndPlayers();
+                Text.send(commandSender, "&fPermission " + perm + " &cremoved &ffrom " + p.getName());
             }
         }
     }

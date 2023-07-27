@@ -23,6 +23,10 @@ public class Permission {
         return this.permissionString;
     }
 
+    public String getPermissionStringStyled() {
+        return "- " + this.getPermissionString();
+    }
+
     public String getAssociatedRank() {
         return this.associatedRank;
     }

@@ -2,6 +2,7 @@ package joserodpt.realpermissions.gui;
 
 import joserodpt.realpermissions.RealPermissions;
 import joserodpt.realpermissions.rank.Rank;
+import joserodpt.realpermissions.rank.RankGUI;
 import joserodpt.realpermissions.utils.Itens;
 import joserodpt.realpermissions.utils.Pagination;
 import joserodpt.realpermissions.utils.Text;
@@ -36,20 +37,16 @@ public class RankViewer {
 
     private UUID uuid;
     private HashMap<Integer, Rank> display = new HashMap<>();
-
     int pageNumber = 0;
     Pagination<Rank> p;
-
-    public enum RankSort { MOST_PERMS, MOST_PLAYERS }
-    private RankSort ws; //TODO: rank sorting
     private RealPermissions rp;
 
     public RankViewer(Player pl, RealPermissions rp) {
         this.rp = rp;
-        this.inv = Bukkit.getServer().createInventory(null, 54, Text.color("&fReal&bPermissions &8| Ranks"));
+        this.inv = Bukkit.getServer().createInventory(null, 54, Text.color("&fReal&bPermissions &8| &eRanks"));
         this.uuid = pl.getUniqueId();
 
-       this.load();
+        this.load();
 
         this.register();
     }
@@ -67,6 +64,10 @@ public class RankViewer {
             this.inv.setItem(i, placeholder);
         }
 
+        this.inv.setItem(9, placeholder);
+        this.inv.setItem(17, placeholder);
+        this.inv.setItem(36, placeholder);
+        this.inv.setItem(44, placeholder);
         this.inv.setItem(45, placeholder);
         this.inv.setItem(46, placeholder);
         this.inv.setItem(47, placeholder);
@@ -76,10 +77,6 @@ public class RankViewer {
         this.inv.setItem(51, placeholder);
         this.inv.setItem(52, placeholder);
         this.inv.setItem(53, placeholder);
-        this.inv.setItem(36, placeholder);
-        this.inv.setItem(44, placeholder);
-        this.inv.setItem(9, placeholder);
-        this.inv.setItem(17, placeholder);
 
         if (firstPage()) {
             this.inv.setItem(18, placeholder);
@@ -110,19 +107,6 @@ public class RankViewer {
             slot++;
         }
 
-        /*
-        switch (ws)
-        {
-            case SIZE:
-                this.inv.setItem(47, Itens.createItem(Material.CHEST, 1, "&fSorted by &aSize", Collections.singletonList("&fClick here to sort by &bRegistration Date")));
-                break;
-            case TIME:
-                this.inv.setItem(47, Itens.createItem(Material.CLOCK, 1, "&fSorted by &aRegistration Date", Collections.singletonList("&fClick here to sort by &bSize")));
-                break;
-        }
-
-         */
-
         this.inv.setItem(49, close);
 
         this.inv.setItem(51, Itens.createItem(Material.EXPERIENCE_BOTTLE, 1, "&a&lRank Paths"));
@@ -142,7 +126,7 @@ public class RankViewer {
         }
     }
 
-    public static Listener getListener(RealPermissions rp) {
+    public static Listener getListener() {
         return new Listener() {
             @EventHandler
             public void onClick(InventoryClickEvent e) {
@@ -164,33 +148,6 @@ public class RankViewer {
 
                         switch (e.getRawSlot())
                         {
-                            case 47:
-                                p.closeInventory();
-                                /*
-                                switch (current.ws) {
-                                    case TIME:
-                                        new BukkitRunnable()
-                                        {
-                                            public void run()
-                                            {
-                                                RankViewer v = new RankViewer(p, WorldSort.SIZE);
-                                                v.openInventory(p);
-                                            }
-                                        }.runTaskLater(RealRegions.getPlugin(), 2);
-                                        break;
-                                    case SIZE:
-                                        new BukkitRunnable()
-                                        {
-                                            public void run()
-                                            {
-                                                RankViewer v = new RankViewer(p, WorldSort.TIME);
-                                                v.openInventory(p);
-                                            }
-                                        }.runTaskLater(RealRegions.getPlugin(), 2);
-                                        break;
-                                }
-
-                                 */
                             case 49:
                                 p.closeInventory();
                                 RPGUI rp = new RPGUI(p, current.rp);
@@ -212,11 +169,11 @@ public class RankViewer {
                             Rank a = current.display.get(e.getRawSlot());
                             p.closeInventory();
                             if (Objects.requireNonNull(e.getClick()) == ClickType.RIGHT) {
-                                rp.getRankManager().deleteRank(a);
+                                current.rp.getRankManager().deleteRank(a);
                                 Text.send(p, a.getPrefix() + " &frank &cdeleted.");
                                 current.load();
                             } else {
-                                RankGUI rg = new RankGUI(p, a, rp);
+                                RankGUI rg = new RankGUI(p, a, current.rp);
                                 rg.openInventory(p);
                             }
                         }

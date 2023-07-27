@@ -1,10 +1,10 @@
-package joserodpt.realpermissions.utils;
-
-import java.util.*;
+package joserodpt.realpermissions.player;
 
 import joserodpt.realpermissions.RealPermissions;
-import joserodpt.realpermissions.rank.RankGUI;
-import joserodpt.realpermissions.rank.Rank;
+import joserodpt.realpermissions.gui.RPGUI;
+import joserodpt.realpermissions.utils.Itens;
+import joserodpt.realpermissions.utils.Pagination;
+import joserodpt.realpermissions.utils.Text;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -12,15 +12,26 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 
-public class MaterialPicker {
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
-    private static Map<UUID, MaterialPicker> inventories = new HashMap<>();
+public class PlayersGUI {
+
+    public enum PlayersGUISorter { SU, ON, MOST_PERMS }
+
+    private static Map<UUID, PlayersGUI> inventories = new HashMap<>();
     private Inventory inv;
 
     private ItemStack placeholder = Itens.createItem(Material.BLACK_STAINED_GLASS_PANE, 1, "");
@@ -29,78 +40,51 @@ public class MaterialPicker {
     private ItemStack back = Itens.createItem(Material.YELLOW_STAINED_GLASS, 1, "&6Back",
             Collections.singletonList("&fClick here to go back to the next page."));
     private ItemStack close = Itens.createItem(Material.ACACIA_DOOR, 1, "&cGo Back",
-            Collections.singletonList("&fClick here to go back."));
-    private ItemStack search = Itens.createItem(Material.SIGN, 1, "&9Search",
-            Collections.singletonList("&fClick here to search for a block."));
+            Collections.singletonList("&fClick here to close this menu."));
 
     private UUID uuid;
-    private ArrayList<Material> items;
-    private HashMap<Integer, Material> display = new HashMap<>();
-
+    private HashMap<Integer, PlayerObject> display = new HashMap<>();
     int pageNumber = 0;
-    Pagination<Material> p;
-    private Rank r;
+    Pagination<PlayerObject> p;
     private RealPermissions rp;
+    private PlayersGUISorter ps = PlayersGUISorter.ON;
 
-    public MaterialPicker(Player pl, Rank r, RealPermissions rp) {
+    public PlayersGUI(Player pl, RealPermissions rp) {
         this.rp = rp;
+        this.inv = Bukkit.getServer().createInventory(null, 54, Text.color("&fReal&bPermissions &8| &9Players"));
         this.uuid = pl.getUniqueId();
-        this.r = r;
 
-        inv = Bukkit.getServer().createInventory(null, 54, Text.color("Select icon for " + r.getPrefix()));
-
-        this.items = getIcons();
-
-        this.p = new Pagination<>(28, this.items);
-        fillChest(this.p.getPage(this.pageNumber));
+        this.load();
 
         this.register();
     }
 
-    public MaterialPicker(Player pl, Rank m, String search, RealPermissions rp) {
-        this.rp = rp;
-        this.uuid = pl.getUniqueId();
-        this.r = m;
-        inv = Bukkit.getServer().createInventory(null, 54, Text.color("Select icon for " + r.getPrefix()));
+    public void load() {
+        List<PlayerObject> po = rp.getPlayerManager().getSavedPlayers();
 
-
-        this.items = searchMaterial(search);
-        this.p = new Pagination<>(28, this.items);
-        fillChest(this.p.getPage(this.pageNumber));
-
-        this.register();
-    }
-
-    private ArrayList<Material> getIcons() {
-        ArrayList<Material> ms = new ArrayList<>();
-        for (Material m : Material.values()) {
-            if (!m.equals(Material.AIR)) {
-                ms.add(m);
-            }
+        switch (ps) {
+            case ON:
+                po.sort(Comparator.comparing(PlayerObject::isOnlineGUI));
+                break;
+            case SU:
+                po.sort(Comparator.comparing(PlayerObject::isSuperUserGUI));
+                break;
+            case MOST_PERMS:
+                po.sort(Comparator.comparingInt(o -> o.getPermissions().size()));
+                break;
         }
-        return ms;
+
+        this.p = new Pagination<>(28, po);
+        fillChest(p.getPage(this.pageNumber));
     }
 
-    private ArrayList<Material> searchMaterial(String s) {
-        ArrayList<Material> ms = new ArrayList<>();
-        for (Material m : getIcons()) {
-            if (m.name().toLowerCase().contains(s.toLowerCase())) {
-                ms.add(m);
-            }
-        }
-        return ms;
-    }
-
-    public void fillChest(List<Material> items) {
-
+    public void fillChest(List<PlayerObject> items) {
         this.inv.clear();
         this.display.clear();
 
         for (int i = 0; i < 9; ++i) {
             this.inv.setItem(i, placeholder);
         }
-
-        this.inv.setItem(4, search);
 
         this.inv.setItem(9, placeholder);
         this.inv.setItem(17, placeholder);
@@ -133,17 +117,29 @@ public class MaterialPicker {
         }
 
         int slot = 0;
-        for (ItemStack i : inv.getContents()) {
+        for (ItemStack i : this.inv.getContents()) {
             if (i == null) {
                 if (items.size() != 0) {
-                    Material s = items.get(0);
-                    this.inv.setItem(slot,
-                            Itens.createItem(s, 1, "§f" + s.name(), Collections.singletonList("&fClick to pick this.")));
-                    this.display.put(slot, s);
+                    PlayerObject e = items.get(0);
+                    this.inv.setItem(slot, e.getIcon());
+                    this.display.put(slot, e);
                     items.remove(0);
                 }
             }
             slot++;
+        }
+
+        switch (this.ps)
+        {
+            case ON:
+                this.inv.setItem(45, Itens.createItem(Material.HOPPER, 1, "&fClick here to &bsort &fby:", Arrays.asList("&a> ON", "&f> Super Users", "&f> Most Permissions")));
+                break;
+            case SU:
+                this.inv.setItem(45, Itens.createItem(Material.HOPPER, 1, "&fClick here to &bsort &fby:", Arrays.asList("&f> ON", "&a> Super Users", "&f> Most Permissions")));
+                break;
+            case MOST_PERMS:
+                this.inv.setItem(45, Itens.createItem(Material.HOPPER, 1, "&fClick here to &bsort &fby:", Arrays.asList("&f> ON", "&f> Super Users", "&a> Most Permissions")));
+                break;
         }
 
         this.inv.setItem(49, close);
@@ -173,35 +169,36 @@ public class MaterialPicker {
                     }
                     UUID uuid = clicker.getUniqueId();
                     if (inventories.containsKey(uuid)) {
-                        MaterialPicker current = inventories.get(uuid);
+                        PlayersGUI current = inventories.get(uuid);
                         if (e.getInventory().getHolder() != current.getInventory().getHolder()) {
                             return;
                         }
 
                         Player p = (Player) clicker;
+
                         e.setCancelled(true);
 
                         switch (e.getRawSlot())
                         {
-                            case 4:
-                                new PlayerInput(p, input -> {
-                                    if (current.searchMaterial(input).size() == 0) {
-                                        Text.send(p, "&fNothing found for your search terms.");
-
-                                        current.exit(p, current.r, current.rp);
-                                        return;
-                                    }
-                                    MaterialPicker df = new MaterialPicker(p,current.r, input, current.rp);
-                                    df.openInventory(p);
-                                }, input -> {
-                                    p.closeInventory();
-
-                                    RankGUI rg = new RankGUI(p, current.r, current.rp);
-                                    rg.openInventory(p);
-                                });
+                            case 45:
+                                switch (current.ps)
+                                {
+                                    case ON:
+                                        current.ps = PlayersGUISorter.SU;
+                                        break;
+                                    case SU:
+                                        current.ps = PlayersGUISorter.MOST_PERMS;
+                                        break;
+                                    case MOST_PERMS:
+                                        current.ps = PlayersGUISorter.ON;
+                                        break;
+                                }
+                                current.load();
                                 break;
                             case 49:
-                                current.exit(p, current.r, current.rp);
+                                p.closeInventory();
+                                RPGUI rp = new RPGUI(p, current.rp);
+                                rp.openInventory(p);
                                 break;
                             case 26:
                             case 35:
@@ -216,19 +213,37 @@ public class MaterialPicker {
                         }
 
                         if (current.display.containsKey(e.getRawSlot())) {
-                            Material a = current.display.get(e.getRawSlot());
-
-                            current.r.setIcon(a);
+                            PlayerObject po = current.display.get(e.getRawSlot());
 
                             p.closeInventory();
-                            RankGUI rg = new RankGUI(p, current.r, current.rp);
-                            rg.openInventory(p);
+                            if (e.getClick().equals(ClickType.DROP)) {
+                                //delete player
+                                current.rp.getPlayerManager().deletePlayer(po);
+                                Text.send(p, "Player " + po.getName() + " &cdeleted.");
+
+                                PlayersGUI pg = new PlayersGUI(p, current.rp);
+                                pg.openInventory(p);
+                            } else {
+                                //edit player
+                                PlayerPermissionsGUI ppg = new PlayerPermissionsGUI(current.rp.getPlayerManager().getPlayerAttatchment(p), current.rp);
+                                ppg.openInventory(p);
+                            }
+
+                            /*
+                            if (Objects.requireNonNull(e.getClick()) == ClickType.RIGHT) {
+                                rp.getRankManager().deleteRank(a);
+                                Text.send(p, a.getPrefix() + " &frank &cdeleted.");
+                                current.load();
+                            } else {
+                                RankGUI rg = new RankGUI(p, a, rp);
+                                rg.openInventory(p);
+                            }*/
                         }
                     }
                 }
             }
 
-            private void backPage(MaterialPicker asd) {
+            private void backPage(PlayersGUI asd) {
                 if (asd.p.exists(asd.pageNumber - 1)) {
                     asd.pageNumber--;
                 }
@@ -236,7 +251,7 @@ public class MaterialPicker {
                 asd.fillChest(asd.p.getPage(asd.pageNumber));
             }
 
-            private void nextPage(MaterialPicker asd) {
+            private void nextPage(PlayersGUI asd) {
                 if (asd.p.exists(asd.pageNumber + 1)) {
                     asd.pageNumber++;
                 }
@@ -268,11 +283,6 @@ public class MaterialPicker {
         return pageNumber == 0;
     }
 
-    protected void exit(Player p, Rank r, RealPermissions rp) {
-        p.closeInventory();
-        RankGUI rg = new RankGUI(p, r, rp);
-        rg.openInventory(p);
-    }
 
     public Inventory getInventory() {
         return inv;

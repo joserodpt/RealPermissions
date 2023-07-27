@@ -2,6 +2,7 @@ package joserodpt.realpermissions.gui;
 
 import joserodpt.realpermissions.RealPermissions;
 import joserodpt.realpermissions.permission.Permission;
+import joserodpt.realpermissions.player.PlayersGUI;
 import joserodpt.realpermissions.utils.Itens;
 import joserodpt.realpermissions.utils.Pagination;
 import joserodpt.realpermissions.utils.Text;
@@ -87,6 +88,11 @@ public class RPGUI {
                         switch (e.getRawSlot()) {
                             case 26:
                                 p.closeInventory();
+                                break;
+                            case 11:
+                                p.closeInventory();
+                                PlayersGUI pg = new PlayersGUI(p, current.rp);
+                                pg.openInventory(p);
                                 break;
                             case 13:
                                 p.closeInventory();

@@ -1,11 +1,13 @@
 package joserodpt.realpermissions.player;
 
 import joserodpt.realpermissions.config.Players;
+import joserodpt.realpermissions.permission.Permission;
 import joserodpt.realpermissions.rank.Rank;
 import org.bukkit.entity.Player;
 import joserodpt.realpermissions.RealPermissions;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class PlayerManager {
     RealPermissions rp;
@@ -43,7 +45,7 @@ public class PlayerManager {
             }
 
             //load player permissions
-            permissions = Players.getConfig().getStringList(p.getUniqueId() + "Permissions");
+            permissions = Players.getConfig().getStringList(p.getUniqueId() + ".Permissions");
         } else {
             //save new player with default rank
             player_rank = rp.getRankManager().getDefaultRank();
@@ -79,5 +81,35 @@ public class PlayerManager {
 
     public void refreshPermissions() {
         this.getPlayerAttatchment().values().forEach(PlayerAttatchment::refreshPlayerPermissions);
+    }
+
+    public List<PlayerObject> getSavedPlayers() {
+        List<PlayerObject> ret = new ArrayList<>();
+        // Loop through the data
+        for (String uuid : Players.getConfig().getKeys(false)) {
+            String path = uuid + ".";
+            String name = Players.getConfig().getString(path + "Name");
+            String rank = Players.getConfig().getString(path + "Rank");
+            boolean isSuperUser = Players.getConfig().getBoolean(path + "Super-User");
+
+            Rank prank = rp.getRankManager().getRank(rank);
+            if (prank == null) {
+                rp.getLogger().severe("There is something wrong with " + name + "'s saved rank.");
+                rp.getLogger().severe("It appears that the rank he has: " + rank + " doesn't exist anymore.");
+                rp.getLogger().severe("The player's saved rank data will be ignored. Please rectify this issue.");
+            }
+
+            ret.add(new PlayerObject(UUID.fromString(uuid), name, prank,Players.getConfig().getStringList(path + "Permissions").stream()
+                    .map(Permission::new)
+                    .collect(Collectors.toList()) , isSuperUser));
+        }
+
+        return ret;
+    }
+
+    public void deletePlayer(PlayerObject po) {
+        this.getPlayerAttatchment().remove(po.getUUID());
+        Players.getConfig().set(po.getUUID().toString(), null);
+        Players.save();
     }
 }

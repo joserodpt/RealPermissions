@@ -1,10 +1,13 @@
-package joserodpt.realpermissions.gui;
+package joserodpt.realpermissions.player;
 
 import joserodpt.realpermissions.RealPermissions;
-import joserodpt.realpermissions.rank.Rank;
-import joserodpt.realpermissions.utils.*;
+import joserodpt.realpermissions.utils.Itens;
+import joserodpt.realpermissions.utils.Pagination;
+import joserodpt.realpermissions.utils.Text;
 import net.wesjd.anvilgui.AnvilGUI;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -15,14 +18,19 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
-import joserodpt.realpermissions.permission.Permission;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 
-public class RankGUI {
+public class PlayerPermissionsGUI {
 
-    private static Map<UUID, RankGUI> inventories = new HashMap<>();
+    private static Map<UUID, PlayerPermissionsGUI> inventories = new HashMap<>();
     private Inventory inv;
 
     private ItemStack placeholder = Itens.createItem(Material.BLACK_STAINED_GLASS_PANE, 1, "&7Permissions");
@@ -32,31 +40,31 @@ public class RankGUI {
             Collections.singletonList("&fClick here to close this menu."));
 
     private final UUID uuid;
-    private HashMap<Integer, Permission> display = new HashMap<>();
-    private Rank r;
+    private HashMap<Integer, String> display = new HashMap<>();
+    private PlayerAttatchment pa;
 
     int pageNumber = 0;
-    Pagination<Permission> p;
+    Pagination<String> p;
 
     private RealPermissions rp;
 
-    public RankGUI(Player as, Rank r, RealPermissions rp) {
+    public PlayerPermissionsGUI(PlayerAttatchment pa, RealPermissions rp) {
+        this.pa = pa;
         this.rp = rp;
-        this.uuid = as.getUniqueId();
-        this.inv = Bukkit.getServer().createInventory(null, 54, Text.color("&fReal&bPermissions &8| &9" + r.getPrefix()));
+        this.uuid = pa.getPlayer().getUniqueId();
+        this.inv = Bukkit.getServer().createInventory(null, 54, Text.color("&fReal&bPermissions &8| &9" + pa.getPlayer().getName()));
 
-        this.r = r;
         load();
 
         this.register();
     }
 
     public void load() {
-        p = new Pagination<>(15, r.getPermissions());
-        fillChest(p.getPage(pageNumber));
+        p = new Pagination<>(15, pa.getPlayerPermissions());
+        fillChest(pa.getPlayerPermissions().size() > 0 ? p.getPage(pageNumber) : Collections.emptyList());
     }
 
-    public void fillChest(List<Permission> items) {
+    public void fillChest(List<String> items) {
         this.inv.clear();
         this.display.clear();
 
@@ -74,8 +82,8 @@ public class RankGUI {
                     break;
                 default:
                     if (items.size() != 0) {
-                        Permission wi = items.get(0);
-                        this.inv.setItem(i, wi.getPermissionIcon(this.r.getName()));
+                        String wi = items.get(0);
+                        this.inv.setItem(i, Itens.createItem(Material.PAPER, 1, "&f" + wi, Arrays.asList("","&fQ (Drop) to &cremove")));
                         this.display.put(i, wi);
                         items.remove(0);
                     } else {
@@ -86,11 +94,7 @@ public class RankGUI {
         }
 
         //16, 25, 34
-        this.inv.setItem(16, Itens.createItem(r.getIcon(), 1, "&eChange Rank's Icon", Collections.singletonList("Click here to change this rank's icon.")));
-
-        this.inv.setItem(25, Itens.createItem(Material.NAME_TAG, 1, "&eChange Rank's Prefix", Collections.singletonList("Click here to change this rank's prefix.")));
-
-        this.inv.setItem(34, Itens.createItem(Material.FILLED_MAP, 1, "&eRename this Rank", Collections.singletonList("Click here to rename this rank.")));
+        this.inv.setItem(16, Itens.createItem(pa.getRank().getIcon(), 1, "&eChange Player's Rank", Collections.singletonList("Click here to change this player's rank.")));
 
         this.inv.setItem(37, Itens.createItem(Material.YELLOW_STAINED_GLASS, 1, "&6Back",
                 Arrays.asList("&fCurrent Page: &b" + (pageNumber + 1) + "&7/&b" + p.totalPages(), "&fClick here to go back to the next page.")));
@@ -128,7 +132,7 @@ public class RankGUI {
                     }
                     UUID uuid = clicker.getUniqueId();
                     if (inventories.containsKey(uuid)) {
-                        RankGUI current = inventories.get(uuid);
+                        PlayerPermissionsGUI current = inventories.get(uuid);
                         if (e.getInventory().getHolder() != current.getInventory().getHolder()) {
                             return;
                         }
@@ -136,46 +140,21 @@ public class RankGUI {
                         e.setCancelled(true);
 
                         switch (e.getRawSlot()) {
-                            case 16:
+                            case 16: //TODO: mudar rank jogador
                                 p.closeInventory();
                                 new BukkitRunnable() {
                                     @Override
                                     public void run() {
-                                        MaterialPicker mp = new MaterialPicker(p, current.r, current.rp);
-                                        mp.openInventory(p);
+
+
                                     }
                                 }.runTaskLater(current.rp, 2);
                                 break;
-                            case 25:
-                                p.closeInventory();
-                                new PlayerInput(p, input -> {
-                                    current.r.setPrefix(input);
-                                    Text.send(p, "The rank's prefix is now " + input);
 
-                                    RankGUI wv = new RankGUI(p, current.r, current.rp);
-                                    wv.openInventory(p);
-                                }, input -> {
-                                    RankGUI wv = new RankGUI(p, current.r, current.rp);
-                                    wv.openInventory(p);
-                                });
-                                break;
-                            case 34:
-                                p.closeInventory();
-                                new PlayerInput(p, input -> {
-                                    current.rp.getRankManager().renameRank(current.r, input);
-                                    Text.send(p, "The rank's name is now " + input);
-
-                                    RankGUI wv = new RankGUI(p, current.rp.getRankManager().getRank(input), current.rp);
-                                    wv.openInventory(p);
-                                }, input -> {
-                                    RankGUI wv = new RankGUI(p, current.r, current.rp);
-                                    wv.openInventory(p);
-                                });
-                                break;
 
                             case 43:
                                 p.closeInventory();
-                                RankViewer rv = new RankViewer(p, current.rp);
+                                PlayersGUI rv = new PlayersGUI(p, current.rp);
                                 rv.openInventory(p);
                                 break;
                             case 41:
@@ -192,7 +171,7 @@ public class RankGUI {
                                         .onClose(stateSnapshot -> new BukkitRunnable() {
                                             @Override
                                             public void run() {
-                                                RankGUI rg = new RankGUI(p, current.r, current.rp);
+                                                PlayerPermissionsGUI rg = new PlayerPermissionsGUI(current.pa, current.rp);
                                                 rg.openInventory(p);
                                             }
                                         }.runTaskLater(current.rp, 2))
@@ -206,12 +185,13 @@ public class RankGUI {
                                             if (perm.isEmpty()) {
                                                 return Collections.singletonList(AnvilGUI.ResponseAction.replaceInputText("Invalid"));
                                             } else {
-                                                if (current.r.hasPermission(perm)) {
+
+                                                if (current.pa.hasPermission(perm)) {
                                                     Text.send(p, "The rank already has the " + perm + " permission.");
                                                 } else {
-                                                    current.r.addPermission(perm);
-                                                    current.rp.getRankManager().refreshPermsAndPlayers();
-                                                    Text.send(p, "&fPermission " + perm + " &aadded &fto " + current.r.getPrefix());
+                                                    current.pa.addPermission(perm);
+                                                    //current.rp.getRankManager().refreshPermsAndPlayers();
+                                                    Text.send(p, "&fPermission " + perm + " &aadded &fto " + current.pa.getPlayer().getName());
                                                 }
 
                                                 return Collections.singletonList(AnvilGUI.ResponseAction.close());
@@ -226,38 +206,37 @@ public class RankGUI {
                         }
 
                         if (current.display.containsKey(e.getRawSlot())) {
-                            Permission perm = current.display.get(e.getRawSlot());
+                            String perm = current.display.get(e.getRawSlot());
 
                             if (Objects.requireNonNull(e.getClick()) == ClickType.DROP) {
-                                if (perm.getAssociatedRank().equalsIgnoreCase(current.r.getName())) {
-                                    current.r.removePermission(perm);
-                                    current.rp.getRankManager().refreshPermsAndPlayers();
-                                    Text.send(p, "&fPermission " + perm.getPermissionString() + " removed.");
-
-                                    current.load();
-                                } else {
-                                    Text.send(p, "&fThis permission is associated with the rank: " + perm.getAssociatedRank() + ". Remove it in the corresponding rank.");
-                                }
+                                current.pa.removePermission(perm);
+                                Text.send(p, "&fPermission " + perm + " removed.");
+                                current.load();
                             }
                         }
                     }
                 }
             }
 
-            private void backPage(RankGUI asd) {
-                if (asd.p.exists(asd.pageNumber - 1)) {
-                    asd.pageNumber--;
-                }
+            private void backPage(PlayerPermissionsGUI asd) {
+                if (asd.pa.getPlayerPermissions().size() > 0) {
+                    if (asd.p.exists(asd.pageNumber - 1)) {
+                        asd.pageNumber--;
+                    }
 
-                asd.fillChest(asd.p.getPage(asd.pageNumber));
+                    asd.fillChest(asd.p.getPage(asd.pageNumber));
+                }
             }
 
-            private void nextPage(RankGUI asd) {
-                if (asd.p.exists(asd.pageNumber + 1)) {
-                    asd.pageNumber++;
-                }
+            private void nextPage(PlayerPermissionsGUI asd) {
+                if (asd.pa.getPlayerPermissions().size() > 0) {
 
-                asd.fillChest(asd.p.getPage(asd.pageNumber));
+                    if (asd.p.exists(asd.pageNumber + 1)) {
+                        asd.pageNumber++;
+                    }
+
+                    asd.fillChest(asd.p.getPage(asd.pageNumber));
+                }
             }
 
             @EventHandler

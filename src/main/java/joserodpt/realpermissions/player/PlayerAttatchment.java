@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class PlayerAttatchment {
+
     public enum PlayerData { RANK, PERMISSIONS, SU }
 
     private Player p;
@@ -98,6 +99,10 @@ public class PlayerAttatchment {
 
     public List<String> getPlayerPermissions() {
         return this.playerPermissions;
+    }
+
+    public boolean hasPermission(String perm) {
+        return this.getPlayerPermissions().contains(perm);
     }
 
     public void addPermission(String perm) {

@@ -7,7 +7,9 @@ import joserodpt.realpermissions.gui.RPGUI;
 import joserodpt.realpermissions.gui.RankViewer;
 import joserodpt.realpermissions.player.PlayerListener;
 import joserodpt.realpermissions.player.PlayerManager;
-import joserodpt.realpermissions.gui.RankGUI;
+import joserodpt.realpermissions.player.PlayerPermissionsGUI;
+import joserodpt.realpermissions.player.PlayersGUI;
+import joserodpt.realpermissions.rank.RankGUI;
 import joserodpt.realpermissions.rank.RankManager;
 import joserodpt.realpermissions.utils.MaterialPicker;
 import joserodpt.realpermissions.utils.PlayerInput;
@@ -92,9 +94,11 @@ public final class RealPermissions extends JavaPlugin {
         pm.registerEvents(new PlayerListener(this), this);
         pm.registerEvents(PlayerInput.getListener(), this);
         pm.registerEvents(RankGUI.getListener(), this);
-        pm.registerEvents(RankViewer.getListener(this), this);
+        pm.registerEvents(RankViewer.getListener(), this);
         pm.registerEvents(RPGUI.getListener(), this);
         pm.registerEvents(MaterialPicker.getListener(), this);
+        pm.registerEvents(PlayersGUI.getListener(), this);
+        pm.registerEvents(PlayerPermissionsGUI.getListener(), this);
 
         getLogger().info("Plugin has been loaded.");
         getLogger().info("Author: JoseGamer_PT | " + this.getDescription().getWebsite());
@@ -103,6 +107,5 @@ public final class RealPermissions extends JavaPlugin {
     }
 
     @Override
-    public void onDisable() {
-    }
+    public void onDisable() { }
 }
