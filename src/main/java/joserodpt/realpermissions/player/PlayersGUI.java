@@ -225,19 +225,9 @@ public class PlayersGUI {
                                 pg.openInventory(p);
                             } else {
                                 //edit player
-                                PlayerPermissionsGUI ppg = new PlayerPermissionsGUI(current.rp.getPlayerManager().getPlayerAttatchment(p), current.rp);
+                                PlayerPermissionsGUI ppg = new PlayerPermissionsGUI(p, current.rp.getPlayerManager().getPlayerAttatchment(p), current.rp);
                                 ppg.openInventory(p);
                             }
-
-                            /*
-                            if (Objects.requireNonNull(e.getClick()) == ClickType.RIGHT) {
-                                rp.getRankManager().deleteRank(a);
-                                Text.send(p, a.getPrefix() + " &frank &cdeleted.");
-                                current.load();
-                            } else {
-                                RankGUI rg = new RankGUI(p, a, rp);
-                                rg.openInventory(p);
-                            }*/
                         }
                     }
                 }

@@ -1,6 +1,7 @@
 package joserodpt.realpermissions.player;
 
 import joserodpt.realpermissions.RealPermissions;
+import joserodpt.realpermissions.gui.RankViewer;
 import joserodpt.realpermissions.utils.Itens;
 import joserodpt.realpermissions.utils.Pagination;
 import joserodpt.realpermissions.utils.Text;
@@ -48,10 +49,10 @@ public class PlayerPermissionsGUI {
 
     private RealPermissions rp;
 
-    public PlayerPermissionsGUI(PlayerAttatchment pa, RealPermissions rp) {
+    public PlayerPermissionsGUI(Player p, PlayerAttatchment pa, RealPermissions rp) {
         this.pa = pa;
         this.rp = rp;
-        this.uuid = pa.getPlayer().getUniqueId();
+        this.uuid = p.getUniqueId();
         this.inv = Bukkit.getServer().createInventory(null, 54, Text.color("&fReal&bPermissions &8| &9" + pa.getPlayer().getName()));
 
         load();
@@ -140,22 +141,15 @@ public class PlayerPermissionsGUI {
                         e.setCancelled(true);
 
                         switch (e.getRawSlot()) {
-                            case 16: //TODO: mudar rank jogador
+                            case 16:
                                 p.closeInventory();
-                                new BukkitRunnable() {
-                                    @Override
-                                    public void run() {
-
-
-                                    }
-                                }.runTaskLater(current.rp, 2);
+                                RankViewer rv = new RankViewer(p, current.rp, current.pa);
+                                rv.openInventory(p);
                                 break;
-
-
                             case 43:
                                 p.closeInventory();
-                                PlayersGUI rv = new PlayersGUI(p, current.rp);
-                                rv.openInventory(p);
+                                PlayersGUI pg = new PlayersGUI(p, current.rp);
+                                pg.openInventory(p);
                                 break;
                             case 41:
                                 nextPage(current);
@@ -171,7 +165,7 @@ public class PlayerPermissionsGUI {
                                         .onClose(stateSnapshot -> new BukkitRunnable() {
                                             @Override
                                             public void run() {
-                                                PlayerPermissionsGUI rg = new PlayerPermissionsGUI(current.pa, current.rp);
+                                                PlayerPermissionsGUI rg = new PlayerPermissionsGUI(p, current.pa, current.rp);
                                                 rg.openInventory(p);
                                             }
                                         }.runTaskLater(current.rp, 2))

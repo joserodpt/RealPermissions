@@ -49,10 +49,6 @@ public class PlayerAttatchment {
         this.getPermissionAttachment().setPermission(permission, true);
     }
 
-    public void unsetPermission(String permission) {
-        this.getPermissionAttachment().unsetPermission(permission);
-    }
-
     public void refreshPlayerPermissions() {
         //remove all player's old permissions
         this.getPermissionAttachment().getPermissions().keySet().forEach(this::removePermission);
@@ -76,7 +72,11 @@ public class PlayerAttatchment {
         //set permissions to player
         this.getPlayerPlusRankPermissions().forEach(permission -> this.setPermission(permission.getPermissionString()));
 
+        //set visual
         this.setVisual();
+
+        //set if it's super user again
+        this.setSuperUser(this.isSuperUser());
     }
 
     private void setVisual() {

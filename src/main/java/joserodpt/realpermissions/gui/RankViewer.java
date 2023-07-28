@@ -1,6 +1,8 @@
 package joserodpt.realpermissions.gui;
 
 import joserodpt.realpermissions.RealPermissions;
+import joserodpt.realpermissions.player.PlayerAttatchment;
+import joserodpt.realpermissions.player.PlayerPermissionsGUI;
 import joserodpt.realpermissions.rank.Rank;
 import joserodpt.realpermissions.rank.RankGUI;
 import joserodpt.realpermissions.utils.Itens;
@@ -42,6 +44,19 @@ public class RankViewer {
     private RealPermissions rp;
 
     public RankViewer(Player pl, RealPermissions rp) {
+        this.rp = rp;
+        this.inv = Bukkit.getServer().createInventory(null, 54, Text.color("&fReal&bPermissions &8| &eRanks"));
+        this.uuid = pl.getUniqueId();
+
+        this.load();
+
+        this.register();
+    }
+
+    private PlayerAttatchment paSelected = null;
+
+    public RankViewer(Player pl, RealPermissions rp, PlayerAttatchment pa) {
+        this.paSelected = pa;
         this.rp = rp;
         this.inv = Bukkit.getServer().createInventory(null, 54, Text.color("&fReal&bPermissions &8| &eRanks"));
         this.uuid = pl.getUniqueId();
@@ -150,8 +165,13 @@ public class RankViewer {
                         {
                             case 49:
                                 p.closeInventory();
-                                RPGUI rp = new RPGUI(p, current.rp);
-                                rp.openInventory(p);
+                                if (current.paSelected == null) {
+                                    RPGUI rp = new RPGUI(p, current.rp);
+                                    rp.openInventory(p);
+                                } else {
+                                    PlayerPermissionsGUI rv = new PlayerPermissionsGUI(p, current.paSelected, current.rp);
+                                    rv.openInventory(p);
+                                }
                                 break;
                             case 26:
                             case 35:
@@ -166,15 +186,26 @@ public class RankViewer {
                         }
 
                         if (current.display.containsKey(e.getRawSlot())) {
-                            Rank a = current.display.get(e.getRawSlot());
-                            p.closeInventory();
-                            if (Objects.requireNonNull(e.getClick()) == ClickType.RIGHT) {
-                                current.rp.getRankManager().deleteRank(a);
-                                Text.send(p, a.getPrefix() + " &frank &cdeleted.");
-                                current.load();
+                            Rank clickedRank = current.display.get(e.getRawSlot());
+
+                            if (current.paSelected == null) {
+                                //open rank to delete or edit
+                                p.closeInventory();
+                                if (Objects.requireNonNull(e.getClick()) == ClickType.RIGHT) {
+                                    current.rp.getRankManager().deleteRank(clickedRank);
+                                    Text.send(p, clickedRank.getPrefix() + " &frank &cdeleted.");
+                                    current.load();
+                                } else {
+                                    RankGUI rg = new RankGUI(p, clickedRank, current.rp);
+                                    rg.openInventory(p);
+                                }
                             } else {
-                                RankGUI rg = new RankGUI(p, a, current.rp);
-                                rg.openInventory(p);
+                                //assign rank to that player attatchment
+                                current.paSelected.setRank(clickedRank);
+                                Text.send(p, p.getName() + "'s &frank is now: " + clickedRank.getPrefix());
+                                p.closeInventory();
+                                PlayerPermissionsGUI rv = new PlayerPermissionsGUI(p, current.paSelected, current.rp);
+                                rv.openInventory(p);
                             }
                         }
                     }
