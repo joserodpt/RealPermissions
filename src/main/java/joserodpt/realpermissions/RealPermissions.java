@@ -5,6 +5,7 @@ import joserodpt.realpermissions.config.Players;
 import joserodpt.realpermissions.config.Ranks;
 import joserodpt.realpermissions.gui.RPGUI;
 import joserodpt.realpermissions.gui.RankViewer;
+import joserodpt.realpermissions.gui.SettingsGUI;
 import joserodpt.realpermissions.player.PlayerListener;
 import joserodpt.realpermissions.player.PlayerManager;
 import joserodpt.realpermissions.player.PlayerPermissionsGUI;
@@ -99,6 +100,7 @@ public final class RealPermissions extends JavaPlugin {
         pm.registerEvents(MaterialPicker.getListener(), this);
         pm.registerEvents(PlayersGUI.getListener(), this);
         pm.registerEvents(PlayerPermissionsGUI.getListener(), this);
+        pm.registerEvents(SettingsGUI.getListener(), this);
 
         getLogger().info("Plugin has been loaded.");
         getLogger().info("Author: JoseGamer_PT | " + this.getDescription().getWebsite());

@@ -99,6 +99,11 @@ public class RPGUI {
                                 RankViewer rv = new RankViewer(p, current.rp);
                                 rv.openInventory(p);
                                 break;
+                            case 15:
+                                p.closeInventory();
+                                SettingsGUI sg = new SettingsGUI(p, current.rp);
+                                sg.openInventory(p);
+                                break;
                         }
                     }
                 }
