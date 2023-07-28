@@ -28,8 +28,13 @@ public class PlayerManager {
 
     public void playerJoin(Player p) {
         //check if player exists in DB
-        Rank player_rank = null;
+        Rank player_rank;
         List<String> permissions = Collections.emptyList();
+        boolean timedRank = false;
+
+        Rank previousRank = null;
+        int secondsRemaining = 0;
+
         if (Players.getConfig().getConfigurationSection(p.getUniqueId().toString()) != null) {
             //load player rank
             String rankName = Players.getConfig().getString(p.getUniqueId() + ".Rank");
@@ -46,6 +51,31 @@ public class PlayerManager {
 
             //load player permissions
             permissions = Players.getConfig().getStringList(p.getUniqueId() + ".Permissions");
+
+            //check if player has timed rank
+            if (Players.getConfig().getConfigurationSection(p.getUniqueId() + ".Timed-Rank") != null) {
+                previousRank = rp.getRankManager().getRank(Players.getConfig().getString(p.getUniqueId() + ".Timed-Rank.Previous-Rank"));
+
+                if (previousRank == null) {
+                    rp.getLogger().severe("There is something wrong with " + p.getName() + "'s previous timed rank.");
+                    rp.getLogger().severe("It appears that the rank he has: " + rankName + " doesn't exist anymore.");
+                    player_rank = rp.getRankManager().getDefaultRank();
+                    rp.getLogger().severe("The player's timed rank is now the default rank.");
+                }
+
+                secondsRemaining = Players.getConfig().getInt(p.getUniqueId() + ".Timed-Rank.Remaining");
+
+                long milis = System.currentTimeMillis() / 1000L; //segundos atuais
+                long difTempoSegundos = milis - Players.getConfig().getLong(p.getUniqueId() + ".Timed-Rank.Last-Save");
+
+                secondsRemaining -= (int) difTempoSegundos;
+
+                if (secondsRemaining < 0) {
+                    secondsRemaining = 0;
+                }
+
+                timedRank = true;
+            }
         } else {
             //save new player with default rank
             player_rank = rp.getRankManager().getDefaultRank();
@@ -57,7 +87,12 @@ public class PlayerManager {
             Players.save();
         }
 
-        this.getPlayerAttatchment().put(p.getUniqueId(), new PlayerAttatchment(p, player_rank, permissions, Players.getConfig().getBoolean(p.getUniqueId() + ".Super-User"),rp));
+        PlayerAttatchment pa = new PlayerAttatchment(p, player_rank, permissions, Players.getConfig().getBoolean(p.getUniqueId() + ".Super-User"),rp);
+        this.getPlayerAttatchment().put(p.getUniqueId(), pa);
+
+        if (timedRank) {
+            pa.loadTimedRank(previousRank, secondsRemaining);
+        }
     }
 
     public void playerLeave(Player player) {
@@ -101,7 +136,8 @@ public class PlayerManager {
 
             ret.add(new PlayerObject(UUID.fromString(uuid), name, prank,Players.getConfig().getStringList(path + "Permissions").stream()
                     .map(Permission::new)
-                    .collect(Collectors.toList()) , isSuperUser));
+                    .collect(Collectors.toList()) , isSuperUser, Players.getConfig().getConfigurationSection(path + "Timed-Rank") != null,
+                    rp.getRankManager().getRank(Players.getConfig().getString(path + "Timed-Rank.Previous-Rank")), Players.getConfig().getInt(path + "Timed-Rank.Remaining")));
         }
 
         return ret;

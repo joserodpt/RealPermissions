@@ -147,6 +147,65 @@ public class RealPermissionsCMD extends CommandBase {
         Text.send(commandSender, p.getName() + "'s &frank is now: " + r.getPrefix());
     }
 
+    @SubCommand("settimedrank")
+    @Alias("str")
+    @Completion({"#players","#ranks"})
+    @WrongUsage("/rp str <player> <rank> <seconds>")
+    @Permission("realpermissions.admin")
+    public void settimedrankcmd(final CommandSender commandSender, final Player p, final String rank, final Integer seconds) {
+        if (commandSender instanceof Player) {
+            if (!rp.getPlayerManager().isSuperUser((Player) commandSender)) {
+                Text.send(commandSender, " &cYou don't have permission to execute this command!");
+                return;
+            }
+        }
+
+        if (p == null) {
+            Text.send(commandSender, "There is no player named like provided.");
+            return;
+        }
+
+        Rank r = rp.getRankManager().getRank(rank);
+        if (r == null) {
+            Text.send(commandSender, "There is no rank named &c" + rank);
+            return;
+        }
+
+        if (seconds == null || seconds <= 0) {
+            Text.send(commandSender, "Timed ranks must be set above 0 seconds.");
+            return;
+        }
+
+        rp.getPlayerManager().getPlayerAttatchment(p).setTimedRank(r, seconds);
+        Text.send(commandSender, p.getName() + "'s &ftimed rank is now: " + r.getPrefix());
+    }
+
+    @SubCommand("cleartimedrank")
+    @Alias("ctr")
+    @Completion("#players")
+    @WrongUsage("/rp ctr <player>")
+    @Permission("realpermissions.admin")
+    public void cleartimedcmd(final CommandSender commandSender, final Player p) {
+        if (commandSender instanceof Player) {
+            if (!rp.getPlayerManager().isSuperUser((Player) commandSender)) {
+                Text.send(commandSender, " &cYou don't have permission to execute this command!");
+                return;
+            }
+        }
+
+        if (p == null) {
+            Text.send(commandSender, "There is no player named like provided.");
+            return;
+        }
+
+        if (rp.getPlayerManager().getPlayerAttatchment(p).hasTimedRank()) {
+            rp.getPlayerManager().getPlayerAttatchment(p).removeTimedRank();
+            Text.send(commandSender, p.getName() + "'s &ftimed rank has been removed.");
+        } else {
+            Text.send(commandSender, p.getName() + " doesn't have a timed rank.");
+        }
+    }
+
     @SubCommand("rename")
     @Alias("ren")
     @Completion("#ranks")

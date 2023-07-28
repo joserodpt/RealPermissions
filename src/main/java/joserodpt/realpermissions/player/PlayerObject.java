@@ -3,6 +3,7 @@ package joserodpt.realpermissions.player;
 import joserodpt.realpermissions.permission.Permission;
 import joserodpt.realpermissions.rank.Rank;
 import joserodpt.realpermissions.utils.Itens;
+import joserodpt.realpermissions.utils.Text;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -21,12 +22,24 @@ public class PlayerObject {
     private List<Permission> permissions;
     private boolean su;
 
-    public PlayerObject(UUID u, String name, Rank r, List<Permission> perms, boolean superUser) {
+    private boolean timedRank;
+    private Rank prevRank;
+    private int timeLeft;
+
+    public PlayerObject(UUID u, String name, Rank r, List<Permission> perms, boolean superUser, boolean timedRank, Rank prev, int timeLeft) {
         this.uuid = u;
         this.name = name;
         this.permissions = perms;
         this.su = superUser;
         this.r = r;
+
+        this.timedRank = timedRank;
+        this.prevRank = prev;
+        this.timeLeft = timeLeft;
+    }
+
+    public boolean hasTimedRank() {
+        return this.timedRank;
     }
 
     public boolean isOnline() {
@@ -62,7 +75,12 @@ public class PlayerObject {
         List<String> lore = new java.util.ArrayList<>(Collections.singletonList(
                 "&bRank: &f" + (this.getRank() == null ? "&cMissing. Check console" : this.getRank().getName())
         ));
-        if (this.getPermissions().size() > 0) {
+
+        if (this.timedRank) {
+            lore.addAll(Arrays.asList(" &f> This rank is Timed.", " &f> Previous Rank: &b" + this.prevRank.getName() + " &f- &b" + Text.formatSeconds(this.timeLeft) + " &fremaining."));
+        }
+
+        if (!this.getPermissions().isEmpty()) {
             lore.addAll(Arrays.asList("", "&e" + this.getPermissions().size() + " Permissions:"));
             lore.addAll(this.getPermissions().stream()
                     .map(Permission::getPermissionStringStyled)
@@ -71,6 +89,9 @@ public class PlayerObject {
         }
         lore.addAll(Arrays.asList("","&n&bQ (Drop)&r&f to &cdelete &fthis player.","&n&bLeft-Click&r&f to edit player permissions."));
 
+        if (this.timedRank) {
+            lore.add("&n&bRight-Click&r&f to remove timed rank.");
+        }
         return Itens.createItem(Material.PLAYER_HEAD, 1, displayName, lore);
     }
 

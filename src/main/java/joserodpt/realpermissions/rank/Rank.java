@@ -20,8 +20,6 @@ public class Rank {
     private String name, prefix, chat;
     private Map<String, Permission> permissions;
     private List<Rank> inheritances;
-
-    //TODO: ranks with time
     public Rank(Material icon, String name, String prefix, String chat, Map<String, Permission> permissions, List<Rank> inheritances) {
         this.icon = icon;
         this.name = name;
@@ -40,12 +38,12 @@ public class Rank {
 
     private List<String> getItemDescription() {
         List<String> desc = new ArrayList<>();
-        if (this.getInheritances().size() > 0) {
+        if (!this.getInheritances().isEmpty()) {
             desc.add("&fInheritances:");
             this.getInheritances().forEach(rank -> desc.add(" &f- &b" + rank.getName() + " &f(&b" + rank.getRankPermissions().size() + " &fperms)"));
         }
 
-        desc.addAll(Arrays.asList("","&b" + this.getPermissions().size() + " &ftotal permissions","","&bClick &fto view this rank in detail.", "&bRight-Click to &cremove &fthis rank"));
+        desc.addAll(Arrays.asList("","&b" + this.getPermissions().size() + " &ftotal permissions","","&bClick &fto view this rank in detail.", "&b&cQ (Drop)&f to &cremove &fthis rank"));
         return desc;
     }
 

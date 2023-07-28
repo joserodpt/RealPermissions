@@ -25,6 +25,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 public class PlayersGUI {
@@ -119,7 +120,7 @@ public class PlayersGUI {
         int slot = 0;
         for (ItemStack i : this.inv.getContents()) {
             if (i == null) {
-                if (items.size() != 0) {
+                if (!items.isEmpty()) {
                     PlayerObject e = items.get(0);
                     this.inv.setItem(slot, e.getIcon());
                     this.display.put(slot, e);
@@ -215,18 +216,23 @@ public class PlayersGUI {
                         if (current.display.containsKey(e.getRawSlot())) {
                             PlayerObject po = current.display.get(e.getRawSlot());
 
-                            p.closeInventory();
-                            if (e.getClick().equals(ClickType.DROP)) {
-                                //delete player
+                            if (Objects.requireNonNull(e.getClick()) == ClickType.DROP) {//delete player
                                 current.rp.getPlayerManager().deletePlayer(po);
                                 Text.send(p, "Player " + po.getName() + " &cdeleted.");
 
-                                PlayersGUI pg = new PlayersGUI(p, current.rp);
-                                pg.openInventory(p);
+                                current.load();
                             } else {
-                                //edit player
-                                PlayerPermissionsGUI ppg = new PlayerPermissionsGUI(p, current.rp.getPlayerManager().getPlayerAttatchment(p), current.rp);
-                                ppg.openInventory(p);
+                                if (e.getClick().equals(ClickType.RIGHT) && po.hasTimedRank()) {
+                                    //eliminar timed rank
+                                    current.rp.getPlayerManager().getPlayerAttatchment(p).removeTimedRank();
+                                    Text.send(p, po.getName() + "'s &ftimed rank has been removed.");
+                                    current.load();
+                                } else {
+                                    //edit player
+                                    p.closeInventory();
+                                    PlayerPermissionsGUI ppg = new PlayerPermissionsGUI(p, current.rp.getPlayerManager().getPlayerAttatchment(p), current.rp);
+                                    ppg.openInventory(p);
+                                }
                             }
                         }
                     }

@@ -112,7 +112,7 @@ public class RankViewer {
         int slot = 0;
         for (ItemStack i : this.inv.getContents()) {
             if (i == null) {
-                if (items.size() != 0) {
+                if (!items.isEmpty()) {
                     Rank e = items.get(0);
                     this.inv.setItem(slot, e.getItem());
                     this.display.put(slot, e);
@@ -191,7 +191,7 @@ public class RankViewer {
                             if (current.paSelected == null) {
                                 //open rank to delete or edit
                                 p.closeInventory();
-                                if (Objects.requireNonNull(e.getClick()) == ClickType.RIGHT) {
+                                if (Objects.requireNonNull(e.getClick()) == ClickType.DROP) {
                                     current.rp.getRankManager().deleteRank(clickedRank);
                                     Text.send(p, clickedRank.getPrefix() + " &frank &cdeleted.");
                                     current.load();
