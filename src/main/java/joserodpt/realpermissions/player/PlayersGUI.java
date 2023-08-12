@@ -65,7 +65,7 @@ public class PlayersGUI {
 
     public PlayersGUI(Player pl, RealPermissions rp) {
         this.rp = rp;
-        this.inv = Bukkit.getServer().createInventory(null, 54, Text.color("&fReal&bPermissions &8| &9Players"));
+        this.inv = Bukkit.getServer().createInventory(null, 54, Text.color("&fReal&cPermissions &8| &9Players"));
         this.uuid = pl.getUniqueId();
 
         this.load();

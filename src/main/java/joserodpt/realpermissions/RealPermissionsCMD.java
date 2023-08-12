@@ -48,7 +48,7 @@ public class RealPermissionsCMD extends CommandBase {
             RPGUI rg = new RPGUI(p, rp);
             rg.openInventory(p);
         } else {
-            Text.sendList(commandSender, Arrays.asList("         &fReal&bPermissions", "         &7Release &a" + rp.getDescription().getVersion()));
+            Text.sendList(commandSender, Arrays.asList("         &fReal&cPermissions", "         &7Release &a" + rp.getDescription().getVersion()));
         }
     }
 

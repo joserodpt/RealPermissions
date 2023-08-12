@@ -66,7 +66,7 @@ public class PlayerPermissionsGUI {
         this.pa = pa;
         this.rp = rp;
         this.uuid = p.getUniqueId();
-        this.inv = Bukkit.getServer().createInventory(null, 54, Text.color("&fReal&bPermissions &8| &9" + Bukkit.getOfflinePlayer(pa.getUUID()).getName()));
+        this.inv = Bukkit.getServer().createInventory(null, 54, Text.color("&fReal&cPermissions &8| &9" + Bukkit.getOfflinePlayer(pa.getUUID()).getName()));
 
         load();
 
@@ -95,7 +95,7 @@ public class PlayerPermissionsGUI {
                 case 17:
                     break;
                 default:
-                    if (items.size() != 0) {
+                    if (!items.isEmpty()) {
                         String wi = items.get(0);
                         this.inv.setItem(i, Itens.createItem(Material.PAPER, 1, "&f" + wi, Arrays.asList("","&fQ (Drop) to &cremove")));
                         this.display.put(i, wi);
