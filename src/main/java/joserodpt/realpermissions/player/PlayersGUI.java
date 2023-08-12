@@ -1,5 +1,18 @@
 package joserodpt.realpermissions.player;
 
+/*
+ *   _____            _ _____
+ *  |  __ \          | |  __ \                  (_)       (_)
+ *  | |__) |___  __ _| | |__) |__ _ __ _ __ ___  _ ___ ___ _  ___  _ __  ___
+ *  |  _  // _ \/ _` | |  ___/ _ \ '__| '_ ` _ \| / __/ __| |/ _ \| '_ \/ __|
+ *  | | \ \  __/ (_| | | |  |  __/ |  | | | | | | \__ \__ \ | (_) | | | \__ \
+ *  |_|  \_\___|\__,_|_|_|   \___|_|  |_| |_| |_|_|___/___/_|\___/|_| |_|___/
+ *
+ * Licensed under the MIT License
+ * @author José Rodrigues
+ * @link https://github.com/joserodpt/RealPermissions
+ */
+
 import joserodpt.realpermissions.RealPermissions;
 import joserodpt.realpermissions.gui.RPGUI;
 import joserodpt.realpermissions.utils.Itens;
@@ -65,10 +78,10 @@ public class PlayersGUI {
 
         switch (ps) {
             case ON:
-                po.sort(Comparator.comparing(PlayerObject::isOnlineGUI));
+                po.sort(Comparator.comparing(PlayerObject::isOnline).reversed());
                 break;
             case SU:
-                po.sort(Comparator.comparing(PlayerObject::isSuperUserGUI));
+                po.sort(Comparator.comparing(PlayerObject::isSuperUser).reversed());
                 break;
             case MOST_PERMS:
                 po.sort(Comparator.comparingInt(o -> o.getPermissions().size()));
@@ -83,23 +96,9 @@ public class PlayersGUI {
         this.inv.clear();
         this.display.clear();
 
-        for (int i = 0; i < 9; ++i) {
-            this.inv.setItem(i, placeholder);
+        for (int slot : new int[]{0,1,2,3,4,5,6,7,8,9, 17, 36, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53}) {
+            this.inv.setItem(slot, placeholder);
         }
-
-        this.inv.setItem(9, placeholder);
-        this.inv.setItem(17, placeholder);
-        this.inv.setItem(36, placeholder);
-        this.inv.setItem(44, placeholder);
-        this.inv.setItem(45, placeholder);
-        this.inv.setItem(46, placeholder);
-        this.inv.setItem(47, placeholder);
-        this.inv.setItem(48, placeholder);
-        this.inv.setItem(49, placeholder);
-        this.inv.setItem(50, placeholder);
-        this.inv.setItem(51, placeholder);
-        this.inv.setItem(52, placeholder);
-        this.inv.setItem(53, placeholder);
 
         if (firstPage()) {
             this.inv.setItem(18, placeholder);
@@ -116,6 +115,8 @@ public class PlayersGUI {
             this.inv.setItem(26, next);
             this.inv.setItem(35, next);
         }
+
+        this.inv.setItem(49, close);
 
         int slot = 0;
         for (ItemStack i : this.inv.getContents()) {
@@ -142,8 +143,6 @@ public class PlayersGUI {
                 this.inv.setItem(45, Itens.createItem(Material.HOPPER, 1, "&fClick here to &bsort &fby:", Arrays.asList("&f> ON", "&f> Super Users", "&a> Most Permissions")));
                 break;
         }
-
-        this.inv.setItem(49, close);
     }
 
     public void openInventory(Player target) {

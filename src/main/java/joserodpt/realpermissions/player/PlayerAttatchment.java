@@ -1,23 +1,42 @@
 package joserodpt.realpermissions.player;
 
+/*
+ *   _____            _ _____
+ *  |  __ \          | |  __ \                  (_)       (_)
+ *  | |__) |___  __ _| | |__) |__ _ __ _ __ ___  _ ___ ___ _  ___  _ __  ___
+ *  |  _  // _ \/ _` | |  ___/ _ \ '__| '_ ` _ \| / __/ __| |/ _ \| '_ \/ __|
+ *  | | \ \  __/ (_| | | |  |  __/ |  | | | | | | \__ \__ \ | (_) | | | \__ \
+ *  |_|  \_\___|\__,_|_|_|   \___|_|  |_| |_| |_|_|___/___/_|\___/|_| |_|___/
+ *
+ * Licensed under the MIT License
+ * @author José Rodrigues
+ * @link https://github.com/joserodpt/RealPermissions
+ */
+
 import joserodpt.realpermissions.RealPermissions;
 import joserodpt.realpermissions.config.Config;
 import joserodpt.realpermissions.config.Players;
 import joserodpt.realpermissions.permission.Permission;
+import joserodpt.realpermissions.permission.PermissionBase;
 import joserodpt.realpermissions.rank.Rank;
 import joserodpt.realpermissions.utils.Countdown;
+import joserodpt.realpermissions.utils.ReflectionHelper;
 import joserodpt.realpermissions.utils.Text;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.permissions.PermissibleBase;
 import org.bukkit.permissions.PermissionAttachment;
 
+import java.lang.reflect.Field;
 import java.util.List;
+import java.util.UUID;
 
 public class PlayerAttatchment {
 
+
     public enum PlayerData { RANK, PERMISSIONS, SU, TIMED_RANK }
 
-    private Player player;
+    private final UUID uuid;
     private PermissionAttachment pa;
     private Rank rank;
     private Rank timedRank_previous;
@@ -30,23 +49,51 @@ public class PlayerAttatchment {
         return this.pa;
     }
 
-    public PlayerAttatchment(Player player, Rank rank, List<String> pperms, boolean superUser, RealPermissions rp) {
-        this.player = player;
+    public PlayerAttatchment(UUID playerUUID, Rank rank, List<String> pperms, boolean superUser, RealPermissions rp) {
+        this.uuid = playerUUID;
         this.rank = rank;
         this.playerPermissions = pperms;
         this.superUser = superUser;
 
-        this.pa = player.addAttachment(rp);
+        //set player's new PermissionBase
+        Player p = Bukkit.getPlayer(playerUUID);
+        replaceBase(p);
+
+        this.pa = p.addAttachment(rp);
 
         this.refreshPlayerPermissions();
     }
 
-    public Player getPlayer() {
-        return player;
+    private void replaceBase(Player player) {
+        try {
+            PermissionBase newPermBase = new PermissionBase(player);
+
+            Field field = ReflectionHelper.getCraftBukkitClass("entity.CraftHumanEntity").getDeclaredField("perm");
+            field.setAccessible(true);
+
+            org.bukkit.permissions.Permissible oldpermissible = (org.bukkit.permissions.Permissible) field.get(player);
+            if (newPermBase instanceof PermissibleBase)
+            {
+                //copy attachments
+                Field attachments = PermissibleBase.class.getDeclaredField("attachments");
+                attachments.setAccessible(true);
+                ((List) attachments.get(newPermBase)).addAll((List)attachments.get(oldpermissible));
+            }
+
+            field.set(player, newPermBase);
+        } catch (Exception e) {
+            RealPermissions.getPlugin().getLogger().severe("Failed to swap the Player's Permission Base");
+            RealPermissions.getPlugin().getLogger().severe(e.getMessage());
+        }
+    }
+
+    public UUID getUUID() {
+        return uuid;
     }
 
     public void logout() {
-        this.player.removeAttachment(this.getPermissionAttachment());
+        this.getPermissionAttachment().remove();
+        this.pa = null;
         this.saveData(PlayerData.TIMED_RANK);
     }
 
@@ -85,8 +132,7 @@ public class PlayerAttatchment {
                 this.setRank(r);
             }
         }, this::removeTimedRank, (t) -> {
-            Bukkit.getLogger().warning(String.valueOf(t.getSecondsLeft()));
-            if (Bukkit.getPlayer(player.getUniqueId()) == null) {
+            if (Bukkit.getPlayer(this.getUUID()) == null) {
                 t.killTask();
             }
         });
@@ -103,7 +149,7 @@ public class PlayerAttatchment {
         }
 
         //remove data from player's config
-        Players.getConfig().set(player.getUniqueId() + ".Timed-Rank", null);
+        Players.getConfig().set(this.getUUID() + ".Timed-Rank", null);
         Players.save();
 
         this.setRank(this.getTimedRank_previous());
@@ -134,7 +180,8 @@ public class PlayerAttatchment {
 
     private void setVisual() {
         if (Config.getConfig().getBoolean("RealPermissions.Prefix-In-Tablist")) {
-            this.getPlayer().setPlayerListName(Text.color(this.getRank().getPrefix() + " &r" + this.getPlayer().getDisplayName()));
+            Player p = Bukkit.getPlayer(this.getUUID());
+            p.setPlayerListName(Text.color(this.getRank().getPrefix() + " &r" + p.getDisplayName()));
         }
     }
 
@@ -143,8 +190,7 @@ public class PlayerAttatchment {
     }
 
     public List<Permission> getRankPermissions() {
-        List<Permission> tmp = this.getRank().getPermissions();
-        return tmp;
+        return this.getRank().getPermissions();
     }
 
     public List<String> getPlayerPermissions() {
@@ -173,18 +219,18 @@ public class PlayerAttatchment {
         }
         switch (pd) {
             case RANK:
-                Players.getConfig().set(player.getUniqueId() + ".Rank", this.getRank().getName());
+                Players.getConfig().set(this.getUUID() + ".Rank", this.getRank().getName());
                 break;
             case PERMISSIONS:
-                Players.getConfig().set(player.getUniqueId() + ".Permissions", this.getPlayerPermissions());
+                Players.getConfig().set(this.getUUID() + ".Permissions", this.getPlayerPermissions());
                 break;
             case SU:
-                Players.getConfig().set(player.getUniqueId() + ".Super-User", this.isSuperUser());
+                Players.getConfig().set(this.getUUID() + ".Super-User", this.isSuperUser());
                 break;
             case TIMED_RANK:
-                Players.getConfig().set(player.getUniqueId() + ".Timed-Rank.Previous-Rank", this.getTimedRank_previous().getName());
-                Players.getConfig().set(player.getUniqueId() + ".Timed-Rank.Remaining", this.getTimedRank_countdown().getSecondsLeft());
-                Players.getConfig().set(player.getUniqueId() + ".Timed-Rank.Last-Save", System.currentTimeMillis() / 1000L);
+                Players.getConfig().set(this.getUUID()+ ".Timed-Rank.Previous-Rank", this.getTimedRank_previous().getName());
+                Players.getConfig().set(this.getUUID() + ".Timed-Rank.Remaining", this.getTimedRank_countdown().getSecondsLeft());
+                Players.getConfig().set(this.getUUID() + ".Timed-Rank.Last-Save", System.currentTimeMillis() / 1000L);
                 break;
         }
         Players.save();

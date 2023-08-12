@@ -1,5 +1,18 @@
 package joserodpt.realpermissions.player;
 
+/*
+ *   _____            _ _____
+ *  |  __ \          | |  __ \                  (_)       (_)
+ *  | |__) |___  __ _| | |__) |__ _ __ _ __ ___  _ ___ ___ _  ___  _ __  ___
+ *  |  _  // _ \/ _` | |  ___/ _ \ '__| '_ ` _ \| / __/ __| |/ _ \| '_ \/ __|
+ *  | | \ \  __/ (_| | | |  |  __/ |  | | | | | | \__ \__ \ | (_) | | | \__ \
+ *  |_|  \_\___|\__,_|_|_|   \___|_|  |_| |_| |_|_|___/___/_|\___/|_| |_|___/
+ *
+ * Licensed under the MIT License
+ * @author José Rodrigues
+ * @link https://github.com/joserodpt/RealPermissions
+ */
+
 import joserodpt.realpermissions.permission.Permission;
 import joserodpt.realpermissions.rank.Rank;
 import joserodpt.realpermissions.utils.Itens;
@@ -16,13 +29,11 @@ import java.util.stream.Collectors;
 
 public class PlayerObject {
 
-    private UUID uuid;
-    private String name;
+    private final UUID uuid;
+    private final String name;
     private Rank r;
     private List<Permission> permissions;
-    private boolean su;
-
-    private boolean timedRank;
+    private boolean timedRank, su;
     private Rank prevRank;
     private int timeLeft;
 
@@ -46,16 +57,8 @@ public class PlayerObject {
         return Bukkit.getPlayer(this.uuid) != null;
     }
 
-    public boolean isOnlineGUI() {
-        return !this.isOnline();
-    }
-
     public boolean isSuperUser() {
         return this.su;
-    }
-
-    public boolean isSuperUserGUI() {
-        return !this.isSuperUser();
     }
 
     public Rank getRank() {

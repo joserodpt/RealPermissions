@@ -1,5 +1,18 @@
 package joserodpt.realpermissions.rank;
 
+/*
+ *   _____            _ _____
+ *  |  __ \          | |  __ \                  (_)       (_)
+ *  | |__) |___  __ _| | |__) |__ _ __ _ __ ___  _ ___ ___ _  ___  _ __  ___
+ *  |  _  // _ \/ _` | |  ___/ _ \ '__| '_ ` _ \| / __/ __| |/ _ \| '_ \/ __|
+ *  | | \ \  __/ (_| | | |  |  __/ |  | | | | | | \__ \__ \ | (_) | | | \__ \
+ *  |_|  \_\___|\__,_|_|_|   \___|_|  |_| |_| |_|_|___/___/_|\___/|_| |_|___/
+ *
+ * Licensed under the MIT License
+ * @author José Rodrigues
+ * @link https://github.com/joserodpt/RealPermissions
+ */
+
 import joserodpt.realpermissions.config.Ranks;
 import joserodpt.realpermissions.permission.Permission;
 import joserodpt.realpermissions.utils.Itens;

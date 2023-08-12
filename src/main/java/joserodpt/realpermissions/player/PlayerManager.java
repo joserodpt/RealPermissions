@@ -1,8 +1,22 @@
 package joserodpt.realpermissions.player;
 
+/*
+ *   _____            _ _____
+ *  |  __ \          | |  __ \                  (_)       (_)
+ *  | |__) |___  __ _| | |__) |__ _ __ _ __ ___  _ ___ ___ _  ___  _ __  ___
+ *  |  _  // _ \/ _` | |  ___/ _ \ '__| '_ ` _ \| / __/ __| |/ _ \| '_ \/ __|
+ *  | | \ \  __/ (_| | | |  |  __/ |  | | | | | | \__ \__ \ | (_) | | | \__ \
+ *  |_|  \_\___|\__,_|_|_|   \___|_|  |_| |_| |_|_|___/___/_|\___/|_| |_|___/
+ *
+ * Licensed under the MIT License
+ * @author José Rodrigues
+ * @link https://github.com/joserodpt/RealPermissions
+ */
+
 import joserodpt.realpermissions.config.Players;
 import joserodpt.realpermissions.permission.Permission;
 import joserodpt.realpermissions.rank.Rank;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import joserodpt.realpermissions.RealPermissions;
 
@@ -16,7 +30,7 @@ public class PlayerManager {
         this.rp = rp;
     }
 
-    public HashMap<UUID,PlayerAttatchment> playerAttatchment = new HashMap<>();
+    public HashMap<UUID, PlayerAttatchment> playerAttatchment = new HashMap<>();
 
     public HashMap<UUID, PlayerAttatchment> getPlayerAttatchment() {
         return playerAttatchment;
@@ -87,7 +101,9 @@ public class PlayerManager {
             Players.save();
         }
 
-        PlayerAttatchment pa = new PlayerAttatchment(p, player_rank, permissions, Players.getConfig().getBoolean(p.getUniqueId() + ".Super-User"),rp);
+        this.getPlayerAttatchment().remove(p.getUniqueId());
+
+        PlayerAttatchment pa = new PlayerAttatchment(p.getUniqueId(), player_rank, permissions, Players.getConfig().getBoolean(p.getUniqueId() + ".Super-User"),rp);
         this.getPlayerAttatchment().put(p.getUniqueId(), pa);
 
         if (timedRank) {
@@ -104,7 +120,7 @@ public class PlayerManager {
         List<Player> p = new ArrayList<>();
         for (PlayerAttatchment value : this.getPlayerAttatchment().values()) {
             if (value.getRank().getName().equalsIgnoreCase(name)) {
-                p.add(value.getPlayer());
+                p.add(Bukkit.getPlayer(value.getUUID()));
             }
         }
         return p;

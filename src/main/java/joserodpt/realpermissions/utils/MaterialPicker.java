@@ -1,5 +1,18 @@
 package joserodpt.realpermissions.utils;
 
+/*
+ *   _____            _ _____
+ *  |  __ \          | |  __ \                  (_)       (_)
+ *  | |__) |___  __ _| | |__) |__ _ __ _ __ ___  _ ___ ___ _  ___  _ __  ___
+ *  |  _  // _ \/ _` | |  ___/ _ \ '__| '_ ` _ \| / __/ __| |/ _ \| '_ \/ __|
+ *  | | \ \  __/ (_| | | |  |  __/ |  | | | | | | \__ \__ \ | (_) | | | \__ \
+ *  |_|  \_\___|\__,_|_|_|   \___|_|  |_| |_| |_|_|___/___/_|\___/|_| |_|___/
+ *
+ * Licensed under the MIT License
+ * @author José Rodrigues
+ * @link https://github.com/joserodpt/RealPermissions
+ */
+
 import java.util.*;
 
 import joserodpt.realpermissions.RealPermissions;
@@ -36,7 +49,6 @@ public class MaterialPicker {
     private UUID uuid;
     private ArrayList<Material> items;
     private HashMap<Integer, Material> display = new HashMap<>();
-
     int pageNumber = 0;
     Pagination<Material> p;
     private Rank r;
@@ -96,25 +108,11 @@ public class MaterialPicker {
         this.inv.clear();
         this.display.clear();
 
-        for (int i = 0; i < 9; ++i) {
-            this.inv.setItem(i, placeholder);
-        }
-
         this.inv.setItem(4, search);
 
-        this.inv.setItem(9, placeholder);
-        this.inv.setItem(17, placeholder);
-        this.inv.setItem(36, placeholder);
-        this.inv.setItem(44, placeholder);
-        this.inv.setItem(45, placeholder);
-        this.inv.setItem(46, placeholder);
-        this.inv.setItem(47, placeholder);
-        this.inv.setItem(48, placeholder);
-        this.inv.setItem(49, placeholder);
-        this.inv.setItem(50, placeholder);
-        this.inv.setItem(51, placeholder);
-        this.inv.setItem(52, placeholder);
-        this.inv.setItem(53, placeholder);
+        for (int slot : new int[]{9, 17, 36, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53}) {
+            this.inv.setItem(slot, placeholder);
+        }
 
         if (firstPage()) {
             this.inv.setItem(18, placeholder);
@@ -132,10 +130,12 @@ public class MaterialPicker {
             this.inv.setItem(35, next);
         }
 
+        this.inv.setItem(49, close);
+
         int slot = 0;
         for (ItemStack i : inv.getContents()) {
             if (i == null) {
-                if (items.size() != 0) {
+                if (!items.isEmpty()) {
                     Material s = items.get(0);
                     this.inv.setItem(slot,
                             Itens.createItem(s, 1, "§f" + s.name(), Collections.singletonList("&fClick to pick this.")));
@@ -145,8 +145,6 @@ public class MaterialPicker {
             }
             slot++;
         }
-
-        this.inv.setItem(49, close);
     }
 
     public void openInventory(Player target) {
@@ -185,7 +183,7 @@ public class MaterialPicker {
                         {
                             case 4:
                                 new PlayerInput(p, input -> {
-                                    if (current.searchMaterial(input).size() == 0) {
+                                    if (current.searchMaterial(input).isEmpty()) {
                                         Text.send(p, "&fNothing found for your search terms.");
 
                                         current.exit(p, current.r, current.rp);

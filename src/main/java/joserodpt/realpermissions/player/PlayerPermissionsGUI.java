@@ -1,5 +1,18 @@
 package joserodpt.realpermissions.player;
 
+/*
+ *   _____            _ _____
+ *  |  __ \          | |  __ \                  (_)       (_)
+ *  | |__) |___  __ _| | |__) |__ _ __ _ __ ___  _ ___ ___ _  ___  _ __  ___
+ *  |  _  // _ \/ _` | |  ___/ _ \ '__| '_ ` _ \| / __/ __| |/ _ \| '_ \/ __|
+ *  | | \ \  __/ (_| | | |  |  __/ |  | | | | | | \__ \__ \ | (_) | | | \__ \
+ *  |_|  \_\___|\__,_|_|_|   \___|_|  |_| |_| |_|_|___/___/_|\___/|_| |_|___/
+ *
+ * Licensed under the MIT License
+ * @author José Rodrigues
+ * @link https://github.com/joserodpt/RealPermissions
+ */
+
 import joserodpt.realpermissions.RealPermissions;
 import joserodpt.realpermissions.gui.RankViewer;
 import joserodpt.realpermissions.utils.Itens;
@@ -53,7 +66,7 @@ public class PlayerPermissionsGUI {
         this.pa = pa;
         this.rp = rp;
         this.uuid = p.getUniqueId();
-        this.inv = Bukkit.getServer().createInventory(null, 54, Text.color("&fReal&bPermissions &8| &9" + pa.getPlayer().getName()));
+        this.inv = Bukkit.getServer().createInventory(null, 54, Text.color("&fReal&bPermissions &8| &9" + Bukkit.getOfflinePlayer(pa.getUUID()).getName()));
 
         load();
 
@@ -62,7 +75,7 @@ public class PlayerPermissionsGUI {
 
     public void load() {
         p = new Pagination<>(15, pa.getPlayerPermissions());
-        fillChest(pa.getPlayerPermissions().size() > 0 ? p.getPage(pageNumber) : Collections.emptyList());
+        fillChest(!pa.getPlayerPermissions().isEmpty() ? p.getPage(pageNumber) : Collections.emptyList());
     }
 
     public void fillChest(List<String> items) {
@@ -185,7 +198,7 @@ public class PlayerPermissionsGUI {
                                                 } else {
                                                     current.pa.addPermission(perm);
                                                     //current.rp.getRankManager().refreshPermsAndPlayers();
-                                                    Text.send(p, "&fPermission " + perm + " &aadded &fto " + current.pa.getPlayer().getName());
+                                                    Text.send(p, "&fPermission " + perm + " &aadded &fto " + Bukkit.getOfflinePlayer(current.pa.getUUID()).getName());
                                                 }
 
                                                 return Collections.singletonList(AnvilGUI.ResponseAction.close());
@@ -213,7 +226,7 @@ public class PlayerPermissionsGUI {
             }
 
             private void backPage(PlayerPermissionsGUI asd) {
-                if (asd.pa.getPlayerPermissions().size() > 0) {
+                if (!asd.pa.getPlayerPermissions().isEmpty()) {
                     if (asd.p.exists(asd.pageNumber - 1)) {
                         asd.pageNumber--;
                     }
@@ -223,8 +236,7 @@ public class PlayerPermissionsGUI {
             }
 
             private void nextPage(PlayerPermissionsGUI asd) {
-                if (asd.pa.getPlayerPermissions().size() > 0) {
-
+                if (!asd.pa.getPlayerPermissions().isEmpty()) {
                     if (asd.p.exists(asd.pageNumber + 1)) {
                         asd.pageNumber++;
                     }
