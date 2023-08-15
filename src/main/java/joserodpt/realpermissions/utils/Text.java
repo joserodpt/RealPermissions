@@ -13,16 +13,14 @@ package joserodpt.realpermissions.utils;
  * @link https://github.com/joserodpt/RealPermissions
  */
 
-import java.util.ArrayList;
-import java.util.List;
-
+import joserodpt.realpermissions.config.Config;
 import joserodpt.realpermissions.rank.Rank;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import joserodpt.realpermissions.config.Config;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Text {
 
@@ -43,15 +41,19 @@ public class Text {
 	}
 
 	public static void send(Player p, String string) {
-		p.sendMessage(Text.color(Config.getConfig().getString("RealPermissions.Prefix") + "&r " + string));
+		p.sendMessage(Text.color(Config.file().getString("RealPermissions.Prefix") + "&r " + string));
 	}
 	public static void send(CommandSender p, String string) {
-		p.sendMessage(Text.color(Config.getConfig().getString("RealPermissions.Prefix") + "&r " + string));
+		p.sendMessage(Text.color(Config.file().getString("RealPermissions.Prefix") + "&r " + string));
 	}
 
-    public static String formatChat(Player player, String message, Rank r) {
-		return Text.color(r.getChat().replace("%prefix%", r.getPrefix()).replace("%player%", player.getDisplayName()).replace("%message%", message));
-    }
+	public static String formatChat(Player player, String message, Rank r) {
+		return Text.color(r.getChat()
+				.replace("%prefix%", r.getPrefix())
+				.replace("%player%", player.getDisplayName())
+				.replace("%message%", message)
+				.replace("%", "%%")); // Escape '%' characters
+	}
 
 	public static String formatSeconds(long seconds) {
 		long years = seconds / (60 * 60 * 24 * 365);
@@ -82,4 +84,15 @@ public class Text {
 			builder.append(value).append(unitName);
 		}
 	}
+
+	public static String formatCost(Double number) {
+		if (number < 1000) {
+			return String.format("%.2f", number); // No suffix needed for values less than 1000
+		} else if (number < 1000000) {
+			return String.format("%.2fk", number / 1000); // Display in thousands
+		} else {
+			return String.format("%.2fM", number / 1000000); // Display in millions
+		}
+	}
+
 }

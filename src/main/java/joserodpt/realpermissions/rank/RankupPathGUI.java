@@ -1,4 +1,4 @@
-package joserodpt.realpermissions.player;
+package joserodpt.realpermissions.rank;
 
 /*
  *   _____            _ _____
@@ -14,7 +14,7 @@ package joserodpt.realpermissions.player;
  */
 
 import joserodpt.realpermissions.RealPermissions;
-import joserodpt.realpermissions.gui.RPGUI;
+import joserodpt.realpermissions.player.RPPlayer;
 import joserodpt.realpermissions.utils.Itens;
 import joserodpt.realpermissions.utils.Pagination;
 import joserodpt.realpermissions.utils.Text;
@@ -25,27 +25,21 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
 
-public class PlayersGUI {
+public class RankupPathGUI { //TODO: admin edit
 
-    public enum PlayersGUISorter { SU, ON, MOST_PERMS }
-
-    private static Map<UUID, PlayersGUI> inventories = new HashMap<>();
+    private static Map<UUID, RankupPathGUI> inventories = new HashMap<>();
     private Inventory inv;
 
     private ItemStack placeholder = Itens.createItem(Material.BLACK_STAINED_GLASS_PANE, 1, "");
@@ -53,46 +47,29 @@ public class PlayersGUI {
             Collections.singletonList("&fClick here to go to the next page."));
     private ItemStack back = Itens.createItem(Material.YELLOW_STAINED_GLASS, 1, "&6Back",
             Collections.singletonList("&fClick here to go back to the next page."));
-    private ItemStack close = Itens.createItem(Material.ACACIA_DOOR, 1, "&cGo Back",
+    private ItemStack close = Itens.createItem(Material.OAK_DOOR, 1, "&cGo Back",
             Collections.singletonList("&fClick here to close this menu."));
 
     private UUID uuid;
-    private HashMap<Integer, PlayerObject> display = new HashMap<>();
+    private HashMap<Integer, RankupPathEntry> display = new HashMap<>();
     int pageNumber = 0;
-    Pagination<PlayerObject> p;
+    Pagination<RankupPathEntry> p;
     private RealPermissions rp;
-    private PlayersGUISorter ps = PlayersGUISorter.ON;
+    private Rankup rk;
+    private RPPlayer player;
 
-    public PlayersGUI(Player pl, RealPermissions rp) {
+    public RankupPathGUI(RPPlayer player, Rankup rk, RealPermissions rp) {
+        this.player = player;
         this.rp = rp;
-        this.inv = Bukkit.getServer().createInventory(null, 54, Text.color("&fReal&cPermissions &8| &9Players"));
-        this.uuid = pl.getUniqueId();
+        this.rk = rk;
+        this.inv = Bukkit.getServer().createInventory(null, 54, Text.color("&fReal&cPermissions &8| " + rk.getDisplayName()));
+        this.uuid = player.getUUID();
 
-        this.load();
-
-        this.register();
-    }
-
-    public void load() {
-        List<PlayerObject> po = rp.getPlayerManager().getSavedPlayers();
-
-        switch (ps) {
-            case ON:
-                po.sort(Comparator.comparing(PlayerObject::isOnline).reversed());
-                break;
-            case SU:
-                po.sort(Comparator.comparing(PlayerObject::isSuperUser).reversed());
-                break;
-            case MOST_PERMS:
-                po.sort(Comparator.comparingInt(o -> o.getPermissions().size()));
-                break;
-        }
-
-        this.p = new Pagination<>(28, po);
+        this.p = new Pagination<>(28, rk.getRankupPath());
         fillChest(p.getPage(this.pageNumber));
     }
 
-    public void fillChest(List<PlayerObject> items) {
+    public void fillChest(List<RankupPathEntry> items) {
         this.inv.clear();
         this.display.clear();
 
@@ -122,26 +99,14 @@ public class PlayersGUI {
         for (ItemStack i : this.inv.getContents()) {
             if (i == null) {
                 if (!items.isEmpty()) {
-                    PlayerObject e = items.get(0);
-                    this.inv.setItem(slot, e.getIcon());
+                    RankupPathEntry e = items.get(0);
+
+                    this.inv.setItem(slot, e.getIcon(player.getRank()));
                     this.display.put(slot, e);
                     items.remove(0);
                 }
             }
             ++slot;
-        }
-
-        switch (this.ps)
-        {
-            case ON:
-                this.inv.setItem(45, Itens.createItem(Material.HOPPER, 1, "&fClick here to &bsort &fby:", Arrays.asList("&a> ON", "&f> Super Users", "&f> Most Permissions")));
-                break;
-            case SU:
-                this.inv.setItem(45, Itens.createItem(Material.HOPPER, 1, "&fClick here to &bsort &fby:", Arrays.asList("&f> ON", "&a> Super Users", "&f> Most Permissions")));
-                break;
-            case MOST_PERMS:
-                this.inv.setItem(45, Itens.createItem(Material.HOPPER, 1, "&fClick here to &bsort &fby:", Arrays.asList("&f> ON", "&f> Super Users", "&a> Most Permissions")));
-                break;
         }
     }
 
@@ -155,6 +120,7 @@ public class PlayersGUI {
             } else {
                 target.openInventory(inv);
             }
+            register();
         }
     }
 
@@ -169,7 +135,7 @@ public class PlayersGUI {
                     }
                     UUID uuid = clicker.getUniqueId();
                     if (inventories.containsKey(uuid)) {
-                        PlayersGUI current = inventories.get(uuid);
+                        RankupPathGUI current = inventories.get(uuid);
                         if (e.getInventory().getHolder() != current.getInventory().getHolder()) {
                             return;
                         }
@@ -180,25 +146,10 @@ public class PlayersGUI {
 
                         switch (e.getRawSlot())
                         {
-                            case 45:
-                                switch (current.ps)
-                                {
-                                    case ON:
-                                        current.ps = PlayersGUISorter.SU;
-                                        break;
-                                    case SU:
-                                        current.ps = PlayersGUISorter.MOST_PERMS;
-                                        break;
-                                    case MOST_PERMS:
-                                        current.ps = PlayersGUISorter.ON;
-                                        break;
-                                }
-                                current.load();
-                                break;
                             case 49:
                                 p.closeInventory();
-                                RPGUI rp = new RPGUI(p, current.rp);
-                                rp.openInventory(p);
+                                RankupGUI rg = new RankupGUI(current.player, current.rp);
+                                rg.openInventory(p);
                                 break;
                             case 26:
                             case 35:
@@ -213,39 +164,23 @@ public class PlayersGUI {
                         }
 
                         if (current.display.containsKey(e.getRawSlot())) {
-                            PlayerObject po = current.display.get(e.getRawSlot());
+                            p.closeInventory();
+                            RankupPathEntry po = current.display.get(e.getRawSlot());
 
-                            if (Objects.requireNonNull(e.getClick()) == ClickType.DROP) {//delete player
-                                current.rp.getPlayerManager().deletePlayer(po);
-                                Text.send(p, "Player " + po.getName() + " &cdeleted.");
-
-                                current.load();
-                            } else {
-                                if (e.getClick().equals(ClickType.RIGHT) && po.hasTimedRank()) {
-                                    //eliminar timed rank
-                                    current.rp.getPlayerManager().getPlayerAttatchment(p).removeTimedRank();
-                                    Text.send(p, po.getName() + "'s &ftimed rank has been removed.");
-                                    current.load();
-                                } else {
-                                    //edit player
-                                    p.closeInventory();
-                                    PlayerPermissionsGUI ppg = new PlayerPermissionsGUI(p, current.rp.getPlayerManager().getPlayerAttatchment(p), current.rp);
-                                    ppg.openInventory(p);
-                                }
-                            }
+                            current.rp.getRankManager().proccessRankup(current.player, current.rk, po);
                         }
                     }
                 }
             }
 
-            private void backPage(PlayersGUI asd) {
+            private void backPage(RankupPathGUI asd) {
                 if (asd.p.exists(asd.pageNumber - 1)) {
                     --asd.pageNumber;
                     asd.fillChest(asd.p.getPage(asd.pageNumber));
                 }
             }
 
-            private void nextPage(PlayersGUI asd) {
+            private void nextPage(RankupPathGUI asd) {
                 if (asd.p.exists(asd.pageNumber + 1)) {
                     ++asd.pageNumber;
                     asd.fillChest(asd.p.getPage(asd.pageNumber));

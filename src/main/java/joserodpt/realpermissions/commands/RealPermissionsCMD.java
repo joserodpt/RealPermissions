@@ -1,4 +1,4 @@
-package joserodpt.realpermissions;
+package joserodpt.realpermissions.commands;
 
 /*
  *   _____            _ _____
@@ -13,12 +13,13 @@ package joserodpt.realpermissions;
  * @link https://github.com/joserodpt/RealPermissions
  */
 
+import joserodpt.realpermissions.RealPermissions;
 import joserodpt.realpermissions.config.Config;
 import joserodpt.realpermissions.config.Players;
 import joserodpt.realpermissions.config.Ranks;
 import joserodpt.realpermissions.gui.RPGUI;
 import joserodpt.realpermissions.gui.RankViewer;
-import joserodpt.realpermissions.player.PlayerAttatchment;
+import joserodpt.realpermissions.player.RPPlayer;
 import joserodpt.realpermissions.player.PlayersGUI;
 import joserodpt.realpermissions.rank.Rank;
 import joserodpt.realpermissions.rank.RankGUI;
@@ -58,9 +59,10 @@ public class RealPermissionsCMD extends CommandBase {
     public void reloadcmd(final CommandSender commandSender) {
         Config.reload();
         Ranks.reload();
-        Players.reload();
         rp.getRankManager().loadRanks();
-       Text.send(commandSender, "&aReloaded.");
+        rp.getRankManager().loadRankups();
+        Players.reload();
+        Text.send(commandSender, "&aReloaded!");
     }
 
     @SubCommand("rank")
@@ -139,7 +141,7 @@ public class RealPermissionsCMD extends CommandBase {
     @Permission("realpermissions.admin")
     public void setrankcmd(final CommandSender commandSender, final Player p, final String rank) {
         if (commandSender instanceof Player) {
-            if (!rp.getPlayerManager().isSuperUser((Player) commandSender)) {
+            if (rp.getPlayerManager().isNotSuperUser((Player) commandSender)) {
                 Text.send(commandSender, " &cYou don't have permission to execute this command!");
                 return;
             }
@@ -167,7 +169,7 @@ public class RealPermissionsCMD extends CommandBase {
     @Permission("realpermissions.admin")
     public void settimedrankcmd(final CommandSender commandSender, final Player p, final String rank, final Integer seconds) {
         if (commandSender instanceof Player) {
-            if (!rp.getPlayerManager().isSuperUser((Player) commandSender)) {
+            if (rp.getPlayerManager().isNotSuperUser((Player) commandSender)) {
                 Text.send(commandSender, " &cYou don't have permission to execute this command!");
                 return;
             }
@@ -200,7 +202,7 @@ public class RealPermissionsCMD extends CommandBase {
     @Permission("realpermissions.admin")
     public void cleartimedcmd(final CommandSender commandSender, final Player p) {
         if (commandSender instanceof Player) {
-            if (!rp.getPlayerManager().isSuperUser((Player) commandSender)) {
+            if (rp.getPlayerManager().isNotSuperUser((Player) commandSender)) {
                 Text.send(commandSender, " &cYou don't have permission to execute this command!");
                 return;
             }
@@ -247,7 +249,7 @@ public class RealPermissionsCMD extends CommandBase {
     @WrongUsage("/rp del <rank>")
     public void delrankcmd(final CommandSender commandSender, final String rank) {
         if (commandSender instanceof Player) {
-            if (!rp.getPlayerManager().isSuperUser((Player) commandSender)) {
+            if (rp.getPlayerManager().isNotSuperUser((Player) commandSender)) {
                 Text.send(commandSender, " &cYou don't have permission to execute this command!");
                 return;
             }
@@ -270,7 +272,7 @@ public class RealPermissionsCMD extends CommandBase {
     @Permission("realpermissions.admin")
     public void permcmd(final CommandSender commandSender, final String operation, final String rank, final String perm) {
         if (commandSender instanceof Player) {
-            if (!rp.getPlayerManager().isSuperUser((Player) commandSender)) {
+            if (rp.getPlayerManager().isNotSuperUser((Player) commandSender)) {
                 Text.send(commandSender, " &cYou don't have permission to execute this command!");
                 return;
             }
@@ -325,7 +327,7 @@ public class RealPermissionsCMD extends CommandBase {
     @Permission("realpermissions.admin")
     public void permcmd(final CommandSender commandSender, final String operation, final Player p, final String perm) {
         if (commandSender instanceof Player) {
-            if (!rp.getPlayerManager().isSuperUser((Player) commandSender)) {
+            if (rp.getPlayerManager().isNotSuperUser((Player) commandSender)) {
                 Text.send(commandSender, " &cYou don't have permission to execute this command!");
                 return;
             }
@@ -348,7 +350,7 @@ public class RealPermissionsCMD extends CommandBase {
             return;
         }
 
-        PlayerAttatchment pa = rp.getPlayerManager().getPlayerAttatchment(p);
+        RPPlayer pa = rp.getPlayerManager().getPlayerAttatchment(p);
 
         if (add) {
             if (pa.hasPermission(perm)) {

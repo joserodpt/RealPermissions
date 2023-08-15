@@ -53,7 +53,7 @@ public class SettingsGUI {
     public SettingsGUI(Player as, RealPermissions rp) {
         this.rp = rp;
         this.uuid = as.getUniqueId();
-        this.inv = Bukkit.getServer().createInventory(null, 54, Text.color("&fReal&bPermissions &8| &eSettings"));
+        this.inv = Bukkit.getServer().createInventory(null, 54, Text.color("&fReal&cPermissions &8| &eSettings"));
 
         fillChest();
 
@@ -64,16 +64,16 @@ public class SettingsGUI {
         this.inv.clear();
 
         //selection items
-        this.inv.setItem(10, Itens.createItem(Material.ENDER_CHEST, 1, "&fReal&bPermissions"));
+        this.inv.setItem(10, Itens.createItem(Material.ENDER_CHEST, 1, "&fReal&cPermissions"));
         this.inv.setItem(19, Itens.createItem(Material.NAME_TAG, 1, "&eChat and Tablist"));
 
         switch (def) {
             case REALP:
-                this.inv.setItem(13, Itens.createItem(Material.WRITABLE_BOOK, 1, "&fPlugin Prefix", Arrays.asList("&fCurrent: &r" + Config.getConfig().getString("RealPermissions.Prefix"), "", "&fClick here to change the plugin's prefix.")));
+                this.inv.setItem(13, Itens.createItem(Material.WRITABLE_BOOK, 1, "&fPlugin Prefix", Arrays.asList("&fCurrent: &r" + Config.file().getString("RealPermissions.Prefix"), "", "&fClick here to change the plugin's prefix.")));
                 break;
             case CHAT_TABLIST:
-                this.inv.setItem(22, Itens.createItem(Material.NAME_TAG, 1, "&fChat Formatting", Arrays.asList("&fCurrent: &r" + (Config.getConfig().getBoolean("RealPermissions.Chat-Formatting") ? "&aON" : "&cOFF"), "", "&fClick here to turn on/off chat formatting.")));
-                this.inv.setItem(23, Itens.createItem(Material.FILLED_MAP, 1, "&fTab Formatting", Arrays.asList("&fCurrent: &r" + (Config.getConfig().getBoolean("RealPermissions.Prefix-In-Tablist") ? "&aON" : "&cOFF"), "", "&fClick here to turn on/off prefixes in tablist.")));
+                this.inv.setItem(22, Itens.createItem(Material.NAME_TAG, 1, "&fChat Formatting", Arrays.asList("&fCurrent: &r" + (Config.file().getBoolean("RealPermissions.Chat-Formatting") ? "&aON" : "&cOFF"), "", "&fClick here to turn on/off chat formatting.")));
+                this.inv.setItem(23, Itens.createItem(Material.FILLED_MAP, 1, "&fTab Formatting", Arrays.asList("&fCurrent: &r" + (Config.file().getBoolean("RealPermissions.Prefix-In-Tablist") ? "&aON" : "&cOFF"), "", "&fClick here to turn on/off prefixes in tablist.")));
                 break;
         }
 
@@ -131,7 +131,7 @@ public class SettingsGUI {
                                 p.closeInventory();
 
                                 new PlayerInput(p, input -> {
-                                    Config.getConfig().set("RealPermissions.Prefix", input);
+                                    Config.file().set("RealPermissions.Prefix", input);
                                     Config.save();
                                     Text.send(p, "The plugin's prefix is now " + input);
 
@@ -144,13 +144,13 @@ public class SettingsGUI {
 
                                 break;
                             case 22:
-                                Config.getConfig().set("RealPermissions.Chat-Formatting", !Config.getConfig().getBoolean("RealPermissions.Chat-Formatting"));
+                                Config.file().set("RealPermissions.Chat-Formatting", !Config.file().getBoolean("RealPermissions.Chat-Formatting"));
                                 Config.save();
                                 current.fillChest();
                                 break;
 
                             case 23:
-                                Config.getConfig().set("RealPermissions.Prefix-In-Tablist", !Config.getConfig().getBoolean("RealPermissions.Prefix-In-Tablist"));
+                                Config.file().set("RealPermissions.Prefix-In-Tablist", !Config.file().getBoolean("RealPermissions.Prefix-In-Tablist"));
                                 Config.save();
                                 current.fillChest();
                                 break;

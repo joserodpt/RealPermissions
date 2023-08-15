@@ -13,47 +13,45 @@ package joserodpt.realpermissions.config;
  * @link https://github.com/joserodpt/RealPermissions
  */
 
-import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.YamlDocument;
+import joserodpt.realpermissions.RealPermissions;
 import org.bukkit.event.Listener;
-import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
 
 public class Players implements Listener {
-
-	private static File file;
-	private static FileConfiguration customFile;
 	private static String name = "players.yml";
 
-	public static void setup(Plugin p) {
-		file = new File(p.getDataFolder(), name);
+	private static YamlDocument document;
 
-		if (!file.exists()) {
-			try {
-				file.createNewFile();
-			} catch (IOException ignored) {
-				Bukkit.getLogger().severe("Error crating config.yml file!");
-			}
+	public static void setup(final JavaPlugin rm) {
+		try {
+			document = YamlDocument.create(new File(rm.getDataFolder(), name));
+		} catch (final IOException e) {
+			RealPermissions.getPlugin().getLogger().severe( "Couldn't setup " + name + "!");
+			RealPermissions.getPlugin().getLogger().severe(e.getMessage());
 		}
-		customFile = YamlConfiguration.loadConfiguration(file);
 	}
 
-	public static FileConfiguration getConfig() {
-		return customFile;
+	public static YamlDocument file() {
+		return document;
 	}
 
 	public static void save() {
 		try {
-			customFile.save(file);
-		} catch (IOException e) {
-			Bukkit.getLogger().severe("Couldn't save " + name + "!");
+			document.save();
+		} catch (final IOException e) {
+			RealPermissions.getPlugin().getLogger().severe( "Couldn't save " + name + "!");
 		}
 	}
 
 	public static void reload() {
-		customFile = YamlConfiguration.loadConfiguration(file);
+		try {
+			document.reload();
+		} catch (final IOException e) {
+			RealPermissions.getPlugin().getLogger().severe( "Couldn't reload " + name + "!");
+		}
 	}
 }

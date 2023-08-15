@@ -143,7 +143,7 @@ public class MaterialPicker {
                     items.remove(0);
                 }
             }
-            slot++;
+            ++slot;
         }
     }
 
@@ -228,18 +228,16 @@ public class MaterialPicker {
 
             private void backPage(MaterialPicker asd) {
                 if (asd.p.exists(asd.pageNumber - 1)) {
-                    asd.pageNumber--;
+                    --asd.pageNumber;
+                    asd.fillChest(asd.p.getPage(asd.pageNumber));
                 }
-
-                asd.fillChest(asd.p.getPage(asd.pageNumber));
             }
 
             private void nextPage(MaterialPicker asd) {
                 if (asd.p.exists(asd.pageNumber + 1)) {
-                    asd.pageNumber++;
+                    ++asd.pageNumber;
+                    asd.fillChest(asd.p.getPage(asd.pageNumber));
                 }
-
-                asd.fillChest(asd.p.getPage(asd.pageNumber));
             }
 
             @EventHandler

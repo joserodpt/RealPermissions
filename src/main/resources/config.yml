@@ -1,4 +1,6 @@
+Version: 1
 RealPermissions:
   Prefix: "&fReal&cPermissions &7>"
   Chat-Formatting: true
   Prefix-In-Tablist: true
+  Enable-Rankup: true

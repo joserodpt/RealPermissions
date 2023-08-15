@@ -14,12 +14,11 @@ import java.util.stream.Collectors;
 
 public class PermissionBase extends PermissibleBase {
     private Tree starPermissions = null;
-    private Map<String, PermissionAttachmentInfo> permissions;
 
     public PermissionBase(ServerOperator opable) {
         super(opable);
 
-        permissions = new LinkedHashMap<String, PermissionAttachmentInfo>() {
+        Map<String, PermissionAttachmentInfo> permissions = new LinkedHashMap<String, PermissionAttachmentInfo>() {
             @Override
             public PermissionAttachmentInfo put(String k, PermissionAttachmentInfo v) {
                 PermissionAttachmentInfo existing = this.get(k);
@@ -123,7 +122,7 @@ public class PermissionBase extends PermissibleBase {
         private class Node {
             public HashMap<Character, Node> children;
             public boolean isLeaf() {
-                return this.children.isEmpty();
+                return this.children == null || this.children.isEmpty();
             }
         }
     }

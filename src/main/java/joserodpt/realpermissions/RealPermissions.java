@@ -13,25 +13,31 @@ package joserodpt.realpermissions;
  * @link https://github.com/joserodpt/RealPermissions
  */
 
+import joserodpt.realpermissions.commands.RankupCMD;
+import joserodpt.realpermissions.commands.RealPermissionsCMD;
 import joserodpt.realpermissions.config.Config;
 import joserodpt.realpermissions.config.Players;
 import joserodpt.realpermissions.config.Ranks;
 import joserodpt.realpermissions.gui.RPGUI;
 import joserodpt.realpermissions.gui.RankViewer;
 import joserodpt.realpermissions.gui.SettingsGUI;
-import joserodpt.realpermissions.player.PlayerAttatchment;
+import joserodpt.realpermissions.player.RPPlayer;
 import joserodpt.realpermissions.player.PlayerListener;
 import joserodpt.realpermissions.player.PlayerManager;
 import joserodpt.realpermissions.player.PlayerPermissionsGUI;
 import joserodpt.realpermissions.player.PlayersGUI;
 import joserodpt.realpermissions.rank.RankGUI;
 import joserodpt.realpermissions.rank.RankManager;
+import joserodpt.realpermissions.rank.RankupGUI;
+import joserodpt.realpermissions.rank.RankupPathGUI;
 import joserodpt.realpermissions.utils.MaterialPicker;
 import joserodpt.realpermissions.utils.PlayerInput;
 import joserodpt.realpermissions.utils.Text;
 import me.mattstudios.mf.base.CommandManager;
+import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import joserodpt.realpermissions.rank.Rank;
 
@@ -39,28 +45,27 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 public final class RealPermissions extends JavaPlugin {
-
-    private RankManager rm = new RankManager(this);
+    private static RealPermissions rp;
+    private final RankManager rm = new RankManager(this);
+    private final PlayerManager pm = new PlayerManager(this);
+    private static Economy econ = null;
 
     public RankManager getRankManager() {
         return rm;
     }
-
-    private PlayerManager pm = new PlayerManager(this);
-
     public PlayerManager getPlayerManager() {
         return pm;
     }
-
-    private static RealPermissions rp;
-
     public static RealPermissions getPlugin() {
         return rp;
     }
-
+    public Economy getEcon() {
+        return econ;
+    }
     @Override
     public void onEnable() {
         rp = this;
+        new Metrics(this, 19519);
 
         getLogger().info("<------------------ RealPermissions PT ------------------>".replace("PT", "| " +
                 this.getDescription().getVersion()));
@@ -68,6 +73,7 @@ public final class RealPermissions extends JavaPlugin {
         saveDefaultConfig();
         Config.setup(this);
         Ranks.setup(this);
+        Players.setup(this);
 
         //load ranks
         getLogger().info("Loading Ranks.");
@@ -81,7 +87,17 @@ public final class RealPermissions extends JavaPlugin {
 
         getLogger().info("Loaded " + rm.getRanks().size() + " ranks.");
 
-        Players.setup(this);
+        //hook into vault
+        if (setupEconomy()) {
+            rm.setRankupEnabled(true);
+            getLogger().info("Vault found and Hooked into!");
+            getLogger().info("Loading Rankups.");
+            rm.loadRankups();
+            getLogger().info("Loaded " + rm.getRankups().size() + " rankups.");
+        } else {
+            rm.setRankupEnabled(false);
+            getLogger().warning("Vault not found. Rankup will be disabled.");
+        }
 
         //register commands
         CommandManager cm = new CommandManager(this);
@@ -103,12 +119,15 @@ public final class RealPermissions extends JavaPlugin {
         );
 
         cm.register(new RealPermissionsCMD(this));
+        cm.register(new RankupCMD(this));
 
         //register events
         PluginManager pm = Bukkit.getPluginManager();
         pm.registerEvents(new PlayerListener(this), this);
         pm.registerEvents(PlayerInput.getListener(), this);
         pm.registerEvents(RankGUI.getListener(), this);
+        pm.registerEvents(RankupGUI.getListener(), this);
+        pm.registerEvents(RankupPathGUI.getListener(), this);
         pm.registerEvents(RankViewer.getListener(), this);
         pm.registerEvents(RPGUI.getListener(), this);
         pm.registerEvents(MaterialPicker.getListener(), this);
@@ -122,8 +141,20 @@ public final class RealPermissions extends JavaPlugin {
                 this.getDescription().getVersion()));
     }
 
+    private boolean setupEconomy() {
+        if (getServer().getPluginManager().getPlugin("Vault") == null) {
+            return false;
+        }
+        RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
+        if (rsp == null) {
+            return false;
+        }
+        econ = rsp.getProvider();
+        return econ != null;
+    }
+
     @Override
     public void onDisable() {
-        getPlayerManager().getPlayerAttatchment().values().forEach(playerAttatchment -> playerAttatchment.saveData(PlayerAttatchment.PlayerData.TIMED_RANK));
+        getPlayerManager().getPlayerAttatchment().values().forEach(playerAttatchment -> playerAttatchment.saveData(RPPlayer.PlayerData.TIMED_RANK));
     }
 }

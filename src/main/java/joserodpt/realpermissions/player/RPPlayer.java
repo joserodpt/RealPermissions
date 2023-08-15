@@ -31,12 +31,12 @@ import java.lang.reflect.Field;
 import java.util.List;
 import java.util.UUID;
 
-public class PlayerAttatchment {
-
+public class RPPlayer {
 
     public enum PlayerData { RANK, PERMISSIONS, SU, TIMED_RANK }
 
     private final UUID uuid;
+    private final Player p;
     private PermissionAttachment pa;
     private Rank rank;
     private Rank timedRank_previous;
@@ -49,14 +49,14 @@ public class PlayerAttatchment {
         return this.pa;
     }
 
-    public PlayerAttatchment(UUID playerUUID, Rank rank, List<String> pperms, boolean superUser, RealPermissions rp) {
-        this.uuid = playerUUID;
+    public RPPlayer(Player p, Rank rank, List<String> pperms, boolean superUser, RealPermissions rp) {
+        this.p = p;
+        this.uuid = p.getUniqueId();
         this.rank = rank;
         this.playerPermissions = pperms;
         this.superUser = superUser;
 
         //set player's new PermissionBase
-        Player p = Bukkit.getPlayer(playerUUID);
         replaceBase(p);
 
         this.pa = p.addAttachment(rp);
@@ -85,6 +85,10 @@ public class PlayerAttatchment {
             RealPermissions.getPlugin().getLogger().severe("Failed to swap the Player's Permission Base");
             RealPermissions.getPlugin().getLogger().severe(e.getMessage());
         }
+    }
+
+    public Player getPlayer() {
+        return p;
     }
 
     public UUID getUUID() {
@@ -149,7 +153,7 @@ public class PlayerAttatchment {
         }
 
         //remove data from player's config
-        Players.getConfig().set(this.getUUID() + ".Timed-Rank", null);
+        Players.file().remove(this.getUUID() + ".Timed-Rank");
         Players.save();
 
         this.setRank(this.getTimedRank_previous());
@@ -176,10 +180,12 @@ public class PlayerAttatchment {
 
         //set if it's super user again
         this.setSuperUser(this.isSuperUser());
+
+        Text.send(this.getPlayer(), "&fYour rank is now " + this.getRank().getPrefix());
     }
 
     private void setVisual() {
-        if (Config.getConfig().getBoolean("RealPermissions.Prefix-In-Tablist")) {
+        if (Config.file().getBoolean("RealPermissions.Prefix-In-Tablist")) {
             Player p = Bukkit.getPlayer(this.getUUID());
             p.setPlayerListName(Text.color(this.getRank().getPrefix() + " &r" + p.getDisplayName()));
         }
@@ -219,18 +225,18 @@ public class PlayerAttatchment {
         }
         switch (pd) {
             case RANK:
-                Players.getConfig().set(this.getUUID() + ".Rank", this.getRank().getName());
+                Players.file().set(this.getUUID() + ".Rank", this.getRank().getName());
                 break;
             case PERMISSIONS:
-                Players.getConfig().set(this.getUUID() + ".Permissions", this.getPlayerPermissions());
+                Players.file().set(this.getUUID() + ".Permissions", this.getPlayerPermissions());
                 break;
             case SU:
-                Players.getConfig().set(this.getUUID() + ".Super-User", this.isSuperUser());
+                Players.file().set(this.getUUID() + ".Super-User", this.isSuperUser());
                 break;
             case TIMED_RANK:
-                Players.getConfig().set(this.getUUID()+ ".Timed-Rank.Previous-Rank", this.getTimedRank_previous().getName());
-                Players.getConfig().set(this.getUUID() + ".Timed-Rank.Remaining", this.getTimedRank_countdown().getSecondsLeft());
-                Players.getConfig().set(this.getUUID() + ".Timed-Rank.Last-Save", System.currentTimeMillis() / 1000L);
+                Players.file().set(this.getUUID()+ ".Timed-Rank.Previous-Rank", this.getTimedRank_previous().getName());
+                Players.file().set(this.getUUID() + ".Timed-Rank.Remaining", this.getTimedRank_countdown().getSecondsLeft());
+                Players.file().set(this.getUUID() + ".Timed-Rank.Last-Save", System.currentTimeMillis() / 1000L);
                 break;
         }
         Players.save();

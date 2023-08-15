@@ -56,7 +56,7 @@ public class RankGUI {
     public RankGUI(Player as, Rank r, RealPermissions rp) {
         this.rp = rp;
         this.uuid = as.getUniqueId();
-        this.inv = Bukkit.getServer().createInventory(null, 54, Text.color("&fReal&bPermissions &8| &9" + r.getPrefix()));
+        this.inv = Bukkit.getServer().createInventory(null, 54, Text.color("&fReal&cPermissions &8| &9" + r.getPrefix()));
 
         this.r = r;
         load();
@@ -259,18 +259,16 @@ public class RankGUI {
 
             private void backPage(RankGUI asd) {
                 if (asd.p.exists(asd.pageNumber - 1)) {
-                    asd.pageNumber--;
+                    --asd.pageNumber;
+                    asd.fillChest(asd.p.getPage(asd.pageNumber));
                 }
-
-                asd.fillChest(asd.p.getPage(asd.pageNumber));
             }
 
             private void nextPage(RankGUI asd) {
                 if (asd.p.exists(asd.pageNumber + 1)) {
-                    asd.pageNumber++;
+                    ++asd.pageNumber;
+                    asd.fillChest(asd.p.getPage(asd.pageNumber));
                 }
-
-                asd.fillChest(asd.p.getPage(asd.pageNumber));
             }
 
             @EventHandler

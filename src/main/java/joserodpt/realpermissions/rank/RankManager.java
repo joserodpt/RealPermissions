@@ -13,33 +13,49 @@ package joserodpt.realpermissions.rank;
  * @link https://github.com/joserodpt/RealPermissions
  */
 
-import joserodpt.realpermissions.player.PlayerAttatchment;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.configuration.ConfigurationSection;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
 import joserodpt.realpermissions.RealPermissions;
+import joserodpt.realpermissions.config.Config;
 import joserodpt.realpermissions.config.Ranks;
 import joserodpt.realpermissions.permission.Permission;
+import joserodpt.realpermissions.player.RPPlayer;
+import joserodpt.realpermissions.utils.Text;
+import net.milkbowl.vault.economy.EconomyResponse;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class RankManager {
 
+    private RealPermissions rp;
+    private Map<String, Rank> ranks = new HashMap<>();
+    private Map<String, Rankup> rankup_paths = new HashMap<>();
     private Rank defaultRank;
-    RealPermissions rp;
+    private Boolean rankupEnabled;
     public RankManager(RealPermissions rp) {
         this.rp = rp;
     }
 
-    private Map<String, Rank> ranks = new HashMap<>();
+    public Boolean isRankupEnabled() {
+        return this.rankupEnabled || Config.file().getBoolean("RealPermissions.Enable-Rankup");
+    }
+
+    public void setRankupEnabled(Boolean rankupEnabled) {
+        this.rankupEnabled = rankupEnabled;
+    }
 
     public void loadRanks() {
         this.ranks.clear();
         //load ranks from config
-        for (String rankName : Ranks.getConfig().getConfigurationSection("Ranks").getKeys(false)) {
-            ConfigurationSection rankSection = Ranks.getConfig().getConfigurationSection("Ranks." + rankName);
+        for (String rankName : Ranks.file().getSection("Ranks").getRoutesAsStrings(false)) {
+            Section rankSection = Ranks.file().getSection("Ranks." + rankName);
             Material icon = Material.matchMaterial(rankSection.getString("Icon"));
             String prefix = rankSection.getString("Prefix");
             String chat = rankSection.getString("Chat");
@@ -63,7 +79,7 @@ public class RankManager {
         }
 
         //load default rank
-        this.defaultRank = this.rp.getRankManager().getRank(Ranks.getConfig().getString("Default-Rank"));
+        this.defaultRank = this.rp.getRankManager().getRank(Ranks.file().getString("Default-Rank"));
     }
 
     public List<Rank> getRanks() {
@@ -87,7 +103,7 @@ public class RankManager {
 
     public void deleteRank(Rank a) {
         //set players that have the rank to the default rank
-        for (PlayerAttatchment value : rp.getPlayerManager().getPlayerAttatchment().values()) {
+        for (RPPlayer value : rp.getPlayerManager().getPlayerAttatchment().values()) {
             if (value.getRank().equals(a)) {
                 value.setRank(this.getDefaultRank());
             }
@@ -143,7 +159,101 @@ public class RankManager {
 
     private void setDefaultRank(Rank newR) {
         this.defaultRank = newR;
-        Ranks.getConfig().set("Default-Rank", newR.getName());
+        Ranks.file().set("Default-Rank", newR.getName());
         Ranks.save();
+    }
+
+    public void loadRankups() {
+        if (isRankupEnabled()) {
+            this.rankup_paths.clear();
+            if (Ranks.file().isSection("Rankups")) {
+                for (String rankup : Ranks.file().getSection("Rankups").getRoutesAsStrings(false)) {
+                    String displayName = Ranks.file().getString("Rankups." + rankup + ".Display-Name");
+                    String perm = Ranks.file().getString("Rankups." + rankup + ".Permission");
+
+                    if (displayName.isEmpty()) {
+                        displayName = rankup;
+                    }
+
+                    Material m = Material.FILLED_MAP;
+                    try {
+                        m = Material.valueOf(Ranks.file().getString("Rankups." + rankup + ".Icon"));
+                    } catch (Exception ignored) { }
+
+                    List<String> desc = new ArrayList<>(Ranks.file().getStringList("Rankups." + rankup + ".Description"));
+
+                    List<String> rankup_data = Ranks.file().getStringList("Rankups." + rankup + ".Path");
+                    List<RankupPathEntry> rankupPath = new ArrayList<>();
+                    for (String rankupDatum : rankup_data) {
+                        String[] dataSplit = rankupDatum.split("=");
+                        if (dataSplit.length != 2 || !rankupDatum.contains("=")) {
+                            rp.getLogger().severe("Rankup data for " + rankup + " is invalid. Skipping. Format: RANK=COST");
+                            continue;
+                        }
+
+                        Rank r = rp.getRankManager().getRank(dataSplit[0]); //get rank name
+                        if (r == null) {
+                            rp.getLogger().severe("Rankup data for " + rankup + " is invalid. Skipping. There is no rank named " + dataSplit[0]);
+                            continue;
+                        }
+
+                        try {
+                            rankupPath.add(new RankupPathEntry(r, Double.parseDouble(dataSplit[1])));
+                        } catch (Exception ignored) {
+                            rp.getLogger().severe("Rankup data for " + rankup + " is invalid. Skipping. Value not accepted as double: " + dataSplit[1]);
+                        }
+                    }
+
+                    Rankup newR = new Rankup(rankup, displayName, perm, m, desc, rankupPath);
+                    if (!newR.containsCost(0D)) {
+                        rp.getLogger().severe("Rankup data for " + rankup + " is invalid. Skipping. There has to be one Rank with 0 rankup cost.");
+                    } else {
+                        rankup_paths.put(rankup, newR);
+                    }
+                }
+            }
+        }
+    }
+
+    public Map<String, Rankup> getRankups() {
+        return this.rankup_paths;
+    }
+
+    public List<Rankup> getRankupsList() {
+        return new ArrayList<>(this.getRankups().values());
+    }
+
+    public List<Rankup> getRankupsListForPlayer(RPPlayer p) {
+        return this.getRankupsList().stream()
+                .filter(rankup -> (!rankup.hasPermission() || p.getPlayer().hasPermission(rankup.getPermission())) && rankup.containsRank(p.getRank()))
+                .collect(Collectors.toList());
+    }
+
+    public void proccessRankup(RPPlayer player, Rankup rk, RankupPathEntry po) {
+        if (player.getRank().equals(po.getRank())) {
+            Text.send(player.getPlayer(), "&cYou already have this rank.");
+            return;
+        }
+
+        int rankIndex = rk.getRankupPath().lastIndexOf(po);
+
+        //go back a rank to check if the player has that rank
+        int prev = rankIndex - 1;
+        if (prev >= 0) {
+            Rank previousRank = rk.getRankupPath().get(prev).getRank();
+            if (player.getRank().equals(previousRank)) {
+                EconomyResponse r = rp.getEcon().withdrawPlayer(player.getPlayer(), po.getCost());
+                if(r.transactionSuccess()) {
+                    player.setRank(po.getRank());
+                    Text.send(player.getPlayer(), "&fYou ranked up to " + po.getRank().getPrefix() + " &ffor " + Text.formatCost(po.getCost()) + " coins");
+                } else {
+                    Text.send(player.getPlayer(), "An error occured: " + r.errorMessage);
+                }
+            } else {
+                Text.send(player.getPlayer(), "&cYou can't rankup to this rank.");
+            }
+        } else {
+            Text.send(player.getPlayer(), "&cYou can't rankdown.");
+        }
     }
 }

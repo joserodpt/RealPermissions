@@ -15,6 +15,8 @@ package joserodpt.realpermissions.utils;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -37,6 +39,17 @@ public class Itens {
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', nome));
         meta.setLore(Text.color(desc));
+        item.setItemMeta(meta);
+        return item;
+    }
+
+    public static ItemStack createItemEnchanted(Material m, int i, String name, List<String> desc) {
+        ItemStack item = new ItemStack(m, i);
+        ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', name));
+        meta.setLore(Text.color(desc));
+        meta.addEnchant(Enchantment.LUCK, 1, true);
+        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         item.setItemMeta(meta);
         return item;
     }

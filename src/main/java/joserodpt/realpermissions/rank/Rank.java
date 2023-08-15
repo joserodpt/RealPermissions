@@ -159,30 +159,30 @@ public class Rank {
     public void saveData(RankData rd) {
         switch (rd) {
             case CHAT:
-                Ranks.getConfig().set("Ranks." + this.getName() + ".Chat", this.getChat());
+                Ranks.file().set("Ranks." + this.getName() + ".Chat", this.getChat());
                 break;
             case ICON:
-                Ranks.getConfig().set("Ranks." + this.getName() + ".Icon", this.getIcon().name());
+                Ranks.file().set("Ranks." + this.getName() + ".Icon", this.getIcon().name());
                 break;
             case PREFIX:
-                Ranks.getConfig().set("Ranks." + this.getName() + ".Prefix", this.getPrefix());
+                Ranks.file().set("Ranks." + this.getName() + ".Prefix", this.getPrefix());
                 break;
             case PERMISSIONS:
-                Ranks.getConfig().set("Ranks." + this.getName() + ".Permissions", this.getRankPermissionStrings());
+                Ranks.file().set("Ranks." + this.getName() + ".Permissions", this.getRankPermissionStrings());
                 break;
             case INHERITANCES:
-                Ranks.getConfig().set("Ranks." + this.getName() + ".Inheritance", this.getInheritances().stream()
+                Ranks.file().set("Ranks." + this.getName() + ".Inheritance", this.getInheritances().stream()
                         .map(Rank::getName)
                         .collect(Collectors.toList()));
                 break;
             case ALL:
-                Ranks.getConfig().set("Ranks." + this.getName() + ".Icon", this.getIcon().name());
-                Ranks.getConfig().set("Ranks." + this.getName() + ".Prefix", this.getPrefix());
-                Ranks.getConfig().set("Ranks." + this.getName() + ".Chat", this.getChat());
-                Ranks.getConfig().set("Ranks." + this.getName() + ".Inheritance", this.getInheritances().stream()
+                Ranks.file().set("Ranks." + this.getName() + ".Icon", this.getIcon().name());
+                Ranks.file().set("Ranks." + this.getName() + ".Prefix", this.getPrefix());
+                Ranks.file().set("Ranks." + this.getName() + ".Chat", this.getChat());
+                Ranks.file().set("Ranks." + this.getName() + ".Inheritance", this.getInheritances().stream()
                         .map(Rank::getName)
                         .collect(Collectors.toList()));
-                Ranks.getConfig().set("Ranks." + this.getName() + ".Permissions", this.getRankPermissionStrings());
+                Ranks.file().set("Ranks." + this.getName() + ".Permissions", this.getRankPermissionStrings());
                 break;
         }
         Ranks.save();
@@ -208,7 +208,12 @@ public class Rank {
     }
 
     public void deleteConfig() {
-        Ranks.getConfig().set("Ranks." + this.getName(), null);
+        Ranks.file().remove("Ranks." + this.getName());
         Ranks.save();
+    }
+
+    @Override
+    public String toString() {
+        return "Rank{" + name + "}";
     }
 }

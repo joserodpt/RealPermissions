@@ -14,10 +14,11 @@ package joserodpt.realpermissions.gui;
  */
 
 import joserodpt.realpermissions.RealPermissions;
-import joserodpt.realpermissions.player.PlayerAttatchment;
+import joserodpt.realpermissions.player.RPPlayer;
 import joserodpt.realpermissions.player.PlayerPermissionsGUI;
 import joserodpt.realpermissions.rank.Rank;
 import joserodpt.realpermissions.rank.RankGUI;
+import joserodpt.realpermissions.rank.RankupGUI;
 import joserodpt.realpermissions.utils.Itens;
 import joserodpt.realpermissions.utils.Pagination;
 import joserodpt.realpermissions.utils.Text;
@@ -58,7 +59,7 @@ public class RankViewer {
 
     public RankViewer(Player pl, RealPermissions rp) {
         this.rp = rp;
-        this.inv = Bukkit.getServer().createInventory(null, 54, Text.color("&fReal&bPermissions &8| &eRanks"));
+        this.inv = Bukkit.getServer().createInventory(null, 54, Text.color("&fReal&cPermissions &8| &eRanks"));
         this.uuid = pl.getUniqueId();
 
         this.load();
@@ -66,12 +67,12 @@ public class RankViewer {
         this.register();
     }
 
-    private PlayerAttatchment paSelected = null;
+    private RPPlayer paSelected = null;
 
-    public RankViewer(Player pl, RealPermissions rp, PlayerAttatchment pa) {
+    public RankViewer(Player pl, RealPermissions rp, RPPlayer pa) {
         this.paSelected = pa;
         this.rp = rp;
-        this.inv = Bukkit.getServer().createInventory(null, 54, Text.color("&fReal&bPermissions &8| &eRanks"));
+        this.inv = Bukkit.getServer().createInventory(null, 54, Text.color("&fReal&cPermissions &8| &eRanks"));
         this.uuid = pl.getUniqueId();
 
         this.load();
@@ -132,12 +133,12 @@ public class RankViewer {
                     items.remove(0);
                 }
             }
-            slot++;
+            ++slot;
         }
 
         this.inv.setItem(49, close);
 
-        this.inv.setItem(51, Itens.createItem(Material.EXPERIENCE_BOTTLE, 1, "&a&lRank Paths"));
+        this.inv.setItem(4, Itens.createItem(Material.EXPERIENCE_BOTTLE, 1, "&a&lRankup"));
 
     }
 
@@ -196,6 +197,11 @@ public class RankViewer {
                                 backPage(current);
                                 p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BELL, 1, 50);
                                 break;
+                            case 4:
+                                p.closeInventory();
+                                RankupGUI rg = new RankupGUI(current.rp.getPlayerManager().getPlayerAttatchment(p), current.rp);
+                                rg.openInventory(p);
+                                break;
                         }
 
                         if (current.display.containsKey(e.getRawSlot())) {
@@ -227,18 +233,16 @@ public class RankViewer {
 
             private void backPage(RankViewer asd) {
                 if (asd.p.exists(asd.pageNumber - 1)) {
-                    asd.pageNumber--;
+                    --asd.pageNumber;
+                    asd.fillChest(asd.p.getPage(asd.pageNumber));
                 }
-
-                asd.fillChest(asd.p.getPage(asd.pageNumber));
             }
 
             private void nextPage(RankViewer asd) {
                 if (asd.p.exists(asd.pageNumber + 1)) {
-                    asd.pageNumber++;
+                    ++asd.pageNumber;
+                    asd.fillChest(asd.p.getPage(asd.pageNumber));
                 }
-
-                asd.fillChest(asd.p.getPage(asd.pageNumber));
             }
 
             @EventHandler

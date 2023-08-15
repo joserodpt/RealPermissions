@@ -55,14 +55,14 @@ public class PlayerPermissionsGUI {
 
     private final UUID uuid;
     private HashMap<Integer, String> display = new HashMap<>();
-    private PlayerAttatchment pa;
+    private RPPlayer pa;
 
     int pageNumber = 0;
     Pagination<String> p;
 
     private RealPermissions rp;
 
-    public PlayerPermissionsGUI(Player p, PlayerAttatchment pa, RealPermissions rp) {
+    public PlayerPermissionsGUI(Player p, RPPlayer pa, RealPermissions rp) {
         this.pa = pa;
         this.rp = rp;
         this.uuid = p.getUniqueId();
@@ -228,20 +228,18 @@ public class PlayerPermissionsGUI {
             private void backPage(PlayerPermissionsGUI asd) {
                 if (!asd.pa.getPlayerPermissions().isEmpty()) {
                     if (asd.p.exists(asd.pageNumber - 1)) {
-                        asd.pageNumber--;
+                        --asd.pageNumber;
+                        asd.fillChest(asd.p.getPage(asd.pageNumber));
                     }
-
-                    asd.fillChest(asd.p.getPage(asd.pageNumber));
                 }
             }
 
             private void nextPage(PlayerPermissionsGUI asd) {
                 if (!asd.pa.getPlayerPermissions().isEmpty()) {
                     if (asd.p.exists(asd.pageNumber + 1)) {
-                        asd.pageNumber++;
+                        ++asd.pageNumber;
+                        asd.fillChest(asd.p.getPage(asd.pageNumber));
                     }
-
-                    asd.fillChest(asd.p.getPage(asd.pageNumber));
                 }
             }
 

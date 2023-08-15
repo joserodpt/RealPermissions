@@ -49,7 +49,7 @@ public class RPGUI {
     public RPGUI(Player as, RealPermissions rp) {
         this.rp = rp;
         this.uuid = as.getUniqueId();
-        this.inv = Bukkit.getServer().createInventory(null, 27, Text.color("&fReal&bPermissions &8Version " + rp.getDescription().getVersion()));
+        this.inv = Bukkit.getServer().createInventory(null, 27, Text.color("&fReal&cPermissions &8Version " + rp.getDescription().getVersion()));
 
         this.inv.clear();
 
