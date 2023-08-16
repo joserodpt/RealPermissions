@@ -22,8 +22,8 @@ import java.util.Collections;
 
 public class RankupPathEntry {
 
-    private final Rank r;
-    private final Double cost;
+    private Rank r;
+    private Double cost;
 
     public RankupPathEntry(Rank r, Double cost) {
         this.r = r;
@@ -38,11 +38,21 @@ public class RankupPathEntry {
         return r;
     }
 
-    public ItemStack getIcon(Rank r) {
-        if (this.getRank().equals(r)) {
-            return Itens.createItemEnchanted(this.getRank().getIcon(), 1, this.getRank().getPrefix(), Collections.singletonList("&fThis is your current rank!"));
-        } else {
-            return Itens.createItem(this.getRank().getIcon(), 1, this.getRank().getPrefix(), Arrays.asList("&fCost to rankup: &b" + Text.formatCost(this.getCost()), "", "&fClick to rankup!"));
+    public ItemStack getIcon(Rank r, boolean admin) {
+        if (admin) {
+            return Itens.createItem(this.getRank().getIcon(), 1, this.getRank().getPrefix() + " &7| &fCost: &b" + Text.formatCost(this.getCost()), Arrays.asList("&a&nRight-Click&r&f to change the rank of this entry.", "&e&nLeft-Click&r&f to change the cost of this entry.", "&c&nQ (Drop)&r&f to delete this entry."));
         }
+
+        return this.getRank().equals(r) ? Itens.createItemEnchanted(this.getRank().getIcon(), 1, this.getRank().getPrefix() + " &7| &fCost: &b" + Text.formatCost(this.getCost()), Collections.singletonList("&fThis is your current rank!")) :
+                Itens.createItem(this.getRank().getIcon(), 1, this.getRank().getPrefix() + " &7| &fCost: &b" + Text.formatCost(this.getCost()), Arrays.asList("", "&fClick to rankup!"));
+    }
+
+    public void setRank(Rank clickedRank) {
+        this.r = clickedRank;
+
+    }
+
+    public void setCost(Double cost) {
+        this.cost = cost;
     }
 }

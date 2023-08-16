@@ -155,6 +155,6 @@ public final class RealPermissions extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        getPlayerManager().getPlayerAttatchment().values().forEach(playerAttatchment -> playerAttatchment.saveData(RPPlayer.PlayerData.TIMED_RANK));
+        getPlayerManager().getPlayerMap().values().forEach(playerAttatchment -> playerAttatchment.saveData(RPPlayer.PlayerData.TIMED_RANK));
     }
 }

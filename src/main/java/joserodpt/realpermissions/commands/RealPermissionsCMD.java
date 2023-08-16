@@ -130,8 +130,8 @@ public class RealPermissionsCMD extends CommandBase {
             return;
         }
 
-        rp.getPlayerManager().getPlayerAttatchment(p).setSuperUser(!rp.getPlayerManager().getPlayerAttatchment(p).isSuperUser());
-        Text.send(commandSender, p.getName() + "'s &fsuper user: " + (rp.getPlayerManager().getPlayerAttatchment(p).isSuperUser() ? "&aON" : "&cOFF"));
+        rp.getPlayerManager().getPlayer(p).setSuperUser(!rp.getPlayerManager().getPlayer(p).isSuperUser());
+        Text.send(commandSender, p.getName() + "'s &fsuper user: " + (rp.getPlayerManager().getPlayer(p).isSuperUser() ? "&aON" : "&cOFF"));
     }
 
     @SubCommand("set")
@@ -158,7 +158,7 @@ public class RealPermissionsCMD extends CommandBase {
             return;
         }
 
-        rp.getPlayerManager().getPlayerAttatchment(p).setRank(r);
+        rp.getPlayerManager().getPlayer(p).setRank(r);
         Text.send(commandSender, p.getName() + "'s &frank is now: " + r.getPrefix());
     }
 
@@ -191,7 +191,7 @@ public class RealPermissionsCMD extends CommandBase {
             return;
         }
 
-        rp.getPlayerManager().getPlayerAttatchment(p).setTimedRank(r, seconds);
+        rp.getPlayerManager().getPlayer(p).setTimedRank(r, seconds);
         Text.send(commandSender, p.getName() + "'s &ftimed rank is now: " + r.getPrefix());
     }
 
@@ -213,8 +213,8 @@ public class RealPermissionsCMD extends CommandBase {
             return;
         }
 
-        if (rp.getPlayerManager().getPlayerAttatchment(p).hasTimedRank()) {
-            rp.getPlayerManager().getPlayerAttatchment(p).removeTimedRank();
+        if (rp.getPlayerManager().getPlayer(p).hasTimedRank()) {
+            rp.getPlayerManager().getPlayer(p).removeTimedRank();
             Text.send(commandSender, p.getName() + "'s &ftimed rank has been removed.");
         } else {
             Text.send(commandSender, p.getName() + " doesn't have a timed rank.");
@@ -350,7 +350,7 @@ public class RealPermissionsCMD extends CommandBase {
             return;
         }
 
-        RPPlayer pa = rp.getPlayerManager().getPlayerAttatchment(p);
+        RPPlayer pa = rp.getPlayerManager().getPlayer(p);
 
         if (add) {
             if (pa.hasPermission(perm)) {

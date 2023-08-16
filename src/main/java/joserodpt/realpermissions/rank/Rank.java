@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class Rank {
-
     public enum RankData { ICON, PREFIX, CHAT, PERMISSIONS, INHERITANCES, ALL}
 
     private Material icon;

@@ -83,6 +83,7 @@ Ranks:
       - essentials.give
       - essentials.broadcast
       - essentials.enchant
+
 Rankups:
   DefaultRankup:
     Display-Name: "&fPlayer &bRankup"

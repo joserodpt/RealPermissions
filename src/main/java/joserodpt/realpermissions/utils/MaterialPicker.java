@@ -14,10 +14,14 @@ package joserodpt.realpermissions.utils;
  */
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import joserodpt.realpermissions.RealPermissions;
+import joserodpt.realpermissions.player.RPPlayer;
 import joserodpt.realpermissions.rank.RankGUI;
 import joserodpt.realpermissions.rank.Rank;
+import joserodpt.realpermissions.rank.Rankup;
+import joserodpt.realpermissions.rank.RankupGUI;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -47,19 +51,23 @@ public class MaterialPicker {
             Collections.singletonList("&fClick here to search for a block."));
 
     private UUID uuid;
-    private ArrayList<Material> items;
-    private HashMap<Integer, Material> display = new HashMap<>();
+    private List<Material> items;
+    private Map<Integer, Material> display = new HashMap<>();
     int pageNumber = 0;
     Pagination<Material> p;
-    private Rank r;
+    private Object obj;
     private RealPermissions rp;
+    private PickType pt;
 
-    public MaterialPicker(Player pl, Rank r, RealPermissions rp) {
+    public enum PickType { RANK, RANKUP }
+
+    public MaterialPicker(Player pl, Object obj, PickType pt, RealPermissions rp) {
         this.rp = rp;
         this.uuid = pl.getUniqueId();
-        this.r = r;
+        this.obj = obj;
+        this.pt = pt;
 
-        inv = Bukkit.getServer().createInventory(null, 54, Text.color("Select icon for " + r.getPrefix()));
+        inv = Bukkit.getServer().createInventory(null, 54, Text.color("Select icon for " + ((pt == PickType.RANK) ? ((Rank) obj).getPrefix() : ((Rankup) obj).getDisplayName())));
 
         this.items = getIcons();
 
@@ -69,12 +77,13 @@ public class MaterialPicker {
         this.register();
     }
 
-    public MaterialPicker(Player pl, Rank m, String search, RealPermissions rp) {
+    public MaterialPicker(Player pl, Object m, String search, PickType pt, RealPermissions rp) {
         this.rp = rp;
         this.uuid = pl.getUniqueId();
-        this.r = m;
-        inv = Bukkit.getServer().createInventory(null, 54, Text.color("Select icon for " + r.getPrefix()));
+        this.obj = m;
+        this.pt = pt;
 
+        inv = Bukkit.getServer().createInventory(null, 54, Text.color("Select icon for " + ((pt == PickType.RANK) ? ((Rank) obj).getPrefix() : ((Rankup) obj).getDisplayName())));
 
         this.items = searchMaterial(search);
         this.p = new Pagination<>(28, this.items);
@@ -83,24 +92,16 @@ public class MaterialPicker {
         this.register();
     }
 
-    private ArrayList<Material> getIcons() {
-        ArrayList<Material> ms = new ArrayList<>();
-        for (Material m : Material.values()) {
-            if (!m.equals(Material.AIR)) {
-                ms.add(m);
-            }
-        }
-        return ms;
+    private List<Material> getIcons() {
+        return Arrays.stream(Material.values())
+                .filter(m -> m != Material.AIR)
+                .collect(Collectors.toList());
     }
 
-    private ArrayList<Material> searchMaterial(String s) {
-        ArrayList<Material> ms = new ArrayList<>();
-        for (Material m : getIcons()) {
-            if (m.name().toLowerCase().contains(s.toLowerCase())) {
-                ms.add(m);
-            }
-        }
-        return ms;
+    private List<Material> searchMaterial(String s) {
+        return getIcons().stream()
+                .filter(m -> m.name().toLowerCase().contains(s.toLowerCase()))
+                .collect(Collectors.toList());
     }
 
     public void fillChest(List<Material> items) {
@@ -108,11 +109,11 @@ public class MaterialPicker {
         this.inv.clear();
         this.display.clear();
 
-        this.inv.setItem(4, search);
-
-        for (int slot : new int[]{9, 17, 36, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53}) {
+        for (int slot : new int[]{0,1,2,3,4,5,6,7,8,9, 17, 36, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53}) {
             this.inv.setItem(slot, placeholder);
         }
+
+        this.inv.setItem(4, search);
 
         if (firstPage()) {
             this.inv.setItem(18, placeholder);
@@ -176,51 +177,59 @@ public class MaterialPicker {
                             return;
                         }
 
-                        Player p = (Player) clicker;
+                        RPPlayer rp = current.rp.getPlayerManager().getPlayer((Player) clicker);
                         e.setCancelled(true);
 
                         switch (e.getRawSlot())
                         {
                             case 4:
-                                new PlayerInput(p, input -> {
+                                new PlayerInput(rp.getPlayer(), input -> {
                                     if (current.searchMaterial(input).isEmpty()) {
-                                        Text.send(p, "&fNothing found for your search terms.");
+                                        Text.send(rp.getPlayer(), "&fNothing found for your search terms.");
 
-                                        current.exit(p, current.r, current.rp);
+                                        current.exit(rp, current.obj, current.pt, current.rp);
                                         return;
                                     }
-                                    MaterialPicker df = new MaterialPicker(p,current.r, input, current.rp);
-                                    df.openInventory(p);
+                                    MaterialPicker df = new MaterialPicker(rp.getPlayer() ,current.obj, input, current.pt, current.rp);
+                                    df.openInventory(rp.getPlayer());
                                 }, input -> {
-                                    p.closeInventory();
+                                    rp.getPlayer().closeInventory();
 
-                                    RankGUI rg = new RankGUI(p, current.r, current.rp);
-                                    rg.openInventory(p);
+                                    RankGUI rg = new RankGUI(rp.getPlayer(), (Rank) current.obj, current.rp);
+                                    rg.openInventory(rp.getPlayer());
                                 });
                                 break;
                             case 49:
-                                current.exit(p, current.r, current.rp);
+                                current.exit(rp, current.obj, current.pt, current.rp);
                                 break;
                             case 26:
                             case 35:
                                 nextPage(current);
-                                p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BELL, 1, 50);
+                                rp.getPlayer().playSound(rp.getPlayer().getLocation(), Sound.BLOCK_NOTE_BLOCK_BELL, 1, 50);
                                 break;
                             case 18:
                             case 27:
                                 backPage(current);
-                                p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BELL, 1, 50);
+                                rp.getPlayer().playSound(rp.getPlayer().getLocation(), Sound.BLOCK_NOTE_BLOCK_BELL, 1, 50);
                                 break;
                         }
 
                         if (current.display.containsKey(e.getRawSlot())) {
                             Material a = current.display.get(e.getRawSlot());
+                            rp.getPlayer().closeInventory();
 
-                            current.r.setIcon(a);
-
-                            p.closeInventory();
-                            RankGUI rg = new RankGUI(p, current.r, current.rp);
-                            rg.openInventory(p);
+                            switch (current.pt) {
+                                case RANKUP:
+                                    ((Rankup) current.obj).setIcon(a);
+                                    RankupGUI rk = new RankupGUI(rp, current.rp, true);
+                                    rk.openInventory(rp.getPlayer());
+                                    break;
+                                case RANK:
+                                    ((Rank) current.obj).setIcon(a);
+                                    RankGUI rg = new RankGUI(rp.getPlayer(), ((Rank) current.obj), current.rp);
+                                    rg.openInventory(rp.getPlayer());
+                                    break;
+                            }
                         }
                     }
                 }
@@ -264,10 +273,18 @@ public class MaterialPicker {
         return pageNumber == 0;
     }
 
-    protected void exit(Player p, Rank r, RealPermissions rp) {
-        p.closeInventory();
-        RankGUI rg = new RankGUI(p, r, rp);
-        rg.openInventory(p);
+    protected void exit(RPPlayer p, Object obj, PickType pt, RealPermissions rp) {
+        p.getPlayer().closeInventory();
+        switch (pt) {
+            case RANK:
+                RankGUI rg = new RankGUI(p.getPlayer(), (Rank) obj, rp);
+                rg.openInventory(p.getPlayer());
+                break;
+            case RANKUP:
+                RankupGUI rk = new RankupGUI(p, rp, true);
+                rk.openInventory(p.getPlayer());
+                break;
+        }
     }
 
     public Inventory getInventory() {

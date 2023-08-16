@@ -18,7 +18,10 @@ import joserodpt.realpermissions.player.RPPlayer;
 import joserodpt.realpermissions.player.PlayerPermissionsGUI;
 import joserodpt.realpermissions.rank.Rank;
 import joserodpt.realpermissions.rank.RankGUI;
+import joserodpt.realpermissions.rank.Rankup;
 import joserodpt.realpermissions.rank.RankupGUI;
+import joserodpt.realpermissions.rank.RankupPathEntry;
+import joserodpt.realpermissions.rank.RankupPathGUI;
 import joserodpt.realpermissions.utils.Itens;
 import joserodpt.realpermissions.utils.Pagination;
 import joserodpt.realpermissions.utils.Text;
@@ -52,7 +55,7 @@ public class RankViewer {
             Collections.singletonList("&fClick here to close this menu."));
 
     private UUID uuid;
-    private HashMap<Integer, Rank> display = new HashMap<>();
+    private Map<Integer, Rank> display = new HashMap<>();
     int pageNumber = 0;
     Pagination<Rank> p;
     private RealPermissions rp;
@@ -69,11 +72,28 @@ public class RankViewer {
 
     private RPPlayer paSelected = null;
 
-    public RankViewer(Player pl, RealPermissions rp, RPPlayer pa) {
+    public RankViewer(RPPlayer pl, RealPermissions rp, RPPlayer pa) {
         this.paSelected = pa;
         this.rp = rp;
         this.inv = Bukkit.getServer().createInventory(null, 54, Text.color("&fReal&cPermissions &8| &eRanks"));
-        this.uuid = pl.getUniqueId();
+        this.uuid = pl.getUUID();
+
+        this.load();
+
+        this.register();
+    }
+
+    private Rankup rk = null;
+    private RankupPathEntry rpe = null;
+    private RPPlayer rpPlayer;
+
+    public RankViewer(RPPlayer pl, RealPermissions rp, Rankup rk, RankupPathEntry rpe) {
+        this.rpe = rpe;
+        this.rk = rk;
+        this.rpPlayer = pl;
+        this.rp = rp;
+        this.inv = Bukkit.getServer().createInventory(null, 54, Text.color("&fReal&cPermissions &8| &eRanks"));
+        this.uuid = pl.getUUID();
 
         this.load();
 
@@ -199,7 +219,7 @@ public class RankViewer {
                                 break;
                             case 4:
                                 p.closeInventory();
-                                RankupGUI rg = new RankupGUI(current.rp.getPlayerManager().getPlayerAttatchment(p), current.rp);
+                                RankupGUI rg = new RankupGUI(current.rp.getPlayerManager().getPlayer(p), current.rp, true);
                                 rg.openInventory(p);
                                 break;
                         }
@@ -207,12 +227,29 @@ public class RankViewer {
                         if (current.display.containsKey(e.getRawSlot())) {
                             Rank clickedRank = current.display.get(e.getRawSlot());
 
+                            if (current.rpe != null) {
+                                //assign rank to rankup entry
+                                current.rpe.setRank(clickedRank);
+                                current.rk.saveData(Rankup.RankupData.ENTRIES);
+
+                                Text.send(p, "&fRank of Rank Entry is now: " + clickedRank.getPrefix());
+                                p.closeInventory();
+                                RankupPathGUI rpg = new RankupPathGUI(current.rpPlayer, current.rk, current.rp, true);
+                                rpg.openInventory(p);
+                                return;
+                            }
+
                             if (current.paSelected == null) {
                                 //open rank to delete or edit
                                 p.closeInventory();
                                 if (Objects.requireNonNull(e.getClick()) == ClickType.DROP) {
-                                    current.rp.getRankManager().deleteRank(clickedRank);
-                                    Text.send(p, clickedRank.getPrefix() + " &frank &cdeleted.");
+
+                                    if (clickedRank.equals(current.rp.getRankManager().getDefaultRank())) {
+                                        Text.send(p, "&cYou can't delete the default rank.");
+                                    } else {
+                                        current.rp.getRankManager().deleteRank(clickedRank);
+                                        Text.send(p, clickedRank.getPrefix() + " &frank &cdeleted.");
+                                    }
                                     current.load();
                                 } else {
                                     RankGUI rg = new RankGUI(p, clickedRank, current.rp);

@@ -45,7 +45,7 @@ public class RankGUI {
             Collections.singletonList("&fClick here to close this menu."));
 
     private final UUID uuid;
-    private HashMap<Integer, Permission> display = new HashMap<>();
+    private Map<Integer, Permission> display = new HashMap<>();
     private Rank r;
 
     int pageNumber = 0;
@@ -154,7 +154,7 @@ public class RankGUI {
                                 new BukkitRunnable() {
                                     @Override
                                     public void run() {
-                                        MaterialPicker mp = new MaterialPicker(p, current.r, current.rp);
+                                        MaterialPicker mp = new MaterialPicker(p, current.r, MaterialPicker.PickType.RANK, current.rp);
                                         mp.openInventory(p);
                                     }
                                 }.runTaskLater(current.rp, 2);

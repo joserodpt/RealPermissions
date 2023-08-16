@@ -57,7 +57,7 @@ public class PlayersGUI {
             Collections.singletonList("&fClick here to close this menu."));
 
     private UUID uuid;
-    private HashMap<Integer, PlayerObject> display = new HashMap<>();
+    private Map<Integer, PlayerObject> display = new HashMap<>();
     int pageNumber = 0;
     Pagination<PlayerObject> p;
     private RealPermissions rp;
@@ -223,13 +223,13 @@ public class PlayersGUI {
                             } else {
                                 if (e.getClick().equals(ClickType.RIGHT) && po.hasTimedRank()) {
                                     //eliminar timed rank
-                                    current.rp.getPlayerManager().getPlayerAttatchment(p).removeTimedRank();
+                                    current.rp.getPlayerManager().getPlayer(p).removeTimedRank();
                                     Text.send(p, po.getName() + "'s &ftimed rank has been removed.");
                                     current.load();
                                 } else {
                                     //edit player
                                     p.closeInventory();
-                                    PlayerPermissionsGUI ppg = new PlayerPermissionsGUI(p, current.rp.getPlayerManager().getPlayerAttatchment(p), current.rp);
+                                    PlayerPermissionsGUI ppg = new PlayerPermissionsGUI(p, current.rp.getPlayerManager().getPlayer(p), current.rp);
                                     ppg.openInventory(p);
                                 }
                             }

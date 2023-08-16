@@ -32,13 +32,19 @@ public class PlayerManager {
 
     public HashMap<UUID, RPPlayer> playerAttatchment = new HashMap<>();
 
-    public HashMap<UUID, RPPlayer> getPlayerAttatchment() {
+    public HashMap<UUID, RPPlayer> getPlayerMap() {
         return playerAttatchment;
     }
 
-    public RPPlayer getPlayerAttatchment(Player p) {
-        return this.getPlayerAttatchment().get(p.getUniqueId());
+    public RPPlayer getPlayer(Player p) {
+        return this.getPlayerMap().get(p.getUniqueId());
     }
+
+    public RPPlayer getPlayer(UUID u) {
+        return this.getPlayerMap().get(u);
+    }
+
+
 
     public void playerJoin(Player p) {
         //check if player exists in DB
@@ -101,10 +107,10 @@ public class PlayerManager {
             Players.save();
         }
 
-        this.getPlayerAttatchment().remove(p.getUniqueId());
+        this.getPlayerMap().remove(p.getUniqueId());
 
         RPPlayer pa = new RPPlayer(p, player_rank, permissions, Players.file().getBoolean(p.getUniqueId() + ".Super-User"),rp);
-        this.getPlayerAttatchment().put(p.getUniqueId(), pa);
+        this.getPlayerMap().put(p.getUniqueId(), pa);
 
         if (timedRank) {
             pa.loadTimedRank(previousRank, secondsRemaining);
@@ -112,13 +118,13 @@ public class PlayerManager {
     }
 
     public void playerLeave(Player player) {
-        this.getPlayerAttatchment().get(player.getUniqueId()).logout();
-        this.getPlayerAttatchment().remove(player.getUniqueId());
+        this.getPlayerMap().get(player.getUniqueId()).logout();
+        this.getPlayerMap().remove(player.getUniqueId());
     }
 
     public List<Player> getPlayersWithRank(String name) {
         List<Player> p = new ArrayList<>();
-        for (RPPlayer value : this.getPlayerAttatchment().values()) {
+        for (RPPlayer value : this.getPlayerMap().values()) {
             if (value.getRank().getName().equalsIgnoreCase(name)) {
                 p.add(Bukkit.getPlayer(value.getUUID()));
             }
@@ -127,11 +133,11 @@ public class PlayerManager {
     }
 
     public boolean isNotSuperUser(Player commandSender) {
-        return !this.getPlayerAttatchment(commandSender).isSuperUser();
+        return !this.getPlayer(commandSender).isSuperUser();
     }
 
     public void refreshPermissions() {
-        this.getPlayerAttatchment().values().forEach(RPPlayer::refreshPlayerPermissions);
+        this.getPlayerMap().values().forEach(RPPlayer::refreshPlayerPermissions);
     }
 
     public List<PlayerObject> getSavedPlayers() {
@@ -160,7 +166,7 @@ public class PlayerManager {
     }
 
     public void deletePlayer(PlayerObject po) {
-        this.getPlayerAttatchment().remove(po.getUUID());
+        this.getPlayerMap().remove(po.getUUID());
         Players.file().remove(po.getUUID().toString());
         Players.save();
     }

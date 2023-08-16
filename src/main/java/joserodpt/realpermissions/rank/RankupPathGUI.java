@@ -14,9 +14,11 @@ package joserodpt.realpermissions.rank;
  */
 
 import joserodpt.realpermissions.RealPermissions;
+import joserodpt.realpermissions.gui.RankViewer;
 import joserodpt.realpermissions.player.RPPlayer;
 import joserodpt.realpermissions.utils.Itens;
 import joserodpt.realpermissions.utils.Pagination;
+import joserodpt.realpermissions.utils.PlayerInput;
 import joserodpt.realpermissions.utils.Text;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -51,20 +53,26 @@ public class RankupPathGUI { //TODO: admin edit
             Collections.singletonList("&fClick here to close this menu."));
 
     private UUID uuid;
-    private HashMap<Integer, RankupPathEntry> display = new HashMap<>();
+    private Map<Integer, RankupPathEntry> display = new HashMap<>();
     int pageNumber = 0;
     Pagination<RankupPathEntry> p;
     private RealPermissions rp;
     private Rankup rk;
     private RPPlayer player;
+    private Boolean admin;
 
-    public RankupPathGUI(RPPlayer player, Rankup rk, RealPermissions rp) {
+    public RankupPathGUI(RPPlayer player, Rankup rk, RealPermissions rp, Boolean admin) {
+        this.admin = admin;
         this.player = player;
         this.rp = rp;
         this.rk = rk;
         this.inv = Bukkit.getServer().createInventory(null, 54, Text.color("&fReal&cPermissions &8| " + rk.getDisplayName()));
         this.uuid = player.getUUID();
 
+        load();
+    }
+
+    public void load() {
         this.p = new Pagination<>(28, rk.getRankupPath());
         fillChest(p.getPage(this.pageNumber));
     }
@@ -101,7 +109,7 @@ public class RankupPathGUI { //TODO: admin edit
                 if (!items.isEmpty()) {
                     RankupPathEntry e = items.get(0);
 
-                    this.inv.setItem(slot, e.getIcon(player.getRank()));
+                    this.inv.setItem(slot, e.getIcon(player.getRank(), admin));
                     this.display.put(slot, e);
                     items.remove(0);
                 }
@@ -148,7 +156,7 @@ public class RankupPathGUI { //TODO: admin edit
                         {
                             case 49:
                                 p.closeInventory();
-                                RankupGUI rg = new RankupGUI(current.player, current.rp);
+                                RankupGUI rg = new RankupGUI(current.player, current.rp, current.admin);
                                 rg.openInventory(p);
                                 break;
                             case 26:
@@ -164,10 +172,47 @@ public class RankupPathGUI { //TODO: admin edit
                         }
 
                         if (current.display.containsKey(e.getRawSlot())) {
-                            p.closeInventory();
                             RankupPathEntry po = current.display.get(e.getRawSlot());
 
-                            current.rp.getRankManager().proccessRankup(current.player, current.rk, po);
+                            if (current.admin) {
+                                switch (e.getClick()) {
+                                    case RIGHT:
+                                        p.closeInventory();
+                                        Bukkit.getScheduler().scheduleSyncDelayedTask(RealPermissions.getPlugin(), () -> {
+                                            RankViewer rv = new RankViewer(current.player, current.rp, current.rk, po);
+                                            rv.openInventory(p);
+                                        }, 1);
+                                        break;
+                                    case LEFT:
+                                        p.closeInventory();
+                                        new PlayerInput(p, s -> {
+                                            double d;
+                                            try {
+                                                d = Double.parseDouble(s);
+                                            } catch (final Exception ex) {
+                                                Text.send(p, "Could not parse double " + s);
+                                                return;
+                                            }
+
+                                            po.setCost(d);
+                                            current.rk.saveData(Rankup.RankupData.ENTRIES);
+
+                                            RankupPathGUI rp = new RankupPathGUI(current.player, current.rk, current.rp, true);
+                                            rp.openInventory(p);
+                                        }, s -> {
+                                            RankupPathGUI rp = new RankupPathGUI(current.player, current.rk, current.rp, true);
+                                            rp.openInventory(p);
+                                        });
+                                        break;
+                                    case DROP:
+                                        current.rp.getRankManager().removeRankupEntry(current.rk, po);
+                                        current.load();
+                                        break;
+                                }
+                            } else {
+                                p.closeInventory();
+                                current.rp.getRankManager().processRankup(current.player, current.rk, po);
+                            }
                         }
                     }
                 }

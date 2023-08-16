@@ -103,7 +103,7 @@ public class RankManager {
 
     public void deleteRank(Rank a) {
         //set players that have the rank to the default rank
-        for (RPPlayer value : rp.getPlayerManager().getPlayerAttatchment().values()) {
+        for (RPPlayer value : rp.getPlayerManager().getPlayerMap().values()) {
             if (value.getRank().equals(a)) {
                 value.setRank(this.getDefaultRank());
             }
@@ -138,7 +138,7 @@ public class RankManager {
         Rank newR = this.addRank(r.getIcon(), input, r.getPrefix(), r.getChat(), r.getMapPermissions(), r.getInheritances());
 
         //add players to this new rank
-        pls.forEach(player -> rp.getPlayerManager().getPlayerAttatchment(player).setRank(newR));
+        pls.forEach(player -> rp.getPlayerManager().getPlayer(player).setRank(newR));
 
         newR.saveData(Rank.RankData.ALL);
 
@@ -225,11 +225,11 @@ public class RankManager {
 
     public List<Rankup> getRankupsListForPlayer(RPPlayer p) {
         return this.getRankupsList().stream()
-                .filter(rankup -> (!rankup.hasPermission() || p.getPlayer().hasPermission(rankup.getPermission())) && rankup.containsRank(p.getRank()))
+                .filter(rankup -> (!rankup.hasPermission() || p.getPlayer().hasPermission(rankup.getPermission())) && rankup.containsRank(p.getRank()) || p.getPlayer().isOp())
                 .collect(Collectors.toList());
     }
 
-    public void proccessRankup(RPPlayer player, Rankup rk, RankupPathEntry po) {
+    public void processRankup(RPPlayer player, Rankup rk, RankupPathEntry po) {
         if (player.getRank().equals(po.getRank())) {
             Text.send(player.getPlayer(), "&cYou already have this rank.");
             return;
@@ -255,5 +255,16 @@ public class RankManager {
         } else {
             Text.send(player.getPlayer(), "&cYou can't rankdown.");
         }
+    }
+
+    public void removeRankup(String name) {
+        this.getRankups().remove(name);
+        Ranks.file().remove("Rankups." + name);
+        Ranks.save();
+    }
+
+    public void removeRankupEntry(Rankup rk, RankupPathEntry po) {
+        rk.getRankupPath().remove(po);
+        rk.saveData(Rankup.RankupData.ENTRIES);
     }
 }

@@ -54,7 +54,7 @@ public class PlayerPermissionsGUI {
             Collections.singletonList("&fClick here to close this menu."));
 
     private final UUID uuid;
-    private HashMap<Integer, String> display = new HashMap<>();
+    private Map<Integer, String> display = new HashMap<>();
     private RPPlayer pa;
 
     int pageNumber = 0;
@@ -156,7 +156,7 @@ public class PlayerPermissionsGUI {
                         switch (e.getRawSlot()) {
                             case 16:
                                 p.closeInventory();
-                                RankViewer rv = new RankViewer(p, current.rp, current.pa);
+                                RankViewer rv = new RankViewer(current.rp.getPlayerManager().getPlayer(uuid), current.rp, current.pa);
                                 rv.openInventory(p);
                                 break;
                             case 43:
