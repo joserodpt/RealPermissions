@@ -80,7 +80,7 @@ public class PlayerObject {
         ));
 
         if (this.timedRank) {
-            lore.addAll(Arrays.asList(" &f> This rank is Timed.", " &f> Previous Rank: &b" + this.prevRank.getName() + " &f- &b" + Text.formatSeconds(this.timeLeft) + " &fremaining."));
+            lore.addAll(Arrays.asList(" &f> This rank is Timed.", " &f> Previous Rank: &b" + this.prevRank.getName() + " &f- &fTime: &b" + Text.formatSeconds(this.timeLeft)));
         }
 
         if (!this.getPermissions().isEmpty()) {
@@ -90,10 +90,10 @@ public class PlayerObject {
                     .limit(10)
                     .collect(Collectors.toList()));
         }
-        lore.addAll(Arrays.asList("","&n&bQ (Drop)&r&f to &cdelete &fthis player.","&n&bLeft-Click&r&f to edit player permissions."));
+        lore.addAll(Arrays.asList("","&c&nQ (Drop)&r&f to &cdelete &fthis player.","&a&nLeft-Click&r&f to edit player permissions."));
 
         if (this.timedRank) {
-            lore.add("&n&bRight-Click&r&f to remove timed rank.");
+            lore.add("&c&nRight-Click&r&f to remove timed rank.");
         }
         return Itens.createItem(Material.PLAYER_HEAD, 1, displayName, lore);
     }

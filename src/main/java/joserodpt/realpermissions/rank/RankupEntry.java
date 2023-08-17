@@ -13,6 +13,7 @@ package joserodpt.realpermissions.rank;
  * @link https://github.com/joserodpt/RealPermissions
  */
 
+import joserodpt.realpermissions.RealPermissions;
 import joserodpt.realpermissions.utils.Itens;
 import joserodpt.realpermissions.utils.Text;
 import org.bukkit.inventory.ItemStack;
@@ -20,12 +21,17 @@ import org.bukkit.inventory.ItemStack;
 import java.util.Arrays;
 import java.util.Collections;
 
-public class RankupPathEntry {
+public class RankupEntry {
 
     private Rank r;
     private Double cost;
 
-    public RankupPathEntry(Rank r, Double cost) {
+    public RankupEntry() {
+        this.r = RealPermissions.getPlugin().getRankManager().getDefaultRank();
+        this.cost = 1000000D;
+    }
+
+    public RankupEntry(Rank r, Double cost) {
         this.r = r;
         this.cost = cost;
     }
@@ -54,5 +60,13 @@ public class RankupPathEntry {
 
     public void setCost(Double cost) {
         this.cost = cost;
+    }
+
+    @Override
+    public String toString() {
+        return "RankupEntry{" +
+                "rank=" + r.getName() +
+                ", cost=" + cost +
+                '}';
     }
 }

@@ -17,7 +17,7 @@ import joserodpt.realpermissions.RealPermissions;
 import joserodpt.realpermissions.config.Config;
 import joserodpt.realpermissions.config.Players;
 import joserodpt.realpermissions.config.Ranks;
-import joserodpt.realpermissions.gui.RPGUI;
+import joserodpt.realpermissions.gui.RealPermissionsGUI;
 import joserodpt.realpermissions.gui.RankViewer;
 import joserodpt.realpermissions.player.RPPlayer;
 import joserodpt.realpermissions.player.PlayersGUI;
@@ -46,7 +46,7 @@ public class RealPermissionsCMD extends CommandBase {
         if (commandSender instanceof Player) {
             Player p = (Player) commandSender;
 
-            RPGUI rg = new RPGUI(p, rp);
+            RealPermissionsGUI rg = new RealPermissionsGUI(p, rp);
             rg.openInventory(p);
         } else {
             Text.sendList(commandSender, Arrays.asList("         &fReal&cPermissions", "         &7Release &a" + rp.getDescription().getVersion()));
@@ -110,7 +110,7 @@ public class RealPermissionsCMD extends CommandBase {
             RankViewer rv = new RankViewer(p, rp);
             rv.openInventory(p);
         } else {
-            rp.getRankManager().getRanks().forEach(rank -> Text.send(commandSender, " " + rank.getName() + " &f[" + rank.getPrefix() + "&f]"));
+            rp.getRankManager().getRanksList().forEach(rank -> Text.send(commandSender, " " + rank.getName() + " &f[" + rank.getPrefix() + "&f]"));
         }
     }
 

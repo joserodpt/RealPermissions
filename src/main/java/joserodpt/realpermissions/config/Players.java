@@ -23,7 +23,6 @@ import java.io.IOException;
 
 public class Players implements Listener {
 	private static String name = "players.yml";
-
 	private static YamlDocument document;
 
 	public static void setup(final JavaPlugin rm) {

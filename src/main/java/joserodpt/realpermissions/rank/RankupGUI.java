@@ -101,6 +101,10 @@ public class RankupGUI {
             this.inv.setItem(35, next);
         }
 
+        if (admin) {
+            this.inv.setItem(4, Itens.createItem(Material.EMERALD, 1, "&aAdd Rankup"));
+        }
+
         this.inv.setItem(49, close);
 
         int slot = 0;
@@ -159,6 +163,10 @@ public class RankupGUI {
 
                         switch (e.getRawSlot())
                         {
+                            case 4:
+                                current.rp.getRankManager().addNewRankup();
+                                current.load();
+                                break;
                             case 49:
                                 p.closeInventory();
 
@@ -181,6 +189,10 @@ public class RankupGUI {
 
                         if (current.display.containsKey(e.getRawSlot())) {
                             Rankup r = current.display.get(e.getRawSlot());
+
+                            if (!r.isInteractable()) {
+                                return;
+                            }
 
                             if (!current.admin) {
                                 p.closeInventory();

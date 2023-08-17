@@ -44,8 +44,6 @@ public class PlayerManager {
         return this.getPlayerMap().get(u);
     }
 
-
-
     public void playerJoin(Player p) {
         //check if player exists in DB
         Rank player_rank;
@@ -122,14 +120,31 @@ public class PlayerManager {
         this.getPlayerMap().remove(player.getUniqueId());
     }
 
+    public List<String> listRanksWithPlayerCounts() {
+        Map<UUID, RPPlayer> playerMap = this.getPlayerMap();
+
+        Map<String, Long> rankCounts = playerMap.values()
+                .stream()
+                .collect(Collectors.groupingBy(
+                        value -> value.getRank().getPrefix(),
+                        Collectors.counting()
+                ));
+
+        return rankCounts.entrySet()
+                .stream()
+                .sorted(Map.Entry.comparingByKey())
+                .map(entry -> "&f" + entry.getValue() + "x " + entry.getKey())
+                .collect(Collectors.toList());
+    }
+
+
     public List<Player> getPlayersWithRank(String name) {
-        List<Player> p = new ArrayList<>();
-        for (RPPlayer value : this.getPlayerMap().values()) {
-            if (value.getRank().getName().equalsIgnoreCase(name)) {
-                p.add(Bukkit.getPlayer(value.getUUID()));
-            }
-        }
-        return p;
+        return this.getPlayerMap().values()
+                .stream()
+                .filter(value -> value.getRank().getName().equalsIgnoreCase(name))
+                .map(value -> Bukkit.getPlayer(value.getUUID()))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
 
     public boolean isNotSuperUser(Player commandSender) {

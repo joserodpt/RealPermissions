@@ -19,11 +19,11 @@ import joserodpt.realpermissions.player.PlayerPermissionsGUI;
 import joserodpt.realpermissions.rank.Rank;
 import joserodpt.realpermissions.rank.RankGUI;
 import joserodpt.realpermissions.rank.Rankup;
-import joserodpt.realpermissions.rank.RankupGUI;
-import joserodpt.realpermissions.rank.RankupPathEntry;
+import joserodpt.realpermissions.rank.RankupEntry;
 import joserodpt.realpermissions.rank.RankupPathGUI;
 import joserodpt.realpermissions.utils.Itens;
 import joserodpt.realpermissions.utils.Pagination;
+import joserodpt.realpermissions.utils.PlayerInput;
 import joserodpt.realpermissions.utils.Text;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -32,7 +32,6 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
@@ -84,10 +83,10 @@ public class RankViewer {
     }
 
     private Rankup rk = null;
-    private RankupPathEntry rpe = null;
+    private RankupEntry rpe = null;
     private RPPlayer rpPlayer;
 
-    public RankViewer(RPPlayer pl, RealPermissions rp, Rankup rk, RankupPathEntry rpe) {
+    public RankViewer(RPPlayer pl, RealPermissions rp, Rankup rk, RankupEntry rpe) {
         this.rpe = rpe;
         this.rk = rk;
         this.rpPlayer = pl;
@@ -101,7 +100,7 @@ public class RankViewer {
     }
 
     public void load() {
-        this.p = new Pagination<>(28,rp.getRankManager().getRanks());
+        this.p = new Pagination<>(28,rp.getRankManager().getRanksList());
         fillChest(p.getPage(this.pageNumber));
     }
 
@@ -143,6 +142,10 @@ public class RankViewer {
             this.inv.setItem(35, next);
         }
 
+        if (paSelected == null && rk == null && rpe == null) {
+            this.inv.setItem(4, Itens.createItem(Material.EMERALD, 1, "&aAdd Rank"));
+        }
+
         int slot = 0;
         for (ItemStack i : this.inv.getContents()) {
             if (i == null) {
@@ -157,9 +160,6 @@ public class RankViewer {
         }
 
         this.inv.setItem(49, close);
-
-        this.inv.setItem(4, Itens.createItem(Material.EXPERIENCE_BOTTLE, 1, "&a&lRankup"));
-
     }
 
     public void openInventory(Player target) {
@@ -197,10 +197,24 @@ public class RankViewer {
 
                         switch (e.getRawSlot())
                         {
+                            case 4:
+                                if (current.paSelected == null && current.rk == null && current.rpe == null) {
+                                    p.closeInventory();
+                                    new PlayerInput(p, input -> {
+                                        current.rp.getRankManager().addNewRank(input);
+
+                                        RankViewer rv = new RankViewer(p, current.rp);
+                                        rv.openInventory(p);
+                                    }, input -> {
+                                        RankViewer rv = new RankViewer(p, current.rp);
+                                        rv.openInventory(p);
+                                    });
+                                }
+                                break;
                             case 49:
                                 p.closeInventory();
                                 if (current.paSelected == null) {
-                                    RPGUI rp = new RPGUI(p, current.rp);
+                                    RealPermissionsGUI rp = new RealPermissionsGUI(p, current.rp);
                                     rp.openInventory(p);
                                 } else {
                                     PlayerPermissionsGUI rv = new PlayerPermissionsGUI(p, current.paSelected, current.rp);
@@ -217,11 +231,6 @@ public class RankViewer {
                                 backPage(current);
                                 p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BELL, 1, 50);
                                 break;
-                            case 4:
-                                p.closeInventory();
-                                RankupGUI rg = new RankupGUI(current.rp.getPlayerManager().getPlayer(p), current.rp, true);
-                                rg.openInventory(p);
-                                break;
                         }
 
                         if (current.display.containsKey(e.getRawSlot())) {
@@ -230,7 +239,7 @@ public class RankViewer {
                             if (current.rpe != null) {
                                 //assign rank to rankup entry
                                 current.rpe.setRank(clickedRank);
-                                current.rk.saveData(Rankup.RankupData.ENTRIES);
+                                current.rk.saveData(Rankup.RankupData.ENTRIES, true);
 
                                 Text.send(p, "&fRank of Rank Entry is now: " + clickedRank.getPrefix());
                                 p.closeInventory();
@@ -242,18 +251,25 @@ public class RankViewer {
                             if (current.paSelected == null) {
                                 //open rank to delete or edit
                                 p.closeInventory();
-                                if (Objects.requireNonNull(e.getClick()) == ClickType.DROP) {
 
-                                    if (clickedRank.equals(current.rp.getRankManager().getDefaultRank())) {
-                                        Text.send(p, "&cYou can't delete the default rank.");
-                                    } else {
-                                        current.rp.getRankManager().deleteRank(clickedRank);
-                                        Text.send(p, clickedRank.getPrefix() + " &frank &cdeleted.");
-                                    }
-                                    current.load();
-                                } else {
-                                    RankGUI rg = new RankGUI(p, clickedRank, current.rp);
-                                    rg.openInventory(p);
+                                switch (e.getClick()) {
+                                    case DROP:
+                                        if (clickedRank.equals(current.rp.getRankManager().getDefaultRank())) {
+                                            Text.send(p, "&cYou can't delete the default rank.");
+                                        } else {
+                                            current.rp.getRankManager().deleteRank(clickedRank);
+                                            Text.send(p, clickedRank.getPrefix() + " &frank &cdeleted.");
+                                        }
+                                        current.load();
+                                        break;
+                                    case RIGHT:
+                                        current.rp.getRankManager().setDefaultRank(clickedRank);
+                                        Text.send(p, clickedRank.getPrefix() + " &r&f is now the &bdefault rank&f!");
+                                        break;
+                                    default:
+                                        RankGUI rg = new RankGUI(p, clickedRank, current.rp);
+                                        rg.openInventory(p);
+                                        break;
                                 }
                             } else {
                                 //assign rank to that player attatchment

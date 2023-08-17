@@ -26,8 +26,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 import java.io.IOException;
 
-public class Ranks implements Listener {
-	private static final String name = "ranks.yml";
+public class Rankups implements Listener {
+	private static final String name = "rankup.yml";
 	private static YamlDocument document;
 
 	public static void setup(final JavaPlugin rm) {

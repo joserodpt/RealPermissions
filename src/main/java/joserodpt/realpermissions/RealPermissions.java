@@ -18,7 +18,8 @@ import joserodpt.realpermissions.commands.RealPermissionsCMD;
 import joserodpt.realpermissions.config.Config;
 import joserodpt.realpermissions.config.Players;
 import joserodpt.realpermissions.config.Ranks;
-import joserodpt.realpermissions.gui.RPGUI;
+import joserodpt.realpermissions.config.Rankups;
+import joserodpt.realpermissions.gui.RealPermissionsGUI;
 import joserodpt.realpermissions.gui.RankViewer;
 import joserodpt.realpermissions.gui.SettingsGUI;
 import joserodpt.realpermissions.player.RPPlayer;
@@ -73,6 +74,7 @@ public final class RealPermissions extends JavaPlugin {
         saveDefaultConfig();
         Config.setup(this);
         Ranks.setup(this);
+        Rankups.setup(this);
         Players.setup(this);
 
         //load ranks
@@ -85,7 +87,7 @@ public final class RealPermissions extends JavaPlugin {
             return;
         }
 
-        getLogger().info("Loaded " + rm.getRanks().size() + " ranks.");
+        getLogger().info("Loaded " + rm.getRanksList().size() + " ranks.");
 
         //hook into vault
         if (setupEconomy()) {
@@ -109,7 +111,7 @@ public final class RealPermissions extends JavaPlugin {
 
         cm.hideTabComplete(true);
         cm.getCompletionHandler().register("#ranks", input ->
-                rm.getRanks()
+                rm.getRanksList()
                         .stream()
                         .map(Rank::getName)
                         .collect(Collectors.toList())
@@ -129,7 +131,7 @@ public final class RealPermissions extends JavaPlugin {
         pm.registerEvents(RankupGUI.getListener(), this);
         pm.registerEvents(RankupPathGUI.getListener(), this);
         pm.registerEvents(RankViewer.getListener(), this);
-        pm.registerEvents(RPGUI.getListener(), this);
+        pm.registerEvents(RealPermissionsGUI.getListener(), this);
         pm.registerEvents(MaterialPicker.getListener(), this);
         pm.registerEvents(PlayersGUI.getListener(), this);
         pm.registerEvents(PlayerPermissionsGUI.getListener(), this);

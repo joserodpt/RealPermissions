@@ -95,4 +95,7 @@ public class Text {
 		}
 	}
 
+	public static String strip(String input) {
+		return ChatColor.stripColor(input);
+	}
 }

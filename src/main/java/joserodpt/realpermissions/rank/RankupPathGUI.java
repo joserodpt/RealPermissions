@@ -34,12 +34,14 @@ import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
-public class RankupPathGUI { //TODO: admin edit
+public class RankupPathGUI {
 
     private static Map<UUID, RankupPathGUI> inventories = new HashMap<>();
     private Inventory inv;
@@ -53,9 +55,9 @@ public class RankupPathGUI { //TODO: admin edit
             Collections.singletonList("&fClick here to close this menu."));
 
     private UUID uuid;
-    private Map<Integer, RankupPathEntry> display = new HashMap<>();
+    private Map<Integer, RankupEntry> display = new HashMap<>();
     int pageNumber = 0;
-    Pagination<RankupPathEntry> p;
+    Pagination<RankupEntry> p;
     private RealPermissions rp;
     private Rankup rk;
     private RPPlayer player;
@@ -73,11 +75,13 @@ public class RankupPathGUI { //TODO: admin edit
     }
 
     public void load() {
-        this.p = new Pagination<>(28, rk.getRankupPath());
+        this.p = new Pagination<>(28, rk.getRankupEntries().stream()
+                .sorted(Comparator.comparingDouble(RankupEntry::getCost))
+                .collect(Collectors.toList()));
         fillChest(p.getPage(this.pageNumber));
     }
 
-    public void fillChest(List<RankupPathEntry> items) {
+    public void fillChest(List<RankupEntry> items) {
         this.inv.clear();
         this.display.clear();
 
@@ -103,11 +107,15 @@ public class RankupPathGUI { //TODO: admin edit
 
         this.inv.setItem(49, close);
 
+        if (admin) {
+            this.inv.setItem(4, Itens.createItem(Material.EMERALD, 1, "&aAdd Entry"));
+        }
+
         int slot = 0;
         for (ItemStack i : this.inv.getContents()) {
             if (i == null) {
                 if (!items.isEmpty()) {
-                    RankupPathEntry e = items.get(0);
+                    RankupEntry e = items.get(0);
 
                     this.inv.setItem(slot, e.getIcon(player.getRank(), admin));
                     this.display.put(slot, e);
@@ -154,6 +162,13 @@ public class RankupPathGUI { //TODO: admin edit
 
                         switch (e.getRawSlot())
                         {
+                            case 4:
+                                if (current.admin) {
+                                    current.rk.getRankupEntries().add(new RankupEntry());
+                                    current.rk.saveData(Rankup.RankupData.ENTRIES, true);
+                                    current.load();
+                                }
+                                break;
                             case 49:
                                 p.closeInventory();
                                 RankupGUI rg = new RankupGUI(current.player, current.rp, current.admin);
@@ -172,7 +187,7 @@ public class RankupPathGUI { //TODO: admin edit
                         }
 
                         if (current.display.containsKey(e.getRawSlot())) {
-                            RankupPathEntry po = current.display.get(e.getRawSlot());
+                            RankupEntry po = current.display.get(e.getRawSlot());
 
                             if (current.admin) {
                                 switch (e.getClick()) {
@@ -195,7 +210,7 @@ public class RankupPathGUI { //TODO: admin edit
                                             }
 
                                             po.setCost(d);
-                                            current.rk.saveData(Rankup.RankupData.ENTRIES);
+                                            current.rk.saveData(Rankup.RankupData.ENTRIES, true);
 
                                             RankupPathGUI rp = new RankupPathGUI(current.player, current.rk, current.rp, true);
                                             rp.openInventory(p);
@@ -205,7 +220,8 @@ public class RankupPathGUI { //TODO: admin edit
                                         });
                                         break;
                                     case DROP:
-                                        current.rp.getRankManager().removeRankupEntry(current.rk, po);
+                                        current.rk.getRankupEntries().remove(po);
+                                        current.rk.saveData(Rankup.RankupData.ENTRIES, true);
                                         current.load();
                                         break;
                                 }

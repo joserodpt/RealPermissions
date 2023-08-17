@@ -14,7 +14,7 @@ package joserodpt.realpermissions.player;
  */
 
 import joserodpt.realpermissions.RealPermissions;
-import joserodpt.realpermissions.gui.RPGUI;
+import joserodpt.realpermissions.gui.RealPermissionsGUI;
 import joserodpt.realpermissions.utils.Itens;
 import joserodpt.realpermissions.utils.Pagination;
 import joserodpt.realpermissions.utils.Text;
@@ -197,7 +197,7 @@ public class PlayersGUI {
                                 break;
                             case 49:
                                 p.closeInventory();
-                                RPGUI rp = new RPGUI(p, current.rp);
+                                RealPermissionsGUI rp = new RealPermissionsGUI(p, current.rp);
                                 rp.openInventory(p);
                                 break;
                             case 26:

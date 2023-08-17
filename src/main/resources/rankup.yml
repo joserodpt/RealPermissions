@@ -1,0 +1,26 @@
+Version: 1
+Rankups:
+  DefaultRankup:
+    Display-Name: "&fPlayer &bRankup"
+    Icon: FILLED_MAP
+    Description:
+      - '&fThis is the default Rankup'
+      - '&fClick here to view your rank ups.'
+    #Structure: RANK=COST, it has always to have the first rank at 0 cost
+    Entries:
+      - Player=0
+      - VIP=1000000
+      - VIP+=5000000
+      - VIPPro=10000000
+  VIPRankup:
+    Display-Name: "&bVIP &bRankup"
+    Icon: FILLED_MAP
+    Permission: RealPermissions.Rankup.VIPRankup
+    Description:
+      - '&fThis is a rankup exclusive for &bVIPs'
+      - '&fClick here to view your rank ups.'
+    #Structure: RANK=COST, it has always to have the first rank at 0 cost
+    Entries:
+      - VIP=0
+      - VIP+=100000
+      - VIPPro=3000000

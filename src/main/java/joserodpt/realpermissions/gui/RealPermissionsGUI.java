@@ -16,6 +16,7 @@ package joserodpt.realpermissions.gui;
 import joserodpt.realpermissions.RealPermissions;
 import joserodpt.realpermissions.permission.Permission;
 import joserodpt.realpermissions.player.PlayersGUI;
+import joserodpt.realpermissions.rank.RankupGUI;
 import joserodpt.realpermissions.utils.Itens;
 import joserodpt.realpermissions.utils.Pagination;
 import joserodpt.realpermissions.utils.Text;
@@ -32,21 +33,16 @@ import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
-public class RPGUI {
+public class RealPermissionsGUI {
 
-    private static Map<UUID, RPGUI> inventories = new HashMap<>();
+    private static Map<UUID, RealPermissionsGUI> inventories = new HashMap<>();
     private Inventory inv;
-    private ItemStack close = Itens.createItem(Material.OAK_DOOR, 1, "&cClose",
-            Collections.singletonList("&fClick here to close this menu."));
-
     private final UUID uuid;
-
-    Pagination<Permission> p;
-
     private RealPermissions rp;
 
-    public RPGUI(Player as, RealPermissions rp) {
+    public RealPermissionsGUI(Player as, RealPermissions rp) {
         this.rp = rp;
         this.uuid = as.getUniqueId();
         this.inv = Bukkit.getServer().createInventory(null, 27, Text.color("&fReal&cPermissions &8Version " + rp.getDescription().getVersion()));
@@ -55,12 +51,27 @@ public class RPGUI {
 
 
         //16, 25, 34
-        this.inv.setItem(11, Itens.createItem(Material.PLAYER_HEAD, 1, "&f&lPlayers"));
+        List<String> players = new ArrayList<>();
+        players.add("&b" + Bukkit.getOnlinePlayers().size() + " &fplayers with the following distribution:"); players.add("");
 
-        this.inv.setItem(13, Itens.createItem(Material.BOOK, 1, "&b&lRanks"));
+        players.addAll(rp.getPlayerManager().listRanksWithPlayerCounts());
+        this.inv.setItem(10, Itens.createItem(Material.PLAYER_HEAD, 1, "&f&lPlayers", players));
 
-        this.inv.setItem(15, Itens.createItem(Material.COMPARATOR, 1, "&e&lSettings"));
+        List<String> ranks = new ArrayList<>();
+        ranks.add("&b" + rp.getRankManager().getRanksList().size() + " &franks registered:"); ranks.add("");
+        ranks.addAll(rp.getRankManager().getRanksList().stream().map(rank -> "&f- " + rank.getPrefix()).collect(Collectors.toList()));
 
+        this.inv.setItem(12, Itens.createItem(Material.BOOK, 1, "&b&lRanks", ranks));
+
+        List<String> rankup = new ArrayList<>();
+        rankup.add("&b" + rp.getRankManager().getRankupsList().size() + " &frankups registered:"); rankup.add("");
+        rankup.addAll(rp.getRankManager().getRankupsList().stream().map(rank -> "&f- " + rank.getDisplayName()).collect(Collectors.toList()));
+        this.inv.setItem(14, Itens.createItem(Material.EXPERIENCE_BOTTLE, 1, "&a&lRankup", rankup));
+
+        this.inv.setItem(16, Itens.createItem(Material.COMPARATOR, 1, "&e&lSettings"));
+
+        ItemStack close = Itens.createItem(Material.OAK_DOOR, 1, "&cClose",
+                Collections.singletonList("&fClick here to close this menu."));
         this.inv.setItem(26, close);
 
         this.register();
@@ -91,7 +102,7 @@ public class RPGUI {
                     }
                     UUID uuid = clicker.getUniqueId();
                     if (inventories.containsKey(uuid)) {
-                        RPGUI current = inventories.get(uuid);
+                        RealPermissionsGUI current = inventories.get(uuid);
                         if (e.getInventory().getHolder() != current.getInventory().getHolder()) {
                             return;
                         }
@@ -102,20 +113,29 @@ public class RPGUI {
                             case 26:
                                 p.closeInventory();
                                 break;
-                            case 11:
+                            case 10:
                                 p.closeInventory();
-                                PlayersGUI pg = new PlayersGUI(p, current.rp);
-                                pg.openInventory(p);
+                                Bukkit.getScheduler().scheduleSyncDelayedTask(RealPermissions.getPlugin(), () -> {
+                                    PlayersGUI pg = new PlayersGUI(p, current.rp);
+                                    pg.openInventory(p);
+                                }, 1);
                                 break;
-                            case 13:
+                            case 12:
                                 p.closeInventory();
                                 RankViewer rv = new RankViewer(p, current.rp);
                                 rv.openInventory(p);
                                 break;
-                            case 15:
+                            case 14:
                                 p.closeInventory();
-                                SettingsGUI sg = new SettingsGUI(p, current.rp);
-                                sg.openInventory(p);
+                                RankupGUI rg = new RankupGUI(current.rp.getPlayerManager().getPlayer(p), current.rp, true);
+                                rg.openInventory(p);
+                                break;
+                            case 16:
+                                p.closeInventory();
+                                Bukkit.getScheduler().scheduleSyncDelayedTask(RealPermissions.getPlugin(), () -> {
+                                    SettingsGUI sg = new SettingsGUI(p, current.rp);
+                                    sg.openInventory(p);
+                                }, 1);
                                 break;
                         }
                     }

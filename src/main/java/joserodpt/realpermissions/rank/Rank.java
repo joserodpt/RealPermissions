@@ -13,6 +13,7 @@ package joserodpt.realpermissions.rank;
  * @link https://github.com/joserodpt/RealPermissions
  */
 
+import joserodpt.realpermissions.RealPermissions;
 import joserodpt.realpermissions.config.Ranks;
 import joserodpt.realpermissions.permission.Permission;
 import joserodpt.realpermissions.utils.Itens;
@@ -21,17 +22,33 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 public class Rank {
-    public enum RankData { ICON, PREFIX, CHAT, PERMISSIONS, INHERITANCES, ALL}
-
     private Material icon;
     private String name, prefix, chat;
     private Map<String, Permission> permissions;
     private List<Rank> inheritances;
+
+    public Rank(String name, String prefix) {
+        this.icon = Material.NETHER_STAR;
+        this.name = name;
+        this.prefix = prefix;
+        this.chat = RealPermissions.getPlugin().getRankManager().getDefaultRank().getChat();
+        this.permissions = new HashMap<>();
+        this.inheritances = new ArrayList<>();
+        this.inheritances.add(RealPermissions.getPlugin().getRankManager().getDefaultRank());
+
+        //load permissions from inheritances
+        loadFromInheritances();
+
+        //save new rank
+        this.saveData(RankData.ALL, true);
+    }
+
     public Rank(Material icon, String name, String prefix, String chat, Map<String, Permission> permissions, List<Rank> inheritances) {
         this.icon = icon;
         this.name = name;
@@ -55,7 +72,10 @@ public class Rank {
             this.getInheritances().forEach(rank -> desc.add(" &f- &b" + rank.getName() + " &f(&b" + rank.getRankPermissions().size() + " &fperms)"));
         }
 
-        desc.addAll(Arrays.asList("","&b" + this.getPermissions().size() + " &ftotal permissions","","&bClick &fto view this rank in detail.", "&b&cQ (Drop)&f to &cremove &fthis rank"));
+        desc.addAll(Arrays.asList("","&b" + this.getPermissions().size() + " &ftotal permissions","",
+                "&a&nLeft-Click&r&f to view this rank in detail.",
+                "&e&nRight-Click&r&f to set this rank as the default one.",
+                "&c&nQ (Drop)&f to remove this rank"));
         return desc;
     }
 
@@ -91,7 +111,7 @@ public class Rank {
 
     public void setIcon(Material icon) {
         this.icon = icon;
-        this.saveData(RankData.ICON);
+        this.saveData(RankData.ICON, true);
     }
 
     public String getName() {
@@ -104,7 +124,7 @@ public class Rank {
 
     public void setPrefix(String prefix) {
         this.prefix = prefix;
-        this.saveData(RankData.PREFIX);
+        this.saveData(RankData.PREFIX, true);
     }
 
     public String getChat() {
@@ -155,7 +175,8 @@ public class Rank {
         return inheritances;
     }
 
-    public void saveData(RankData rd) {
+    public enum RankData { ICON, PREFIX, CHAT, PERMISSIONS, INHERITANCES, ALL}
+    public void saveData(RankData rd, boolean save) {
         switch (rd) {
             case CHAT:
                 Ranks.file().set("Ranks." + this.getName() + ".Chat", this.getChat());
@@ -175,16 +196,16 @@ public class Rank {
                         .collect(Collectors.toList()));
                 break;
             case ALL:
-                Ranks.file().set("Ranks." + this.getName() + ".Icon", this.getIcon().name());
-                Ranks.file().set("Ranks." + this.getName() + ".Prefix", this.getPrefix());
-                Ranks.file().set("Ranks." + this.getName() + ".Chat", this.getChat());
-                Ranks.file().set("Ranks." + this.getName() + ".Inheritance", this.getInheritances().stream()
-                        .map(Rank::getName)
-                        .collect(Collectors.toList()));
-                Ranks.file().set("Ranks." + this.getName() + ".Permissions", this.getRankPermissionStrings());
+                this.saveData(RankData.PREFIX, false);
+                this.saveData(RankData.ICON, false);
+                this.saveData(RankData.CHAT, false);
+                this.saveData(RankData.PERMISSIONS, false);
+                this.saveData(RankData.INHERITANCES, false);
                 break;
         }
-        Ranks.save();
+        if (save) {
+            Ranks.save();
+        }
     }
 
     public void addPermission(String perm) {
@@ -193,17 +214,17 @@ public class Rank {
 
     public void addPermission(Permission p) {
         this.getMapPermissions().put(p.getPermissionString(), p);
-        this.saveData(RankData.PERMISSIONS);
+        this.saveData(RankData.PERMISSIONS, true);
     }
 
     public void removePermission(String permission) {
         this.getMapPermissions().remove(permission);
-        this.saveData(RankData.PERMISSIONS);
+        this.saveData(RankData.PERMISSIONS, true);
     }
 
     public void removePermission(Permission permission) {
         this.getMapPermissions().remove(permission.getPermissionString());
-        this.saveData(RankData.PERMISSIONS);
+        this.saveData(RankData.PERMISSIONS, true);
     }
 
     public void deleteConfig() {
