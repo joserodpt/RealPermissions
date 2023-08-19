@@ -16,6 +16,7 @@ package joserodpt.realpermissions;
 import joserodpt.realpermissions.commands.RankupCMD;
 import joserodpt.realpermissions.commands.RealPermissionsCMD;
 import joserodpt.realpermissions.config.Config;
+import joserodpt.realpermissions.config.Language;
 import joserodpt.realpermissions.config.Players;
 import joserodpt.realpermissions.config.Ranks;
 import joserodpt.realpermissions.config.Rankups;
@@ -73,6 +74,7 @@ public final class RealPermissions extends JavaPlugin {
 
         saveDefaultConfig();
         Config.setup(this);
+        Language.setup(this);
         Ranks.setup(this);
         Rankups.setup(this);
         Players.setup(this);
