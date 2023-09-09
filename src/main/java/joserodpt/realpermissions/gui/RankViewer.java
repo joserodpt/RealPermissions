@@ -251,28 +251,29 @@ public class RankViewer {
 
                             if (current.paSelected == null) {
                                 //open rank to delete or edit
-                                p.closeInventory();
-
                                 switch (e.getClick()) {
                                     case DROP:
                                         if (clickedRank.equals(current.rp.getRankManager().getDefaultRank())) {
+                                            p.closeInventory();
                                             Text.send(p, Language.file().getString("Ranks.Cant-Delete-Default-Rank"));
                                         } else {
                                             current.rp.getRankManager().deleteRank(clickedRank);
                                             Text.send(p, Language.file().getString("Ranks.Deleted").replace("%rank%", clickedRank.getPrefix()));
+                                            current.load();
                                         }
-                                        current.load();
                                         break;
                                     case RIGHT:
                                         current.rp.getRankManager().setDefaultRank(clickedRank);
                                         Text.send(p, Language.file().getString("Ranks.Set-Default").replace("%rank%", clickedRank.getPrefix()));
                                         break;
                                     default:
+                                        p.closeInventory();
                                         RankGUI rg = new RankGUI(p, clickedRank, current.rp);
                                         rg.openInventory(p);
                                         break;
                                 }
                             } else {
+                                p.closeInventory();
                                 //assign rank to that player attatchment
                                 current.paSelected.setRank(clickedRank);
                                 Text.send(p, Language.file().getString("Ranks.Rank-Set").replace("%player%", p.getName()).replace("%rank%", clickedRank.getPrefix()));

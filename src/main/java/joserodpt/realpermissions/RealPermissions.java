@@ -38,6 +38,7 @@ import joserodpt.realpermissions.utils.Text;
 import me.mattstudios.mf.base.CommandManager;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
+import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -51,6 +52,7 @@ public final class RealPermissions extends JavaPlugin {
     private final RankManager rm = new RankManager(this);
     private final PlayerManager pm = new PlayerManager(this);
     private static Economy econ = null;
+    private boolean newUpdate = false;
 
     public RankManager getRankManager() {
         return rm;
@@ -121,6 +123,9 @@ public final class RealPermissions extends JavaPlugin {
         cm.getCompletionHandler().register("#permOperations", input ->
                 Arrays.asList("add", "remove")
         );
+        cm.getCompletionHandler().register("#permissions", input ->
+                Bukkit.getServer().getPluginManager().getPermissions().stream().map(Permission::getName).collect(Collectors.toList())
+        );
 
         cm.register(new RealPermissionsCMD(this));
         cm.register(new RankupCMD(this));
@@ -138,6 +143,18 @@ public final class RealPermissions extends JavaPlugin {
         pm.registerEvents(PlayersGUI.getListener(), this);
         pm.registerEvents(PlayerPermissionsGUI.getListener(), this);
         pm.registerEvents(SettingsGUI.getListener(), this);
+
+
+        /*
+        new UpdateChecker(this, 0).getVersion(version -> {
+            if (this.getDescription().getVersion().equalsIgnoreCase(version)) {
+                this.getLogger().info("The plugin is updated to the latest version.");
+            } else {
+                this.newUpdate = true;
+                this.getLogger().warning("There is a new update available! Version: " + version + " -> https://www.spigotmc.org/resources/111629/");
+            }
+        });
+         */
 
         getLogger().info("Plugin has been loaded.");
         getLogger().info("Author: JoseGamer_PT | " + this.getDescription().getWebsite());
@@ -160,5 +177,9 @@ public final class RealPermissions extends JavaPlugin {
     @Override
     public void onDisable() {
         getPlayerManager().getPlayerMap().values().forEach(playerAttatchment -> playerAttatchment.saveData(RPPlayer.PlayerData.TIMED_RANK));
+    }
+
+    public boolean hasNewUpdate() {
+        return this.newUpdate;
     }
 }

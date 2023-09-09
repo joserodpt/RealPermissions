@@ -32,6 +32,9 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
+        if (e.getPlayer().isOp() && rp.hasNewUpdate()) {
+            Text.send(e.getPlayer(), "&6&LWARNING! &r&fThere is a new update available for &fReal&cPermissions&f! https://www.spigotmc.org/resources/");
+        }
         rp.getPlayerManager().playerJoin(e.getPlayer());
     }
 

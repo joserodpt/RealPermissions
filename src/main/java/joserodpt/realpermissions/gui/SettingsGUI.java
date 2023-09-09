@@ -61,6 +61,10 @@ public class SettingsGUI {
     public void fillChest() {
         this.inv.clear();
 
+        for (int number : new int[]{0, 1, 2, 9, 11, 18, 20, 27, 29, 36, 38, 45, 46, 47}) {
+            this.inv.setItem(number, Itens.createItem(Material.BLACK_STAINED_GLASS_PANE, 1, ""));
+        }
+
         //selection items
         this.inv.setItem(10, Itens.createItem(Material.ENDER_CHEST, 1, "&fReal&cPermissions"));
         this.inv.setItem(19, Itens.createItem(Material.LEVER, 1, "&bToggles"));

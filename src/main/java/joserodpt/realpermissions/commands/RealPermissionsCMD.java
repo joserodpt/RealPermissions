@@ -271,7 +271,7 @@ public class RealPermissionsCMD extends CommandBase {
 
     @SubCommand("permission")
     @Alias("perm")
-    @Completion({"#permOperations","#ranks"})
+    @Completion({"#permOperations","#ranks", "#permissions"})
     @WrongUsage("/rp perm <add/remove> <rank> <permission>")
     @Permission("realpermissions.admin")
     public void permcmd(final CommandSender commandSender, final String operation, final String rank, final String perm) {
@@ -325,7 +325,7 @@ public class RealPermissionsCMD extends CommandBase {
 
     @SubCommand("playerperm")
     @Alias("pperm")
-    @Completion({"#permOperations","#players"})
+    @Completion({"#permOperations","#players", "#permissions"})
     @WrongUsage("/rp pperm <add/remove> <player> <permission>")
     @Permission("realpermissions.admin")
     public void permcmd(final CommandSender commandSender, final String operation, final Player p, final String perm) {
