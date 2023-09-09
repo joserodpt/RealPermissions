@@ -378,7 +378,7 @@ public class RealPermissionsCMD extends CommandBase {
     @Completion("#players")
     @WrongUsage("/rp player <player>")
     @Permission("realpermissions.admin")
-    public void playercmd(final CommandSender commandSender, final String operation, final Player p, final String perm) {
+    public void playercmd(final CommandSender commandSender, final Player p) {
         if (commandSender instanceof Player) {
             if (p == null) {
                 Text.send(commandSender, Language.file().getString("System.No-Player-Found"));
