@@ -145,16 +145,14 @@ public final class RealPermissions extends JavaPlugin {
         pm.registerEvents(SettingsGUI.getListener(), this);
 
 
-        /*
-        new UpdateChecker(this, 0).getVersion(version -> {
+        new UpdateChecker(this, 112560).getVersion(version -> {
             if (this.getDescription().getVersion().equalsIgnoreCase(version)) {
                 this.getLogger().info("The plugin is updated to the latest version.");
             } else {
                 this.newUpdate = true;
-                this.getLogger().warning("There is a new update available! Version: " + version + " -> https://www.spigotmc.org/resources/111629/");
+                this.getLogger().warning("There is a new update available! Version: " + version + " -> https://www.spigotmc.org/resources/112560");
             }
         });
-         */
 
         getLogger().info("Plugin has been loaded.");
         getLogger().info("Author: JoseGamer_PT | " + this.getDescription().getWebsite());
