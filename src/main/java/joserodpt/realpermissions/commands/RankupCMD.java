@@ -47,7 +47,7 @@ public class RankupCMD extends CommandBase {
             RankupGUI rg = new RankupGUI(rp.getPlayerManager().getPlayer(p), rp, false);
             rg.openInventory(p);
         } else {
-            commandSender.sendMessage("[RealPermissions] Only players can run this command.");
+            Text.send(commandSender,"[RealPermissions] Only players can run this command.");
         }
     }
 }

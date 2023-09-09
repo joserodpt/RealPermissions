@@ -7,10 +7,6 @@ import java.lang.reflect.Field;
 
 public class ReflectionHelper
 {
-    public static Class<?> getNMSClass(final String str) {
-        return getClass("net.minecraft.server." + getServerVersion() + "." + str);
-    }
-    
     public static Class<?> getCraftBukkitClass(final String str) {
         return getClass("org.bukkit.craftbukkit." + getServerVersion() + "." + str);
     }

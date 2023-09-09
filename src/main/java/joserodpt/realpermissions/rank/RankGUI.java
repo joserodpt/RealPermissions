@@ -14,6 +14,7 @@ package joserodpt.realpermissions.rank;
  */
 
 import joserodpt.realpermissions.RealPermissions;
+import joserodpt.realpermissions.config.Language;
 import joserodpt.realpermissions.gui.RankViewer;
 import joserodpt.realpermissions.utils.*;
 import net.wesjd.anvilgui.AnvilGUI;
@@ -220,11 +221,11 @@ public class RankGUI {
                                                 return Collections.singletonList(AnvilGUI.ResponseAction.replaceInputText("Invalid"));
                                             } else {
                                                 if (current.r.hasPermission(perm)) {
-                                                    Text.send(p, "The rank already has the " + perm + " permission.");
+                                                    Text.send(p, Language.file().getString("Permissions.Rank-Already-Has-Permission").replace("%perm%", perm));
                                                 } else {
                                                     current.r.addPermission(perm);
                                                     current.rp.getRankManager().refreshPermsAndPlayers();
-                                                    Text.send(p, "&fPermission " + perm + " &aadded &fto " + current.r.getPrefix());
+                                                    Text.send(p, Language.file().getString("Permissions.Rank-Perm-Add").replace("%perm%", perm).replace("%rank%", current.r.getPrefix()));
                                                 }
 
                                                 return Collections.singletonList(AnvilGUI.ResponseAction.close());
@@ -242,14 +243,14 @@ public class RankGUI {
                             Permission perm = current.display.get(e.getRawSlot());
 
                             if (Objects.requireNonNull(e.getClick()) == ClickType.DROP) {
-                                if (perm.getAssociatedRank().equalsIgnoreCase(current.r.getName())) {
+                                if (perm.getAssociatedRankName().equalsIgnoreCase(current.r.getName())) {
                                     current.r.removePermission(perm);
                                     current.rp.getRankManager().refreshPermsAndPlayers();
-                                    Text.send(p, "&fPermission " + perm.getPermissionString() + " removed.");
+                                    Text.send(p, Language.file().getString("Permissions.Rank-Perm-Remove").replace("%perm%", perm.getPermissionString()).replace("%rank%", current.r.getPrefix()));
 
                                     current.load();
                                 } else {
-                                    Text.send(p, "&fThis permission is associated with the rank: " + perm.getAssociatedRank() + ". Remove it in the corresponding rank.");
+                                    Text.send(p, Language.file().getString("Permissions.Permission-Associated-With-Other-Rank").replace("%rank%", perm.getAssociatedRankName()));
                                 }
                             }
                         }

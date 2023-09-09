@@ -20,16 +20,16 @@ import org.bukkit.inventory.ItemStack;
 import java.util.Arrays;
 
 public class Permission {
-    private String permissionString, associatedRank;
+    private String permissionString, associatedRankName;
 
     public Permission(String perm) {
         //for player permissions
         this.permissionString = perm;
     }
 
-    public Permission(String permission, String associatedRank) {
+    public Permission(String permission, String associatedRankName) {
         this.permissionString = permission;
-        this.associatedRank = associatedRank;
+        this.associatedRankName = associatedRankName;
     }
 
     public String getPermissionString() {
@@ -40,15 +40,15 @@ public class Permission {
         return "- " + this.getPermissionString();
     }
 
-    public String getAssociatedRank() {
-        return this.associatedRank;
+    public String getAssociatedRankName() {
+        return this.associatedRankName;
     }
 
     public ItemStack getPermissionIcon(String rank) {
-        return Itens.createItem(Material.PAPER, 1, "&f" + this.getPermissionString(), Arrays.asList(this.getAssociatedRank().equalsIgnoreCase(rank) ? "" : "Permission inherited from &b" + this.getAssociatedRank(), "","&fQ (Drop) to &cremove"));
+        return Itens.createItem(Material.PAPER, 1, "&f" + this.getPermissionString(), Arrays.asList(this.getAssociatedRankName().equalsIgnoreCase(rank) ? "" : "Permission inherited from &b" + this.getAssociatedRankName(), "","&fQ (Drop) to &cremove"));
     }
 
-    public void setAssociatedRank(String input) {
-        this.associatedRank = input;
+    public void setAssociatedRankName(String input) {
+        this.associatedRankName = input;
     }
 }

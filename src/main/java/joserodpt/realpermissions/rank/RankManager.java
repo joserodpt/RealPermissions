@@ -133,8 +133,8 @@ public class RankManager {
 
         //treat the permissions map correctly, change the old rank's permission to the new rank's permissions
         for (Permission value : r.getMapPermissions().values()) {
-            if (value.getAssociatedRank().equalsIgnoreCase(r.getName())) {
-                value.setAssociatedRank(input);
+            if (value.getAssociatedRankName().equalsIgnoreCase(r.getName())) {
+                value.setAssociatedRankName(input);
                 r.getMapPermissions().put(value.getPermissionString(), value);
             }
         }

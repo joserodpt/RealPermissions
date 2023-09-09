@@ -118,8 +118,6 @@ public class SettingsGUI {
                             case 16:
                                 p.closeInventory();
                                 break;
-
-
                             case 10:
                                 current.def = Setting.REALP;
                                 current.fillChest();

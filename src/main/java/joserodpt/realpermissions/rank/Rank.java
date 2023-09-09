@@ -115,7 +115,7 @@ public class Rank {
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public String getPrefix() {
@@ -168,7 +168,7 @@ public class Rank {
     }
 
     private boolean isRankPermission(Permission value) {
-        return value.getAssociatedRank().equalsIgnoreCase(this.getName());
+        return value.getAssociatedRankName().equalsIgnoreCase(this.getName());
     }
 
     public List<Rank> getInheritances() {

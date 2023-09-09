@@ -13,11 +13,15 @@ package joserodpt.realpermissions.config;
  * @link https://github.com/joserodpt/RealPermissions
  */
 
+import dev.dejvokep.boostedyaml.YamlDocument;
+import dev.dejvokep.boostedyaml.dvs.versioning.BasicVersioning;
+import dev.dejvokep.boostedyaml.settings.dumper.DumperSettings;
+import dev.dejvokep.boostedyaml.settings.general.GeneralSettings;
+import dev.dejvokep.boostedyaml.settings.loader.LoaderSettings;
+import dev.dejvokep.boostedyaml.settings.updater.UpdaterSettings;
 import joserodpt.realpermissions.RealPermissions;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.Listener;
-import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,30 +29,38 @@ import java.io.IOException;
 public class Language implements Listener {
 
     private static final String name = "language.yml";
-    private static File file;
-    private static FileConfiguration customFile;
-    public static void setup(Plugin p) {
-        file = new File(p.getDataFolder(), name);
+    private static YamlDocument document;
 
-        if (!file.exists()) {
-            p.saveResource(name, true);
+    public static void setup(final JavaPlugin rm) {
+        try {
+            document = YamlDocument.create(new File(rm.getDataFolder(), name), rm.getResource(name),
+                    GeneralSettings.DEFAULT,
+                    LoaderSettings.builder().setAutoUpdate(true).build(),
+                    DumperSettings.DEFAULT,
+                    UpdaterSettings.builder().setVersioning(new BasicVersioning("Version")).build());
+        } catch (final IOException e) {
+            RealPermissions.getPlugin().getLogger().severe( "Couldn't setup " + name + "!");
+            RealPermissions.getPlugin().getLogger().severe(e.getMessage());
         }
-        customFile = YamlConfiguration.loadConfiguration(file);
     }
 
-    public static FileConfiguration file() {
-        return customFile;
+    public static YamlDocument file() {
+        return document;
     }
 
     public static void save() {
         try {
-            customFile.save(file);
-        } catch (IOException e) {
-            RealPermissions.getPlugin().getLogger().severe("Couldn't save " + name + "!");
+            document.save();
+        } catch (final IOException e) {
+            RealPermissions.getPlugin().getLogger().severe( "Couldn't save " + name + "!");
         }
     }
 
     public static void reload() {
-        customFile = YamlConfiguration.loadConfiguration(file);
+        try {
+            document.reload();
+        } catch (final IOException e) {
+            RealPermissions.getPlugin().getLogger().severe( "Couldn't reload " + name + "!");
+        }
     }
 }

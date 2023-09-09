@@ -72,13 +72,11 @@ public class RPPlayer {
             field.setAccessible(true);
 
             org.bukkit.permissions.Permissible oldpermissible = (org.bukkit.permissions.Permissible) field.get(player);
-            if (newPermBase instanceof PermissibleBase)
-            {
-                //copy attachments
-                Field attachments = PermissibleBase.class.getDeclaredField("attachments");
-                attachments.setAccessible(true);
-                ((List) attachments.get(newPermBase)).addAll((List)attachments.get(oldpermissible));
-            }
+
+            //copy attachments
+            Field attachments = PermissibleBase.class.getDeclaredField("attachments");
+            attachments.setAccessible(true);
+            ((List) attachments.get(newPermBase)).addAll((List)attachments.get(oldpermissible));
 
             field.set(player, newPermBase);
         } catch (Exception e) {

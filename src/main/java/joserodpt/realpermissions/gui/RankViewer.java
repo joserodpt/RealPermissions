@@ -14,6 +14,7 @@ package joserodpt.realpermissions.gui;
  */
 
 import joserodpt.realpermissions.RealPermissions;
+import joserodpt.realpermissions.config.Language;
 import joserodpt.realpermissions.player.RPPlayer;
 import joserodpt.realpermissions.player.PlayerPermissionsGUI;
 import joserodpt.realpermissions.rank.Rank;
@@ -100,7 +101,7 @@ public class RankViewer {
     }
 
     public void load() {
-        this.p = new Pagination<>(28,rp.getRankManager().getRanksList());
+        this.p = new Pagination<>(28, rp.getRankManager().getRanksList());
         fillChest(p.getPage(this.pageNumber));
     }
 
@@ -255,16 +256,16 @@ public class RankViewer {
                                 switch (e.getClick()) {
                                     case DROP:
                                         if (clickedRank.equals(current.rp.getRankManager().getDefaultRank())) {
-                                            Text.send(p, "&cYou can't delete the default rank.");
+                                            Text.send(p, Language.file().getString("Ranks.Cant-Delete-Default-Rank"));
                                         } else {
                                             current.rp.getRankManager().deleteRank(clickedRank);
-                                            Text.send(p, clickedRank.getPrefix() + " &frank &cdeleted.");
+                                            Text.send(p, Language.file().getString("Ranks.Deleted").replace("%rank%", clickedRank.getPrefix()));
                                         }
                                         current.load();
                                         break;
                                     case RIGHT:
                                         current.rp.getRankManager().setDefaultRank(clickedRank);
-                                        Text.send(p, clickedRank.getPrefix() + " &r&f is now the &bdefault rank&f!");
+                                        Text.send(p, Language.file().getString("Ranks.Set-Default").replace("%rank%", clickedRank.getPrefix()));
                                         break;
                                     default:
                                         RankGUI rg = new RankGUI(p, clickedRank, current.rp);
@@ -274,7 +275,7 @@ public class RankViewer {
                             } else {
                                 //assign rank to that player attatchment
                                 current.paSelected.setRank(clickedRank);
-                                Text.send(p, p.getName() + "'s &frank is now: " + clickedRank.getPrefix());
+                                Text.send(p, Language.file().getString("Ranks.Rank-Set").replace("%player%", p.getName()).replace("%rank%", clickedRank.getPrefix()));
                                 p.closeInventory();
                                 PlayerPermissionsGUI rv = new PlayerPermissionsGUI(p, current.paSelected, current.rp);
                                 rv.openInventory(p);

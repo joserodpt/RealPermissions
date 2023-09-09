@@ -1,0 +1,29 @@
+System:
+  Reloaded: "&fReal&cPermissions &fhas been &areloded"
+  No-Permission-Command: "&cYou don't have permission to execute this command!"
+  No-Player-Found: "%cThere is no player named like that."
+  Super-User-State: "%player% 's &fsuper user state: %state%"
+Ranks:
+  Set-Default: "%rank%&r&f is now the &bdefault rank&f!"
+  Cant-Delete-Default-Rank: "&cYou can't delete the default rank."
+  Name-Empty: "&cNew rank name cannot be empty."
+  New-Name: "The rank's name is now %name%"
+  Deleted: "%rank% &frank &cdeleted."
+  No-Rank-Found: "There is no rank named &c%name%"
+  Rank-Set: "%player% 's &frank is now: %rank%"
+  Player-No-Timed-Rank: "%player% &cdoesn't have a timed rank."
+  Timed-Rank-Set: "%player% 's &ftimed rank is now: %rank%"
+  Timed-Rank-Above-Zero: "&cTimed ranks must be set above 0 seconds."
+  Player-Remove-Timed-Rank: "%player% &ftimed rank has been &eremoved."
+Permissions:
+  Rank-Already-Has-Permission: "The rank already has the %perm% permission."
+  Rank-Doesnt-Have-Permission: "The rank doesn't have the %perm% permission."
+  Permission-Associated-With-Other-Rank: "&cThis permission is associated with the rank: %rank%. &fRemove it in the corresponding rank."
+  Rank-Perm-Add: "&fPermission %perm% &aadded &fto %rank%"
+  Rank-Perm-Remove: "&fPermission %perm% &cremoved &fto %rank%"
+  Player:
+    Already-Has-Permission: "The player already has that permission."
+    Doesnt-Have-Permission: "The player doesn't have that permission."
+    Add: "&fPermission %perm% &aadded &fto %player%"
+    Remove: "&fPermission %perm% &cremoved &ffrom %player%"
+Version: 1
