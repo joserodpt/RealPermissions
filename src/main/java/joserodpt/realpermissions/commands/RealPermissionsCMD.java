@@ -20,6 +20,7 @@ import joserodpt.realpermissions.config.Players;
 import joserodpt.realpermissions.config.Ranks;
 import joserodpt.realpermissions.gui.RealPermissionsGUI;
 import joserodpt.realpermissions.gui.RankViewer;
+import joserodpt.realpermissions.player.PlayerPermissionsGUI;
 import joserodpt.realpermissions.player.RPPlayer;
 import joserodpt.realpermissions.player.PlayersGUI;
 import joserodpt.realpermissions.rank.Rank;
@@ -91,7 +92,7 @@ public class RealPermissionsCMD extends CommandBase {
     }
 
     @SubCommand("players")
-    @Alias("p")
+    @Alias("plrs")
     @Completion("#ranks")
     @Permission("realpermissions.admin")
     public void playerscmd(final CommandSender commandSender) {
@@ -369,6 +370,25 @@ public class RealPermissionsCMD extends CommandBase {
                 pa.removePermission(perm);
                 Text.send(commandSender, Language.file().getString("Permissions.Player.Remove").replace("%perm%", perm).replace("%player%", p.getName()));
             }
+        }
+    }
+
+    @SubCommand("player")
+    @Alias("p")
+    @Completion("#players")
+    @WrongUsage("/rp player <player>")
+    @Permission("realpermissions.admin")
+    public void playercmd(final CommandSender commandSender, final String operation, final Player p, final String perm) {
+        if (commandSender instanceof Player) {
+            if (p == null) {
+                Text.send(commandSender, Language.file().getString("System.No-Player-Found"));
+                return;
+            }
+
+            PlayerPermissionsGUI ppg = new PlayerPermissionsGUI(p, rp.getPlayerManager().getPlayer(p), rp);
+            ppg.openInventory(p);
+        } else {
+            Text.send(commandSender, noConsole);
         }
     }
 }
