@@ -20,6 +20,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class Text {
@@ -98,4 +99,14 @@ public class Text {
 	public static String strip(String input) {
 		return ChatColor.stripColor(input);
 	}
+
+	public static Comparator<String> ALPHABETICAL_ORDER = new Comparator<String>() {
+		public int compare(String str1, String str2) {
+			int res = String.CASE_INSENSITIVE_ORDER.compare(str1, str2);
+			if (res == 0) {
+				res = str1.compareTo(str2);
+			}
+			return res;
+		}
+	};
 }

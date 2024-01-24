@@ -15,13 +15,16 @@ package joserodpt.realpermissions.api;
 
 import joserodpt.realpermissions.api.pluginhookup.ExternalPlugin;
 import joserodpt.realpermissions.api.pluginhookup.ExternalPluginPermission;
+import joserodpt.realpermissions.api.utils.Text;
 import org.bukkit.Material;
 import org.bukkit.plugin.Plugin;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class RealPermissionsHookupAPI {
 
@@ -40,6 +43,14 @@ public class RealPermissionsHookupAPI {
 
     public void removeHookup(ExternalPlugin ep) {
         this.externalPluginList.remove(ep.getName());
+    }
+
+    public Map<String, ExternalPlugin> getExternalPluginList() {
+        return externalPluginList;
+    }
+
+    public LinkedHashSet<String> getExternalPluginListSorted() {
+        return this.getExternalPluginList().keySet().stream().sorted(Text.ALPHABETICAL_ORDER).collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     public void injectEssentialsXPermissions(String ver) {
@@ -563,6 +574,27 @@ public class RealPermissionsHookupAPI {
     }
 
     public void loadPermissionsFromKnownPlugins() {
+        //load myself, hehehe
+        this.externalPluginList.put("RealPermissions", new ExternalPlugin("RealPermissions", "&fReal&cPermissions", rpa.getPlugin().getDescription().getDescription(), Material.BARRIER, Arrays.asList(
+                new ExternalPluginPermission("realpermissions.admin", "Main permission for operation of RealPermissions.", Arrays.asList(
+                        "/realpermissions",
+                        "/rp reload",
+                        "/rp rank",
+                        "/rp players",
+                        "/rp ranks",
+                        "/rp setsuper",
+                        "/rp set",
+                        "/rp settimedrank",
+                        "/rp cleartimedrank",
+                        "/rp rename",
+                        "/rp delete",
+                        "/rp permission",
+                        "/rp playerperm"
+                )),
+                new ExternalPluginPermission("realpermissions.prefix-in-tablist", "Permission to show prefix in the tablist."),
+                new ExternalPluginPermission("realpermissions.rankup.<rank>", "Permission to rankup to the specified <rank>.")
+        ), rpa.getPlugin().getDescription().getVersion()));
+
         Plugin pl = rpa.getPlugin().getServer().getPluginManager().getPlugin("Essentials"); if (pl != null) { injectEssentialsXPermissions(pl.getDescription().getVersion()); }
 
         pl = rpa.getPlugin().getServer().getPluginManager().getPlugin("EssentialsSpawn"); if (pl != null) { injectEssentialsSpawnPermissions(pl.getDescription().getVersion()); }

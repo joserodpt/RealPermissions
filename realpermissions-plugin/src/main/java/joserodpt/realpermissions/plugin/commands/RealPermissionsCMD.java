@@ -20,6 +20,7 @@ import joserodpt.realpermissions.api.config.Players;
 import joserodpt.realpermissions.api.config.Ranks;
 import joserodpt.realpermissions.api.config.Rankups;
 import joserodpt.realpermissions.api.player.RPPlayer;
+import joserodpt.realpermissions.api.pluginhookup.ExternalPlugin;
 import joserodpt.realpermissions.api.rank.Rank;
 import joserodpt.realpermissions.api.utils.Text;
 import joserodpt.realpermissions.plugin.gui.PlayerPermissionsGUI;
@@ -33,6 +34,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.LinkedHashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Command("realpermissions")
 @Alias("rp")
@@ -391,6 +396,19 @@ public class RealPermissionsCMD extends CommandBase {
             ppg.openInventory(p);
         } else {
             Text.send(commandSender, noConsole);
+        }
+    }
+
+    @SubCommand("hookups")
+    @Alias("hk")
+    @Permission("realpermissions.admin")
+    @WrongUsage("/rp hookups")
+    public void hookups(final CommandSender commandSender) {
+        Text.send(commandSender, "&fThere are &b" + rp.getHookupAPI().getExternalPluginList().size() + " &fhooked up plugins to &fReal&cPermissions&f:");
+
+        for (String pluginName : rp.getHookupAPI().getExternalPluginListSorted()) {
+            ExternalPlugin ep = rp.getHookupAPI().getExternalPluginList().get(pluginName);
+            commandSender.sendMessage(Text.color("&7 > &f" + ep.getDisplayName() + " &r&f[" + pluginName + ", version: " + ep.getVersion() + "] - &b" + ep.getPermissionList().size() + " &fpermissions registered."));
         }
     }
 }

@@ -36,6 +36,10 @@ public class ExternalPlugin {
         this(name, displayName, description, Material.BEACON, permissionList, version);
     }
 
+    public ExternalPlugin(String name, String description, List<ExternalPluginPermission> permissionList, String version) {
+        this(name, name, description, Material.BEACON, permissionList, version);
+    }
+
     public String getName() {
         return name;
     }
