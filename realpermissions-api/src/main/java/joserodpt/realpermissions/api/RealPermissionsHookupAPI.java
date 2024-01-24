@@ -36,10 +36,12 @@ public class RealPermissionsHookupAPI {
     public RealPermissionsHookupAPI(RealPermissionsAPI rpa) { this.rpa = rpa; }
 
     public void addHookup(ExternalPlugin ep) {
-        if (!this.externalPluginList.containsKey(ep.getName())) {
-            this.externalPluginList.put(ep.getName(), ep);
-            rpa.getLogger().info("Loaded " + ep.getPermissionList().size() + " permissions from " + ep.getName() + ", version: " + ep.getVersion());
+        if (this.externalPluginList.containsKey(ep.getName()) && ep.getPluginSource() == ExternalPlugin.PluginSource.JAR_YML_SCAN) {
+            return;
         }
+
+        this.externalPluginList.put(ep.getName(), ep);
+        rpa.getLogger().info("Loaded " + ep.getPermissionList().size() + " permissions from " + ep.getName() + ", version: " + ep.getVersion());
     }
 
     public void removeHookup(ExternalPlugin ep) {
@@ -63,7 +65,7 @@ public class RealPermissionsHookupAPI {
         addHookup(new ExternalPlugin("Vault", "&aVault", "Vault is a Permissions, Chat, & Economy API.", Material.CHEST, Arrays.asList(
                 new ExternalPluginPermission("vault.admin", "Allows access to vault info and conversion commands", Arrays.asList("vault-info", "vault-conversion")),
                 new ExternalPluginPermission("vault.update", "Anyone with this permission will be notified when Vault is out-dated")
-        ), ver));
+        ), ver, ExternalPlugin.PluginSource.API));
     }
 
     public void loadPermissionsFromKnownPlugins() {
@@ -86,7 +88,7 @@ public class RealPermissionsHookupAPI {
                 )),
                 new ExternalPluginPermission("realpermissions.prefix-in-tablist", "Permission to show prefix in the tablist."),
                 new ExternalPluginPermission("realpermissions.rankup.<rank>", "Permission to rankup to the specified <rank>.")
-        ), rpa.getPlugin().getDescription().getVersion()));
+        ), rpa.getPlugin().getDescription().getVersion(), ExternalPlugin.PluginSource.API));
 
         int counter = 0;
         //loop through plugins installed in the server and find permissions in .yml
@@ -104,7 +106,7 @@ public class RealPermissionsHookupAPI {
                     List<ExternalPluginPermission> list = new ArrayList<>();
                     plugin.getDescription().getPermissions().forEach(permission -> list.add(new ExternalPluginPermission(permission.getName(), permission.getDescription())));
                     plugin.getDescription().getPermissions().forEach(permission -> permission.getChildren().keySet().forEach(s -> list.add(new ExternalPluginPermission(s, "Child of: " + permission.getName()))));
-                    addHookup(new ExternalPlugin(name, plugin.getDescription().getDescription(), list, plugin.getDescription().getVersion()));
+                    addHookup(new ExternalPlugin(name, plugin.getDescription().getDescription(), list, plugin.getDescription().getVersion(), ExternalPlugin.PluginSource.JAR_YML_SCAN));
                     counter += list.size();
                 }
             }

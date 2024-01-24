@@ -23,26 +23,38 @@ import java.util.List;
 
 public class ExternalPlugin {
 
+    public enum PluginSource {JAR_YML_SCAN, API }
+
+    private final PluginSource ps;
     private final String name, description, displayName, version;
     private final Material icon;
     private final List<ExternalPluginPermission> permissionList;
 
-    public ExternalPlugin(String name, String displayName, String description, Material icon, List<ExternalPluginPermission> permissionList, String version) {
+    public ExternalPlugin(String name, String displayName, String description, Material icon, List<ExternalPluginPermission> permissionList, String version, PluginSource ps) {
         this.name = name;
         this.description = description;
         this.icon = icon;
         this.displayName = displayName;
         this.version = version;
+        this.ps = ps;
         this.permissionList = permissionList;
         this.permissionList.sort(Comparator.comparing(ExternalPluginPermission::getPermission));
     }
 
-    public ExternalPlugin(String name, String displayName, String description, List<ExternalPluginPermission> permissionList, String version) {
-        this(name, displayName, description, Material.COMMAND_BLOCK, permissionList, version);
+    public ExternalPlugin(String name, String displayName, String description, Material icon, List<ExternalPluginPermission> permissionList, String version) {
+        this(name, displayName, description, icon, permissionList, version, PluginSource.API);
     }
 
-    public ExternalPlugin(String name, String description, List<ExternalPluginPermission> permissionList, String version) {
-        this(name, "&f" + name, description, Material.COMMAND_BLOCK, permissionList, version);
+    public ExternalPlugin(String name, String displayName, String description, List<ExternalPluginPermission> permissionList, String version, PluginSource ps) {
+        this(name, displayName, description, Material.COMMAND_BLOCK, permissionList, version, ps);
+    }
+
+    public ExternalPlugin(String name, String description, List<ExternalPluginPermission> permissionList, String version, PluginSource ps) {
+        this(name, "&f" + name, description, Material.COMMAND_BLOCK, permissionList, version, ps);
+    }
+
+    public PluginSource getPluginSource() {
+        return ps;
     }
 
     public String getName() {
