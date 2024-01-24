@@ -14,9 +14,6 @@ package joserodpt.realpermissions.api;
  */
 
 import com.google.common.base.Preconditions;
-import joserodpt.realpermissions.api.managers.PlayerManagerAPI;
-import joserodpt.realpermissions.api.managers.RankManagerAPI;
-import joserodpt.realpermissions.api.managers.RealPermissionsHookupAPI;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.plugin.java.JavaPlugin;
 

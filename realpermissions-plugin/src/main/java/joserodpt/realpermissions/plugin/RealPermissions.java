@@ -14,8 +14,8 @@ package joserodpt.realpermissions.plugin;
  */
 
 import joserodpt.realpermissions.api.RealPermissionsAPI;
-import joserodpt.realpermissions.api.managers.PlayerManagerAPI;
-import joserodpt.realpermissions.api.managers.RankManagerAPI;
+import joserodpt.realpermissions.api.PlayerManagerAPI;
+import joserodpt.realpermissions.api.RankManagerAPI;
 import joserodpt.realpermissions.plugin.managers.PlayerManager;
 import joserodpt.realpermissions.plugin.managers.RankManager;
 import net.milkbowl.vault.economy.Economy;

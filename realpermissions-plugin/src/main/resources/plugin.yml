@@ -1,4 +1,4 @@
-name: Realpermissions
+name: RealPermissions
 version: '${project.version}'
 main: joserodpt.realpermissions.plugin.RealPermissionsPlugin
 api-version: '1.13'

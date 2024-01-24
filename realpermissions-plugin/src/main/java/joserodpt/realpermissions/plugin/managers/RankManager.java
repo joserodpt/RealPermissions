@@ -18,7 +18,7 @@ import joserodpt.realpermissions.api.RealPermissionsAPI;
 import joserodpt.realpermissions.api.config.Config;
 import joserodpt.realpermissions.api.config.Ranks;
 import joserodpt.realpermissions.api.config.Rankups;
-import joserodpt.realpermissions.api.managers.RankManagerAPI;
+import joserodpt.realpermissions.api.RankManagerAPI;
 import joserodpt.realpermissions.api.permission.Permission;
 import joserodpt.realpermissions.api.player.RPPlayer;
 import joserodpt.realpermissions.api.rank.Rank;

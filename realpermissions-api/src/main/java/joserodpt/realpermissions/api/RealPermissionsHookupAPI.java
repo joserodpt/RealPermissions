@@ -1,4 +1,4 @@
-package joserodpt.realpermissions.api.managers;
+package joserodpt.realpermissions.api;
 
 /*
  *   _____            _ _____
@@ -13,7 +13,6 @@ package joserodpt.realpermissions.api.managers;
  * @link https://github.com/joserodpt/RealPermissions
  */
 
-import joserodpt.realpermissions.api.RealPermissionsAPI;
 import joserodpt.realpermissions.api.pluginhookup.ExternalPlugin;
 import joserodpt.realpermissions.api.pluginhookup.ExternalPluginPermission;
 import org.bukkit.Material;
@@ -33,11 +32,10 @@ public class RealPermissionsHookupAPI {
     public RealPermissionsHookupAPI(RealPermissionsAPI rpa) { this.rpa = rpa; }
 
     public void addHookup(ExternalPlugin ep) {
-        if (this.externalPluginList.containsKey(ep.getName())) {
-            return;
+        if (!this.externalPluginList.containsKey(ep.getName())) {
+            this.externalPluginList.put(ep.getName(), ep);
+            rpa.getLogger().info("Loaded " + ep.getPermissionList().size() + " permissions from " + ep.getName() + ", version: " + ep.getVersion());
         }
-        this.externalPluginList.put(ep.getName(), ep);
-        rpa.getLogger().info("Loaded " + ep.getPermissionList().size() + " permissions from " + ep.getName() + ", version:" + ep.getVersion());
     }
 
     public void removeHookup(ExternalPlugin ep) {

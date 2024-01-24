@@ -15,7 +15,7 @@ package joserodpt.realpermissions.plugin.managers;
 
 import joserodpt.realpermissions.api.RealPermissionsAPI;
 import joserodpt.realpermissions.api.config.Players;
-import joserodpt.realpermissions.api.managers.PlayerManagerAPI;
+import joserodpt.realpermissions.api.PlayerManagerAPI;
 import joserodpt.realpermissions.api.permission.Permission;
 import joserodpt.realpermissions.api.player.PlayerObject;
 import joserodpt.realpermissions.api.player.RPPlayer;
