@@ -87,6 +87,26 @@ RealPermissions softdepends on [Vault](https://www.spigotmc.org/resources/vault.
 
 ----
 
+## API
+You can access the RealPermissionsAPI via the RealPermissionsAPI class:
+
+```java
+var rpAPI = RealPermissionsAPI.getInstance();
+```
+
+For registering a plugin in RealPermissions, you have to use the RealPermissionsHookupAPI:
+
+```java
+var rpAPI = RealPermissionsAPI.getInstance();
+rpAPI.getHookupAPI().addHookup(new ExternalPlugin("Name", "&aDisplayName", "Description", Material.CHEST, Arrays.asList(
+        new ExternalPluginPermission("permission.one", "description1", Arrays.asList("command1", "command2")),
+        new ExternalPluginPermission("permission.two", "description2")
+        ), "PLUGIN_VERSION", ExternalPlugin.PluginSource.API));
+```
+There are other classes in the RealPermissionsAPI, like the RankManagerAPI and PlayerManagerAPI that you can hook up to.
+
+----
+
 ## Links
 * [SpigotMC](https://www.spigotmc.org/resources/realpermissions-1-13-to-1-20-1.112560/)
 * [Discord Server](https://discord.gg/t7gfnYZKy8)
