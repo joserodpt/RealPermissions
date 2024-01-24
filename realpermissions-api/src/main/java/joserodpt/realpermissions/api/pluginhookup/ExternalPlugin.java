@@ -38,11 +38,11 @@ public class ExternalPlugin {
     }
 
     public ExternalPlugin(String name, String displayName, String description, List<ExternalPluginPermission> permissionList, String version) {
-        this(name, displayName, description, Material.BEACON, permissionList, version);
+        this(name, displayName, description, Material.COMMAND_BLOCK, permissionList, version);
     }
 
     public ExternalPlugin(String name, String description, List<ExternalPluginPermission> permissionList, String version) {
-        this(name, name, description, Material.BEACON, permissionList, version);
+        this(name, "&f" + name, description, Material.COMMAND_BLOCK, permissionList, version);
     }
 
     public String getName() {
@@ -71,6 +71,7 @@ public class ExternalPlugin {
 
     public ItemStack getItemStack() {
         List<String> desc = new ArrayList<>();
+        desc.add("&b&nVersion:&r&f " + this.getVersion());
         if (!this.getDescription().isEmpty()) {
             desc.add("&b&nDescription:");
             desc.add("&f" + this.getDescription());

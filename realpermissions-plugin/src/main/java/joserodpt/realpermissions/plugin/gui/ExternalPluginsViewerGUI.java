@@ -39,6 +39,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -95,6 +96,7 @@ public class ExternalPluginsViewerGUI {
     public void load(String search) {
         this.p = new Pagination<>(28, rp.getHookupAPI().getExternalPluginList().values().stream()
                 .filter(permission -> permission.getName().toLowerCase().contains(search.toLowerCase()))
+                .sorted(Comparator.comparing(ExternalPlugin::getName))
                 .collect(Collectors.toList()));
         fillChest(this.p.getPage(this.pageNumber));
     }
