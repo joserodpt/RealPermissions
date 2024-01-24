@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -49,12 +50,17 @@ public class RealPermissionsHookupAPI {
         return externalPluginList;
     }
 
+    public List<ExternalPluginPermission> getListPermissionsExternalPlugins() {
+        return this.getExternalPluginList().values().stream()
+                .flatMap(pl -> pl.getPermissionList().stream()).collect(Collectors.toList());
+    }
+
     public LinkedHashSet<String> getExternalPluginListSorted() {
         return this.getExternalPluginList().keySet().stream().sorted(Text.ALPHABETICAL_ORDER).collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     public void injectEssentialsXPermissions(String ver) {
-        addHookup(new ExternalPlugin("EssentialsX", "&fEssentialsX", "EssentialsX is the essential plugin suite for Minecraft servers, with over 130 commands for servers of all size and scale.", Material.COMMAND_BLOCK, Arrays.asList(
+        addHookup(new ExternalPlugin("EssentialsX", "&fEssentialsX", "EssentialsX is the essential plugin suite for Minecraft servers.", Material.COMMAND_BLOCK, Arrays.asList(
                 new ExternalPluginPermission("essentials.afk", "Allow access to the /afk command.", Collections.singletonList("afk")),
                 new ExternalPluginPermission("essentials.afk.message", "Allow access to settings an afk message.", Collections.singletonList("afk")),
                 new ExternalPluginPermission("essentials.afk.others", "Allows you to AFK other players.", Collections.singletonList("afk")),
@@ -539,7 +545,7 @@ public class RealPermissionsHookupAPI {
     }
 
     public void injectVaultPermissions(String ver) {
-        addHookup(new ExternalPlugin("Vault", "&aVault", "Vault is a Permissions, Chat, & Economy API to give plugins easy hooks into these systems without needing to hook or depend on each individual plugin themselves.", Material.CHEST, Arrays.asList(
+        addHookup(new ExternalPlugin("Vault", "&aVault", "Vault is a Permissions, Chat, & Economy API.", Material.CHEST, Arrays.asList(
                 new ExternalPluginPermission("vault.admin", "Allows access to vault info and conversion commands", Arrays.asList("vault-info", "vault-conversion")),
                 new ExternalPluginPermission("vault.update", "Anyone with this permission will be notified when Vault is out-dated")
         ), ver));

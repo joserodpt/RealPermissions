@@ -170,7 +170,7 @@ public class RankupGUI {
                                 p.closeInventory();
 
                                 if (current.admin) {
-                                    RankViewerGUI rg = new RankViewerGUI(p, current.rp);
+                                    RanksListGUI rg = new RanksListGUI(p, current.rp);
                                     rg.openInventory(p);
                                 }
                                 break;

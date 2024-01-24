@@ -25,8 +25,8 @@ import joserodpt.realpermissions.api.rank.Rank;
 import joserodpt.realpermissions.api.utils.Text;
 import joserodpt.realpermissions.plugin.gui.PlayerPermissionsGUI;
 import joserodpt.realpermissions.plugin.gui.PlayersGUI;
-import joserodpt.realpermissions.plugin.gui.RankGUI;
-import joserodpt.realpermissions.plugin.gui.RankViewerGUI;
+import joserodpt.realpermissions.plugin.gui.RankPermissionsGUI;
+import joserodpt.realpermissions.plugin.gui.RanksListGUI;
 import joserodpt.realpermissions.plugin.gui.RealPermissionsGUI;
 import me.mattstudios.mf.annotations.*;
 import me.mattstudios.mf.base.CommandBase;
@@ -34,10 +34,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
-import java.util.Comparator;
-import java.util.LinkedHashSet;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Command("realpermissions")
 @Alias("rp")
@@ -91,7 +87,7 @@ public class RealPermissionsCMD extends CommandBase {
                 return;
             }
 
-            RankGUI rg = new RankGUI(p, r, rp);
+            RankPermissionsGUI rg = new RankPermissionsGUI(p, r, rp);
             rg.openInventory(p);
         } else {
             Text.send(commandSender, noConsole);
@@ -119,7 +115,7 @@ public class RealPermissionsCMD extends CommandBase {
         if (commandSender instanceof Player) {
             Player p = (Player) commandSender;
 
-            RankViewerGUI rv = new RankViewerGUI(p, rp);
+            RanksListGUI rv = new RanksListGUI(p, rp);
             rv.openInventory(p);
         } else {
             rp.getRankManager().getRanksList().forEach(rank -> Text.send(commandSender, " " + rank.getName() + " &f[" + rank.getPrefix() + "&f]"));
@@ -365,14 +361,14 @@ public class RealPermissionsCMD extends CommandBase {
 
         if (add) {
             if (pa.hasPermission(perm)) {
-                Text.send(commandSender, Language.file().getString("Permissions.Player.Already-Has-Permission"));
+                Text.send(commandSender, Language.file().getString("Permissions.Player.Already-Has-Permission").replace("%perm%", perm));
             } else {
                 pa.addPermission(perm);
                 Text.send(commandSender, Language.file().getString("Permissions.Player.Add").replace("%perm%", perm).replace("%player%", p.getName()));
             }
         } else {
             if (!pa.hasPermission(perm)) {
-                Text.send(commandSender, Language.file().getString("Permissions.Player.Doesnt-Have-Permission"));
+                Text.send(commandSender, Language.file().getString("Permissions.Player.Doesnt-Have-Permission").replace("%perm%", perm));
             } else {
                 pa.removePermission(perm);
                 Text.send(commandSender, Language.file().getString("Permissions.Player.Remove").replace("%perm%", perm).replace("%player%", p.getName()));

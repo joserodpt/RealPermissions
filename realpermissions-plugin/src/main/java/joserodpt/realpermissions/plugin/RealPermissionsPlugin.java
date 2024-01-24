@@ -19,16 +19,19 @@ import joserodpt.realpermissions.api.config.Players;
 import joserodpt.realpermissions.api.config.Ranks;
 import joserodpt.realpermissions.api.config.Rankups;
 import joserodpt.realpermissions.api.player.RPPlayer;
+import joserodpt.realpermissions.api.pluginhookup.ExternalPluginPermission;
 import joserodpt.realpermissions.api.rank.Rank;
 import joserodpt.realpermissions.api.utils.PlayerInput;
 import joserodpt.realpermissions.api.utils.Text;
 import joserodpt.realpermissions.plugin.commands.RankupCMD;
 import joserodpt.realpermissions.plugin.commands.RealPermissionsCMD;
+import joserodpt.realpermissions.plugin.gui.EPPermissionsViewerGUI;
+import joserodpt.realpermissions.plugin.gui.ExternalPluginsViewerGUI;
 import joserodpt.realpermissions.plugin.gui.MaterialPickerGUI;
 import joserodpt.realpermissions.plugin.gui.PlayerPermissionsGUI;
 import joserodpt.realpermissions.plugin.gui.PlayersGUI;
-import joserodpt.realpermissions.plugin.gui.RankGUI;
-import joserodpt.realpermissions.plugin.gui.RankViewerGUI;
+import joserodpt.realpermissions.plugin.gui.RankPermissionsGUI;
+import joserodpt.realpermissions.plugin.gui.RanksListGUI;
 import joserodpt.realpermissions.plugin.gui.RankupGUI;
 import joserodpt.realpermissions.plugin.gui.RankupPathGUI;
 import joserodpt.realpermissions.plugin.gui.RealPermissionsGUI;
@@ -36,7 +39,6 @@ import joserodpt.realpermissions.plugin.gui.SettingsGUI;
 import me.mattstudios.mf.base.CommandManager;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
-import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -111,7 +113,9 @@ public final class RealPermissionsPlugin extends JavaPlugin {
                 Arrays.asList("add", "remove")
         );
         cm.getCompletionHandler().register("#permissions", input ->
-                Bukkit.getServer().getPluginManager().getPermissions().stream().map(Permission::getName).collect(Collectors.toList())
+                realPermissions.getHookupAPI().getListPermissionsExternalPlugins().stream()
+                        .map(ExternalPluginPermission::getPermission)
+                        .collect(Collectors.toList())
         );
 
         cm.register(new RealPermissionsCMD(realPermissions));
@@ -121,15 +125,17 @@ public final class RealPermissionsPlugin extends JavaPlugin {
         PluginManager pm = Bukkit.getPluginManager();
         pm.registerEvents(new PlayerListener(realPermissions), this);
         pm.registerEvents(PlayerInput.getListener(), this);
-        pm.registerEvents(RankGUI.getListener(), this);
+        pm.registerEvents(RankPermissionsGUI.getListener(), this);
         pm.registerEvents(RankupGUI.getListener(), this);
         pm.registerEvents(RankupPathGUI.getListener(), this);
-        pm.registerEvents(RankViewerGUI.getListener(), this);
+        pm.registerEvents(RanksListGUI.getListener(), this);
         pm.registerEvents(RealPermissionsGUI.getListener(), this);
         pm.registerEvents(MaterialPickerGUI.getListener(), this);
         pm.registerEvents(PlayersGUI.getListener(), this);
         pm.registerEvents(PlayerPermissionsGUI.getListener(), this);
         pm.registerEvents(SettingsGUI.getListener(), this);
+        pm.registerEvents(ExternalPluginsViewerGUI.getListener(), this);
+        pm.registerEvents(EPPermissionsViewerGUI.getListener(), this);
 
         //load permissions from known plugins
         realPermissions.getHookupAPI().loadPermissionsFromKnownPlugins();

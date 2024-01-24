@@ -21,7 +21,6 @@ import joserodpt.realpermissions.api.utils.Items;
 import joserodpt.realpermissions.api.utils.Pagination;
 import joserodpt.realpermissions.api.utils.PlayerInput;
 import joserodpt.realpermissions.api.utils.Text;
-import net.wesjd.anvilgui.AnvilGUI;
 import org.bukkit.*;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -37,9 +36,9 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
 
-public class RankGUI {
+public class RankPermissionsGUI {
 
-    private static Map<UUID, RankGUI> inventories = new HashMap<>();
+    private static Map<UUID, RankPermissionsGUI> inventories = new HashMap<>();
     private Inventory inv;
 
     private ItemStack placeholder = Items.createItem(Material.BLACK_STAINED_GLASS_PANE, 1, "&7Permissions");
@@ -57,7 +56,7 @@ public class RankGUI {
 
     private RealPermissionsAPI rp;
 
-    public RankGUI(Player as, Rank r, RealPermissionsAPI rp) {
+    public RankPermissionsGUI(Player as, Rank r, RealPermissionsAPI rp) {
         this.rp = rp;
         this.uuid = as.getUniqueId();
         this.inv = Bukkit.getServer().createInventory(null, 54, Text.color("&fReal&cPermissions &8| &9" + r.getPrefix()));
@@ -145,7 +144,7 @@ public class RankGUI {
                     }
                     UUID uuid = clicker.getUniqueId();
                     if (inventories.containsKey(uuid)) {
-                        RankGUI current = inventories.get(uuid);
+                        RankPermissionsGUI current = inventories.get(uuid);
                         if (e.getInventory().getHolder() != current.getInventory().getHolder()) {
                             return;
                         }
@@ -169,10 +168,10 @@ public class RankGUI {
                                     current.r.setPrefix(input);
                                     Text.send(p, "The rank's prefix is now " + input);
 
-                                    RankGUI wv = new RankGUI(p, current.r, current.rp);
+                                    RankPermissionsGUI wv = new RankPermissionsGUI(p, current.r, current.rp);
                                     wv.openInventory(p);
                                 }, input -> {
-                                    RankGUI wv = new RankGUI(p, current.r, current.rp);
+                                    RankPermissionsGUI wv = new RankPermissionsGUI(p, current.r, current.rp);
                                     wv.openInventory(p);
                                 });
                                 break;
@@ -182,17 +181,17 @@ public class RankGUI {
                                     current.rp.getRankManager().renameRank(current.r, input);
                                     Text.send(p, "The rank's name is now " + input);
 
-                                    RankGUI wv = new RankGUI(p, current.rp.getRankManager().getRank(input), current.rp);
+                                    RankPermissionsGUI wv = new RankPermissionsGUI(p, current.rp.getRankManager().getRank(input), current.rp);
                                     wv.openInventory(p);
                                 }, input -> {
-                                    RankGUI wv = new RankGUI(p, current.r, current.rp);
+                                    RankPermissionsGUI wv = new RankPermissionsGUI(p, current.r, current.rp);
                                     wv.openInventory(p);
                                 });
                                 break;
 
                             case 43:
                                 p.closeInventory();
-                                RankViewerGUI rv = new RankViewerGUI(p, current.rp);
+                                RanksListGUI rv = new RanksListGUI(p, current.rp);
                                 rv.openInventory(p);
                                 break;
                             case 41:
@@ -205,40 +204,8 @@ public class RankGUI {
                                 break;
                             case 39:
                                 p.closeInventory();
-                                new AnvilGUI.Builder()
-                                        .onClose(stateSnapshot -> new BukkitRunnable() {
-                                            @Override
-                                            public void run() {
-                                                RankGUI rg = new RankGUI(p, current.r, current.rp);
-                                                rg.openInventory(p);
-                                            }
-                                        }.runTaskLater(current.rp.getPlugin(), 2))
-                                        .onClick((slot, stateSnapshot) -> { // Either use sync or async variant, not both
-                                            if(slot != AnvilGUI.Slot.OUTPUT) {
-                                                return Collections.emptyList();
-                                            }
-
-                                            String perm = stateSnapshot.getText();
-
-                                            if (perm.isEmpty()) {
-                                                return Collections.singletonList(AnvilGUI.ResponseAction.replaceInputText("Invalid"));
-                                            } else {
-                                                if (current.r.hasPermission(perm)) {
-                                                    Text.send(p, Language.file().getString("Permissions.Rank-Already-Has-Permission").replace("%perm%", perm));
-                                                } else {
-                                                    current.r.addPermission(perm);
-                                                    current.rp.getRankManager().refreshPermsAndPlayers();
-                                                    Text.send(p, Language.file().getString("Permissions.Rank-Perm-Add").replace("%perm%", perm).replace("%rank%", current.r.getPrefix()));
-                                                }
-
-                                                return Collections.singletonList(AnvilGUI.ResponseAction.close());
-                                            }
-
-                                        })
-                                        .text("Permission")
-                                        .title("New permission:")
-                                        .plugin(current.rp.getPlugin())
-                                        .open(p);
+                                ExternalPluginsViewerGUI ev = new ExternalPluginsViewerGUI(p, current.rp, current.r, "");
+                                ev.openInventory(p);
                                 break;
                         }
 
@@ -261,14 +228,14 @@ public class RankGUI {
                 }
             }
 
-            private void backPage(RankGUI asd) {
+            private void backPage(RankPermissionsGUI asd) {
                 if (asd.p.exists(asd.pageNumber - 1)) {
                     --asd.pageNumber;
                     asd.fillChest(asd.p.getPage(asd.pageNumber));
                 }
             }
 
-            private void nextPage(RankGUI asd) {
+            private void nextPage(RankPermissionsGUI asd) {
                 if (asd.p.exists(asd.pageNumber + 1)) {
                     ++asd.pageNumber;
                     asd.fillChest(asd.p.getPage(asd.pageNumber));

@@ -119,7 +119,7 @@ public class RealPermissionsGUI {
                                 break;
                             case 12:
                                 p.closeInventory();
-                                RankViewerGUI rv = new RankViewerGUI(p, current.rp);
+                                RanksListGUI rv = new RanksListGUI(p, current.rp);
                                 rv.openInventory(p);
                                 break;
                             case 14:

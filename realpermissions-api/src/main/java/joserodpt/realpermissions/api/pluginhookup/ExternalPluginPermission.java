@@ -13,8 +13,11 @@ package joserodpt.realpermissions.api.pluginhookup;
  * @link https://github.com/joserodpt/RealPermissions
  */
 
-import com.google.common.collect.ImmutableList;
+import joserodpt.realpermissions.api.utils.Items;
+import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -41,7 +44,23 @@ public class ExternalPluginPermission {
         return description;
     }
 
-    public ImmutableList<String> getCommands() {
-        return (ImmutableList<String>) commands;
+    public List<String> getCommands() {
+        return commands;
+    }
+
+    public ItemStack getItemStack() {
+        List<String> desc = new ArrayList<>();
+        desc.add("&fClick to &aadd this permission");
+        if (!this.getDescription().isEmpty()) {
+            desc.add("&b&nDescription:");
+            desc.add("&f" + this.getDescription());
+        }
+        if (!this.getCommands().isEmpty()) {
+            desc.add("");
+            desc.add("&b&nCommands granted:");
+            this.getCommands().forEach(s -> desc.add("/" + s));
+        }
+
+        return Items.createItem(Material.FILLED_MAP, Math.max(1, Math.min(this.commands.size(), 64)), "&f&l" + this.getPermission(), desc);
     }
 }

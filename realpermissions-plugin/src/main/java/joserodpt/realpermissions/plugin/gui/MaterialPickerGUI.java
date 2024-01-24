@@ -197,7 +197,7 @@ public class MaterialPickerGUI {
                                 }, input -> {
                                     rp.getPlayer().closeInventory();
 
-                                    RankGUI rg = new RankGUI(rp.getPlayer(), (Rank) current.obj, current.rp);
+                                    RankPermissionsGUI rg = new RankPermissionsGUI(rp.getPlayer(), (Rank) current.obj, current.rp);
                                     rg.openInventory(rp.getPlayer());
                                 });
                                 break;
@@ -228,7 +228,7 @@ public class MaterialPickerGUI {
                                     break;
                                 case RANK:
                                     ((Rank) current.obj).setIcon(a);
-                                    RankGUI rg = new RankGUI(rp.getPlayer(), ((Rank) current.obj), current.rp);
+                                    RankPermissionsGUI rg = new RankPermissionsGUI(rp.getPlayer(), ((Rank) current.obj), current.rp);
                                     rg.openInventory(rp.getPlayer());
                                     break;
                             }
@@ -279,7 +279,7 @@ public class MaterialPickerGUI {
         p.getPlayer().closeInventory();
         switch (pt) {
             case RANK:
-                RankGUI rg = new RankGUI(p.getPlayer(), (Rank) obj, rp);
+                RankPermissionsGUI rg = new RankPermissionsGUI(p.getPlayer(), (Rank) obj, rp);
                 rg.openInventory(p.getPlayer());
                 break;
             case RANKUP:

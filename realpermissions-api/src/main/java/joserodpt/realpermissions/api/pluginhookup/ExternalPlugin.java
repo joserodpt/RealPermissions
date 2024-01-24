@@ -13,8 +13,12 @@ package joserodpt.realpermissions.api.pluginhookup;
  * @link https://github.com/joserodpt/RealPermissions
  */
 
+import joserodpt.realpermissions.api.utils.Items;
 import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class ExternalPlugin {
@@ -30,6 +34,7 @@ public class ExternalPlugin {
         this.displayName = displayName;
         this.version = version;
         this.permissionList = permissionList;
+        this.permissionList.sort(Comparator.comparing(ExternalPluginPermission::getPermission));
     }
 
     public ExternalPlugin(String name, String displayName, String description, List<ExternalPluginPermission> permissionList, String version) {
@@ -62,5 +67,16 @@ public class ExternalPlugin {
 
     public String getVersion() {
         return version;
+    }
+
+    public ItemStack getItemStack() {
+        List<String> desc = new ArrayList<>();
+        if (!this.getDescription().isEmpty()) {
+            desc.add("&b&nDescription:");
+            desc.add("&f" + this.getDescription());
+        }
+        desc.add(""); desc.add("&b" + this.getPermissionList().size() + " &fpermissions registered."); desc.add("&fClick to explore this plugin's permissions.");
+
+        return Items.createItem(this.getIcon(), Math.min(this.getPermissionList().size(), 64), this.getDisplayName(), desc);
     }
 }

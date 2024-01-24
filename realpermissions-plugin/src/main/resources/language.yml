@@ -17,13 +17,14 @@ Ranks:
   Player-Remove-Timed-Rank: "%player% &ftimed rank has been &eremoved."
 Permissions:
   Rank-Already-Has-Permission: "The rank already has the %perm% permission."
+  Player-Already-Has-Permission: "The player already has the %perm% permission."
   Rank-Doesnt-Have-Permission: "The rank doesn't have the %perm% permission."
   Permission-Associated-With-Other-Rank: "&cThis permission is associated with the rank: %rank%. &fRemove it in the corresponding rank."
   Rank-Perm-Add: "&fPermission %perm% &aadded &fto %rank%"
-  Rank-Perm-Remove: "&fPermission %perm% &cremoved &fto %rank%"
+  Rank-Perm-Remove: "&fPermission %perm% &cremoved &ffrom %rank%"
   Player:
-    Already-Has-Permission: "The player already has that permission."
-    Doesnt-Have-Permission: "The player doesn't have that permission."
+    Already-Has-Permission: "The player already has the %perm% permission."
+    Doesnt-Have-Permission: "The player doesn't has the %perm% permission."
     Add: "&fPermission %perm% &aadded &fto %player%"
     Remove: "&fPermission %perm% &cremoved &ffrom %player%"
 Version: 1

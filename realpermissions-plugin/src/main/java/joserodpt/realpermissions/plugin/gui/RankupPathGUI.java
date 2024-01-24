@@ -196,7 +196,7 @@ public class RankupPathGUI {
                                     case RIGHT:
                                         p.closeInventory();
                                         Bukkit.getScheduler().scheduleSyncDelayedTask(RealPermissions.getInstance().getPlugin(), () -> {
-                                            RankViewerGUI rv = new RankViewerGUI(current.player, current.rp, current.rk, po);
+                                            RanksListGUI rv = new RanksListGUI(current.player, current.rp, current.rk, po);
                                             rv.openInventory(p);
                                         }, 1);
                                         break;

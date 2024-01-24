@@ -38,9 +38,9 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
 
-public class RankViewerGUI {
+public class RanksListGUI {
 
-    private static Map<UUID, RankViewerGUI> inventories = new HashMap<>();
+    private static Map<UUID, RanksListGUI> inventories = new HashMap<>();
     private Inventory inv;
 
     private ItemStack placeholder = Items.createItem(Material.BLACK_STAINED_GLASS_PANE, 1, "");
@@ -57,7 +57,7 @@ public class RankViewerGUI {
     Pagination<Rank> p;
     private RealPermissionsAPI rp;
 
-    public RankViewerGUI(Player pl, RealPermissionsAPI rp) {
+    public RanksListGUI(Player pl, RealPermissionsAPI rp) {
         this.rp = rp;
         this.inv = Bukkit.getServer().createInventory(null, 54, Text.color("&fReal&cPermissions &8| &eRanks"));
         this.uuid = pl.getUniqueId();
@@ -69,7 +69,7 @@ public class RankViewerGUI {
 
     private RPPlayer paSelected = null;
 
-    public RankViewerGUI(RPPlayer pl, RealPermissionsAPI rp, RPPlayer pa) {
+    public RanksListGUI(RPPlayer pl, RealPermissionsAPI rp, RPPlayer pa) {
         this.paSelected = pa;
         this.rp = rp;
         this.inv = Bukkit.getServer().createInventory(null, 54, Text.color("&fReal&cPermissions &8| &eRanks"));
@@ -84,7 +84,7 @@ public class RankViewerGUI {
     private RankupEntry rpe = null;
     private RPPlayer rpPlayer;
 
-    public RankViewerGUI(RPPlayer pl, RealPermissionsAPI rp, Rankup rk, RankupEntry rpe) {
+    public RanksListGUI(RPPlayer pl, RealPermissionsAPI rp, Rankup rk, RankupEntry rpe) {
         this.rpe = rpe;
         this.rk = rk;
         this.rpPlayer = pl;
@@ -184,7 +184,7 @@ public class RankViewerGUI {
                     }
                     UUID uuid = clicker.getUniqueId();
                     if (inventories.containsKey(uuid)) {
-                        RankViewerGUI current = inventories.get(uuid);
+                        RanksListGUI current = inventories.get(uuid);
                         if (e.getInventory().getHolder() != current.getInventory().getHolder()) {
                             return;
                         }
@@ -201,10 +201,10 @@ public class RankViewerGUI {
                                     new PlayerInput(p, input -> {
                                         current.rp.getRankManager().addNewRank(input);
 
-                                        RankViewerGUI rv = new RankViewerGUI(p, current.rp);
+                                        RanksListGUI rv = new RanksListGUI(p, current.rp);
                                         rv.openInventory(p);
                                     }, input -> {
-                                        RankViewerGUI rv = new RankViewerGUI(p, current.rp);
+                                        RanksListGUI rv = new RanksListGUI(p, current.rp);
                                         rv.openInventory(p);
                                     });
                                 }
@@ -265,7 +265,7 @@ public class RankViewerGUI {
                                         break;
                                     default:
                                         p.closeInventory();
-                                        RankGUI rg = new RankGUI(p, clickedRank, current.rp);
+                                        RankPermissionsGUI rg = new RankPermissionsGUI(p, clickedRank, current.rp);
                                         rg.openInventory(p);
                                         break;
                                 }
@@ -283,14 +283,14 @@ public class RankViewerGUI {
                 }
             }
 
-            private void backPage(RankViewerGUI asd) {
+            private void backPage(RanksListGUI asd) {
                 if (asd.p.exists(asd.pageNumber - 1)) {
                     --asd.pageNumber;
                     asd.fillChest(asd.p.getPage(asd.pageNumber));
                 }
             }
 
-            private void nextPage(RankViewerGUI asd) {
+            private void nextPage(RanksListGUI asd) {
                 if (asd.p.exists(asd.pageNumber + 1)) {
                     ++asd.pageNumber;
                     asd.fillChest(asd.p.getPage(asd.pageNumber));

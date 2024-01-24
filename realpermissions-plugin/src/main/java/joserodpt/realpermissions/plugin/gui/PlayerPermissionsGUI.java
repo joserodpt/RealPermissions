@@ -18,7 +18,6 @@ import joserodpt.realpermissions.api.player.RPPlayer;
 import joserodpt.realpermissions.api.utils.Items;
 import joserodpt.realpermissions.api.utils.Pagination;
 import joserodpt.realpermissions.api.utils.Text;
-import net.wesjd.anvilgui.AnvilGUI;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -32,7 +31,6 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -97,7 +95,7 @@ public class PlayerPermissionsGUI {
                 default:
                     if (!items.isEmpty()) {
                         String wi = items.get(0);
-                        this.inv.setItem(i, Items.createItem(Material.PAPER, 1, "&f" + wi, Arrays.asList("","&fQ (Drop) to &cremove")));
+                        this.inv.setItem(i, Items.createItem(Material.PAPER, 1, "&f&l" + wi, Arrays.asList("","&fQ (Drop) to &cremove")));
                         this.display.put(i, wi);
                         items.remove(0);
                     } else {
@@ -156,7 +154,7 @@ public class PlayerPermissionsGUI {
                         switch (e.getRawSlot()) {
                             case 16:
                                 p.closeInventory();
-                                RankViewerGUI rv = new RankViewerGUI(current.rp.getPlayerManager().getPlayer(uuid), current.rp, current.pa);
+                                RanksListGUI rv = new RanksListGUI(current.rp.getPlayerManager().getPlayer(uuid), current.rp, current.pa);
                                 rv.openInventory(p);
                                 break;
                             case 43:
@@ -174,41 +172,8 @@ public class PlayerPermissionsGUI {
                                 break;
                             case 39:
                                 p.closeInventory();
-                                new AnvilGUI.Builder()
-                                        .onClose(stateSnapshot -> new BukkitRunnable() {
-                                            @Override
-                                            public void run() {
-                                                PlayerPermissionsGUI rg = new PlayerPermissionsGUI(p, current.pa, current.rp);
-                                                rg.openInventory(p);
-                                            }
-                                        }.runTaskLater(current.rp.getPlugin(), 2))
-                                        .onClick((slot, stateSnapshot) -> { // Either use sync or async variant, not both
-                                            if(slot != AnvilGUI.Slot.OUTPUT) {
-                                                return Collections.emptyList();
-                                            }
-
-                                            String perm = stateSnapshot.getText();
-
-                                            if (perm.isEmpty()) {
-                                                return Collections.singletonList(AnvilGUI.ResponseAction.replaceInputText("Invalid"));
-                                            } else {
-
-                                                if (current.pa.hasPermission(perm)) {
-                                                    Text.send(p, "The rank already has the " + perm + " permission.");
-                                                } else {
-                                                    current.pa.addPermission(perm);
-                                                    //current.rp.getRankManager().refreshPermsAndPlayers();
-                                                    Text.send(p, "&fPermission " + perm + " &aadded &fto " + Bukkit.getOfflinePlayer(current.pa.getUUID()).getName());
-                                                }
-
-                                                return Collections.singletonList(AnvilGUI.ResponseAction.close());
-                                            }
-
-                                        })
-                                        .text("Permission")
-                                        .title("New permission:")
-                                        .plugin(current.rp.getPlugin())
-                                        .open(p);
+                                ExternalPluginsViewerGUI epvg = new ExternalPluginsViewerGUI(p, current.rp, current.pa, "");
+                                epvg.openInventory(p);
                                 break;
                         }
 
