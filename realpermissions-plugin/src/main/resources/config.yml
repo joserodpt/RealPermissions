@@ -1,6 +1,7 @@
-Version: 1
+Version: 2
 RealPermissions:
   Prefix: "&fReal&cPermissions &7>"
   Chat-Formatting: true
   Prefix-In-Tablist: true
   Enable-Rankup: true
+  Warn-Modifications-To-Plugins-Via-API: true

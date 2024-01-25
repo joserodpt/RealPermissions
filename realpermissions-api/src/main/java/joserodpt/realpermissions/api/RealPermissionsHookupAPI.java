@@ -13,6 +13,7 @@ package joserodpt.realpermissions.api;
  * @link https://github.com/joserodpt/RealPermissions
  */
 
+import joserodpt.realpermissions.api.config.Config;
 import joserodpt.realpermissions.api.pluginhookup.ExternalPlugin;
 import joserodpt.realpermissions.api.pluginhookup.ExternalPluginPermission;
 import joserodpt.realpermissions.api.utils.Text;
@@ -22,6 +23,7 @@ import org.bukkit.plugin.Plugin;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -41,7 +43,72 @@ public class RealPermissionsHookupAPI {
         }
 
         this.externalPluginList.put(ep.getName(), ep);
-        rpa.getLogger().info("Loaded " + ep.getPermissionList().size() + " permissions from " + ep.getName() + ", version: " + ep.getVersion());
+        rpa.getLogger().info("[API] Loaded " + ep.getPermissionList().size() + " permissions from " + ep.getName() + ", version: " + ep.getVersion());
+    }
+
+    public void addPermissionToHookup(String externalPluginID, ExternalPluginPermission epp) {
+        if (this.externalPluginList.containsKey(externalPluginID)) {
+            this.externalPluginList.get(externalPluginID).getPermissionList().add(epp);
+        }
+        if (Config.file().getBoolean("RealPermissions.Warn-Modifications-To-Plugins-Via-API")) {
+            rpa.getLogger().info("[API] " + externalPluginID + " added 1 new permission to RealPermissions.");
+        }
+    }
+
+    public void addPermissionToHookup(String externalPluginID, List<ExternalPluginPermission> epp) {
+        if (epp.isEmpty()) {
+            return;
+        }
+        if (epp.size() == 1) {
+            addPermissionToHookup(externalPluginID, epp.get(0));
+        } else {
+            if (this.externalPluginList.containsKey(externalPluginID)) {
+                epp.forEach(externalPluginPermission -> this.externalPluginList.get(externalPluginID).getPermissionList().add(externalPluginPermission));
+            }
+            if (Config.file().getBoolean("RealPermissions.Warn-Modifications-To-Plugins-Via-API")) {
+                rpa.getLogger().info("[API] " + externalPluginID + " added " + epp.size() + " new permissions to RealPermissions.");
+            }
+        }
+    }
+
+    public void removePermissionFromHookup(String externalPluginID, ExternalPluginPermission epp) {
+        if (this.externalPluginList.containsKey(externalPluginID)) {
+            removeEPPString(externalPluginID, epp);
+        }
+        if (Config.file().getBoolean("RealPermissions.Warn-Modifications-To-Plugins-Via-API")) {
+            rpa.getLogger().info("[API] " + externalPluginID + " removed 1 permission from RealPermissions.");
+        }
+    }
+
+    private void removeEPPString(String externalPluginID, ExternalPluginPermission epp) {
+        List<ExternalPluginPermission> permissionList = this.externalPluginList.get(externalPluginID).getPermissionList();
+        Iterator<ExternalPluginPermission> iterator = permissionList.iterator();
+
+        while (iterator.hasNext()) {
+            ExternalPluginPermission externalPluginPermission = iterator.next();
+            if (externalPluginPermission.getPermission().equalsIgnoreCase(epp.getPermission())) {
+                iterator.remove();
+                break;
+            }
+        }
+    }
+
+    public void removePermissionFromHookup(String externalPluginID, List<ExternalPluginPermission> epp) {
+        if (epp.isEmpty()) {
+            return;
+        }
+        if (epp.size() == 1) {
+            removePermissionFromHookup(externalPluginID, epp.get(0));
+        } else {
+            if (this.externalPluginList.containsKey(externalPluginID)) {
+                for (ExternalPluginPermission toRemove : epp) {
+                    removeEPPString(externalPluginID, toRemove);
+                }
+            }
+            if (Config.file().getBoolean("RealPermissions.Warn-Modifications-To-Plugins-Via-API")) {
+                rpa.getLogger().info("[API] " + externalPluginID + " removed " + epp.size() + " permissions to RealPermissions.");
+            }
+        }
     }
 
     public void removeHookup(ExternalPlugin ep) {

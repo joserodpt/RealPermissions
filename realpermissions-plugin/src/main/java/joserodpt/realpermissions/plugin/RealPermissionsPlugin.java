@@ -43,6 +43,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
@@ -116,6 +117,9 @@ public final class RealPermissionsPlugin extends JavaPlugin {
                 realPermissions.getHookupAPI().getListPermissionsExternalPlugins().stream()
                         .map(ExternalPluginPermission::getPermission)
                         .collect(Collectors.toList())
+        );
+        cm.getCompletionHandler().register("#plugins", input ->
+                new ArrayList<>(realPermissions.getHookupAPI().getExternalPluginList().keySet())
         );
 
         cm.register(new RealPermissionsCMD(realPermissions));

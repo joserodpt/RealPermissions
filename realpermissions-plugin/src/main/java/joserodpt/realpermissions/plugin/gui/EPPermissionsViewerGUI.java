@@ -67,6 +67,7 @@ public class EPPermissionsViewerGUI {
     private RPPlayer pa = null;
     private ExternalPlugin ep;
     private boolean enableSearch = true;
+    private boolean forceExit = false;
 
     public EPPermissionsViewerGUI(Player pl, RealPermissionsAPI rp, ExternalPlugin ep, String search) {
         this.ep = ep;
@@ -112,6 +113,20 @@ public class EPPermissionsViewerGUI {
         enableSearch = false;
 
         this.p = new Pagination<>(28, search);
+        fillChest(this.p.getPage(this.pageNumber));
+
+        this.register();
+    }
+
+    public EPPermissionsViewerGUI(Player p, RealPermissionsAPI rp, ExternalPlugin externalPlugin) {
+        this.rp = rp;
+        this.inv = Bukkit.getServer().createInventory(null, 54, Text.color("&fReal&cPermissions &8| " + externalPlugin.getName()));
+        this.uuid = p.getUniqueId();
+
+        enableSearch = false;
+        forceExit = true;
+
+        this.p = new Pagination<>(28, externalPlugin.getPermissionList());
         fillChest(this.p.getPage(this.pageNumber));
 
         this.register();
@@ -261,7 +276,11 @@ public class EPPermissionsViewerGUI {
 
                             case 49:
                                 p.closeInventory();
-                                if (current.rank != null) {
+                                if (current.forceExit) {
+                                    return;
+                                }
+
+                                 if (current.rank != null) {
                                     ExternalPluginsViewerGUI rg = new ExternalPluginsViewerGUI(p, current.rp, current.rank, "");
                                     rg.openInventory(p);
                                 }
@@ -284,6 +303,10 @@ public class EPPermissionsViewerGUI {
                         }
 
                         if (current.display.containsKey(e.getRawSlot())) {
+                            if (current.forceExit) {
+                                return;
+                            }
+
                             ExternalPluginPermission clickedExtPerm = current.display.get(e.getRawSlot());
 
                             p.closeInventory();

@@ -23,6 +23,7 @@ import joserodpt.realpermissions.api.player.RPPlayer;
 import joserodpt.realpermissions.api.pluginhookup.ExternalPlugin;
 import joserodpt.realpermissions.api.rank.Rank;
 import joserodpt.realpermissions.api.utils.Text;
+import joserodpt.realpermissions.plugin.gui.EPPermissionsViewerGUI;
 import joserodpt.realpermissions.plugin.gui.PlayerPermissionsGUI;
 import joserodpt.realpermissions.plugin.gui.PlayersGUI;
 import joserodpt.realpermissions.plugin.gui.RankPermissionsGUI;
@@ -396,7 +397,7 @@ public class RealPermissionsCMD extends CommandBase {
     }
 
     @SubCommand("hookups")
-    @Alias("hk")
+    @Alias("hks")
     @Permission("realpermissions.admin")
     @WrongUsage("/rp hookups")
     public void hookups(final CommandSender commandSender) {
@@ -405,6 +406,26 @@ public class RealPermissionsCMD extends CommandBase {
         for (String pluginName : rp.getHookupAPI().getExternalPluginListSorted()) {
             ExternalPlugin ep = rp.getHookupAPI().getExternalPluginList().get(pluginName);
             commandSender.sendMessage(Text.color("&7 > &f" + ep.getDisplayName() + " &r&f[" + pluginName + ", version: " + ep.getVersion() + "] - &b" + ep.getPermissionList().size() + " &fpermissions registered."));
+        }
+    }
+
+    @SubCommand("hook")
+    @Alias("hk")
+    @Completion("#plugins")
+    @Permission("realpermissions.admin")
+    @WrongUsage("/rp hook <plugin>")
+    public void hookups(final CommandSender commandSender, final String pluginName) {
+        if (commandSender instanceof Player) {
+            if (pluginName == null || pluginName.isEmpty()) {
+                return;
+            }
+
+            if (rp.getHookupAPI().getExternalPluginList().containsKey(pluginName)) {
+                EPPermissionsViewerGUI epvg = new EPPermissionsViewerGUI((Player) commandSender, rp, rp.getHookupAPI().getExternalPluginList().get(pluginName));
+                epvg.openInventory((Player) commandSender);
+            }
+        } else {
+            Text.send(commandSender, noConsole);
         }
     }
 }

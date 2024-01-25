@@ -84,7 +84,7 @@ public class ExternalPlugin {
     public ItemStack getItemStack() {
         List<String> desc = new ArrayList<>();
         desc.add("&b&nVersion:&r&f " + this.getVersion());
-        if (!this.getDescription().isEmpty()) {
+        if (this.getDescription() != null && !this.getDescription().isEmpty()) {
             desc.add("&b&nDescription:");
             desc.add("&f" + this.getDescription());
         }
