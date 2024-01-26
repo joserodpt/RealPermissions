@@ -56,6 +56,8 @@ public final class RealPermissionsPlugin extends JavaPlugin {
     public void onEnable() {
         printASCII();
 
+        final long start = System.currentTimeMillis();
+
         Config.setup(this);
         realPermissions = new RealPermissions(this);
         RealPermissions.setInstance(realPermissions);
@@ -150,9 +152,8 @@ public final class RealPermissionsPlugin extends JavaPlugin {
             }
         });
 
-        getLogger().info("Plugin has been loaded.");
-        getLogger().info("Author: JoseGamer_PT | " + this.getDescription().getWebsite());
-        getLogger().info("<------------------ RealPermissions | vPT ------------------>".replace("PT",
+        getLogger().info("Finished loading in " + ((System.currentTimeMillis() - start) / 1000F) + " seconds.");
+        getLogger().info("<------------------ RealPermissions vPT ------------------>".replace("PT",
                 this.getDescription().getVersion()));
     }
 
