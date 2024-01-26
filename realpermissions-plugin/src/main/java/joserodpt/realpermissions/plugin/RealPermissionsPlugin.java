@@ -54,14 +54,13 @@ public final class RealPermissionsPlugin extends JavaPlugin {
     private static RealPermissions realPermissions;
     @Override
     public void onEnable() {
+        printASCII();
+
         Config.setup(this);
         realPermissions = new RealPermissions(this);
         RealPermissions.setInstance(realPermissions);
 
         new Metrics(this, 19519);
-
-        getLogger().info("<------------------ RealPermissions PT ------------------>".replace("PT", "| " +
-                this.getDescription().getVersion()));
 
         saveDefaultConfig();
         Config.setup(this);
@@ -71,7 +70,6 @@ public final class RealPermissionsPlugin extends JavaPlugin {
         Players.setup(this);
 
         //load ranks
-        getLogger().info("Loading Ranks.");
         realPermissions.getRankManager().loadRanks();
 
         if (realPermissions.getRankManager().getDefaultRank() == null) {
@@ -87,7 +85,6 @@ public final class RealPermissionsPlugin extends JavaPlugin {
             realPermissions.getRankManager().setRankupEnabled(true);
             realPermissions.getHookupAPI().injectVaultPermissions(getServer().getPluginManager().getPlugin("Vault").getDescription().getVersion());
             getLogger().info("Vault found and Hooked into!");
-            getLogger().info("Loading Rankups.");
             realPermissions.getRankManager().loadRankups();
             getLogger().info("Loaded " + realPermissions.getRankManager().getRankups().size() + " rankups.");
         } else {
@@ -155,8 +152,22 @@ public final class RealPermissionsPlugin extends JavaPlugin {
 
         getLogger().info("Plugin has been loaded.");
         getLogger().info("Author: JoseGamer_PT | " + this.getDescription().getWebsite());
-        getLogger().info("<------------------ RealPermissions PT ------------------>".replace("PT", "| " +
+        getLogger().info("<------------------ RealPermissions | vPT ------------------>".replace("PT",
                 this.getDescription().getVersion()));
+    }
+
+    private void printASCII() {
+        logWithColor("&4   _____            _ _____                    _         _ ");
+        logWithColor("&4  |  __ \\          | |  __ \\                  (_)       (_)  &8Version: &9" + this.getDescription().getVersion());
+        logWithColor("&4  | |__) |___  __ _| | |__) |__ _ __ _ __ ___  _ ___ ___ _  ___  _ __  ___");
+        logWithColor("&4  |  _  // _ \\/ _` | |  ___/ _ \\ '__| '_ ` _ \\| / __/ __| |/ _ \\| '_ \\/ __|");
+        logWithColor("&4  | | \\ \\  __/ (_| | | |  |  __/ |  | | | | | | \\__ \\__ \\ | (_) | | | \\__ \\");
+        logWithColor("&4  |_|  \\_\\___|\\__,_|_|_|   \\___|_|  |_| |_| |_|_|___/___/_|\\___/|_| |_|___/");
+        logWithColor("                                                      &8Made by: &9JoseGamer_PT");
+    }
+
+    public void logWithColor(String s) {
+        getServer().getConsoleSender().sendMessage("[" + this.getDescription().getName() + "] " + Text.color(s));
     }
 
     private boolean setupEconomy() {

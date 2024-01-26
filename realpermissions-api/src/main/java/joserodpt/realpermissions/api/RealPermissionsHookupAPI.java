@@ -178,7 +178,7 @@ public class RealPermissionsHookupAPI {
                 }
             }
         }
-
-        rpa.getLogger().info("Loaded " + counter + " permissions from .jars!");
+        if (counter > 0)
+            rpa.getLogger().info("Loaded " + counter + " permissions from .jars!");
     }
 }
