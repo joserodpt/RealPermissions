@@ -26,14 +26,14 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 import java.io.IOException;
 
-public class Rankups implements Listener {
-	private static final String name = "rankup.yml";
+public class RPConfig implements Listener {
+	private static final String name = "config.yml";
 	private static YamlDocument document;
 
 	public static void setup(final JavaPlugin rm) {
 		try {
 			document = YamlDocument.create(new File(rm.getDataFolder(), name), rm.getResource(name),
-					GeneralSettings.builder().setUseDefaults(false).build(),
+					GeneralSettings.DEFAULT,
 					LoaderSettings.builder().setAutoUpdate(true).build(),
 					DumperSettings.DEFAULT,
 					UpdaterSettings.builder().setVersioning(new BasicVersioning("Version")).build());

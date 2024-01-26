@@ -14,7 +14,7 @@ package joserodpt.realpermissions.api.rank;
  */
 
 import joserodpt.realpermissions.api.RealPermissionsAPI;
-import joserodpt.realpermissions.api.config.Ranks;
+import joserodpt.realpermissions.api.config.RPRanksConfig;
 import joserodpt.realpermissions.api.permission.Permission;
 import joserodpt.realpermissions.api.utils.Items;
 import org.bukkit.Material;
@@ -179,19 +179,19 @@ public class Rank {
     public void saveData(RankData rd, boolean save) {
         switch (rd) {
             case CHAT:
-                Ranks.file().set("Ranks." + this.getName() + ".Chat", this.getChat());
+                RPRanksConfig.file().set("Ranks." + this.getName() + ".Chat", this.getChat());
                 break;
             case ICON:
-                Ranks.file().set("Ranks." + this.getName() + ".Icon", this.getIcon().name());
+                RPRanksConfig.file().set("Ranks." + this.getName() + ".Icon", this.getIcon().name());
                 break;
             case PREFIX:
-                Ranks.file().set("Ranks." + this.getName() + ".Prefix", this.getPrefix());
+                RPRanksConfig.file().set("Ranks." + this.getName() + ".Prefix", this.getPrefix());
                 break;
             case PERMISSIONS:
-                Ranks.file().set("Ranks." + this.getName() + ".Permissions", this.getRankPermissionStrings());
+                RPRanksConfig.file().set("Ranks." + this.getName() + ".Permissions", this.getRankPermissionStrings());
                 break;
             case INHERITANCES:
-                Ranks.file().set("Ranks." + this.getName() + ".Inheritance", this.getInheritances().stream()
+                RPRanksConfig.file().set("Ranks." + this.getName() + ".Inheritance", this.getInheritances().stream()
                         .map(Rank::getName)
                         .collect(Collectors.toList()));
                 break;
@@ -204,7 +204,7 @@ public class Rank {
                 break;
         }
         if (save) {
-            Ranks.save();
+            RPRanksConfig.save();
         }
     }
 
@@ -228,8 +228,8 @@ public class Rank {
     }
 
     public void deleteConfig() {
-        Ranks.file().remove("Ranks." + this.getName());
-        Ranks.save();
+        RPRanksConfig.file().remove("Ranks." + this.getName());
+        RPRanksConfig.save();
     }
 
     @Override

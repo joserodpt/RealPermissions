@@ -14,8 +14,8 @@ package joserodpt.realpermissions.api.player;
  */
 
 import joserodpt.realpermissions.api.RealPermissionsAPI;
-import joserodpt.realpermissions.api.config.Config;
-import joserodpt.realpermissions.api.config.Players;
+import joserodpt.realpermissions.api.config.RPConfig;
+import joserodpt.realpermissions.api.config.RPPlayersConfig;
 import joserodpt.realpermissions.api.permission.Permission;
 import joserodpt.realpermissions.api.permission.PermissionBase;
 import joserodpt.realpermissions.api.rank.Rank;
@@ -151,8 +151,8 @@ public class RPPlayer {
         }
 
         //remove data from player's config
-        Players.file().remove(this.getUUID() + ".Timed-Rank");
-        Players.save();
+        RPPlayersConfig.file().remove(this.getUUID() + ".Timed-Rank");
+        RPPlayersConfig.save();
 
         this.setRank(this.getTimedRank_previous());
         this.timedRank_previous = null;
@@ -183,7 +183,7 @@ public class RPPlayer {
     }
 
     private void setVisual() {
-        if (Config.file().getBoolean("realpermissions.prefix-in-tablist")) {
+        if (RPConfig.file().getBoolean("realpermissions.prefix-in-tablist")) {
             Player p = Bukkit.getPlayer(this.getUUID());
             p.setPlayerListName(Text.color(this.getRank().getPrefix() + " &r" + p.getDisplayName()));
         }
@@ -223,21 +223,21 @@ public class RPPlayer {
         }
         switch (pd) {
             case RANK:
-                Players.file().set(this.getUUID() + ".Rank", this.getRank().getName());
+                RPPlayersConfig.file().set(this.getUUID() + ".Rank", this.getRank().getName());
                 break;
             case PERMISSIONS:
-                Players.file().set(this.getUUID() + ".Permissions", this.getPlayerPermissions());
+                RPPlayersConfig.file().set(this.getUUID() + ".Permissions", this.getPlayerPermissions());
                 break;
             case SU:
-                Players.file().set(this.getUUID() + ".Super-User", this.isSuperUser());
+                RPPlayersConfig.file().set(this.getUUID() + ".Super-User", this.isSuperUser());
                 break;
             case TIMED_RANK:
-                Players.file().set(this.getUUID()+ ".Timed-Rank.Previous-Rank", this.getTimedRank_previous().getName());
-                Players.file().set(this.getUUID() + ".Timed-Rank.Remaining", this.getTimedRank_countdown().getSecondsLeft());
-                Players.file().set(this.getUUID() + ".Timed-Rank.Last-Save", System.currentTimeMillis() / 1000L);
+                RPPlayersConfig.file().set(this.getUUID()+ ".Timed-Rank.Previous-Rank", this.getTimedRank_previous().getName());
+                RPPlayersConfig.file().set(this.getUUID() + ".Timed-Rank.Remaining", this.getTimedRank_countdown().getSecondsLeft());
+                RPPlayersConfig.file().set(this.getUUID() + ".Timed-Rank.Last-Save", System.currentTimeMillis() / 1000L);
                 break;
         }
-        Players.save();
+        RPPlayersConfig.save();
     }
 
     public Rank getTimedRank_previous() {

@@ -15,9 +15,9 @@ package joserodpt.realpermissions.plugin.managers;
 
 import dev.dejvokep.boostedyaml.block.implementation.Section;
 import joserodpt.realpermissions.api.RealPermissionsAPI;
-import joserodpt.realpermissions.api.config.Config;
-import joserodpt.realpermissions.api.config.Ranks;
-import joserodpt.realpermissions.api.config.Rankups;
+import joserodpt.realpermissions.api.config.RPConfig;
+import joserodpt.realpermissions.api.config.RPRanksConfig;
+import joserodpt.realpermissions.api.config.RPRankupsConfig;
 import joserodpt.realpermissions.api.RankManagerAPI;
 import joserodpt.realpermissions.api.permission.Permission;
 import joserodpt.realpermissions.api.player.RPPlayer;
@@ -50,7 +50,7 @@ public class RankManager extends RankManagerAPI {
 
     @Override
     public Boolean isRankupEnabled() {
-        return this.rankupEnabled || Config.file().getBoolean("RealPermissions.Enable-Rankup");
+        return this.rankupEnabled || RPConfig.file().getBoolean("RealPermissions.Enable-Rankup");
     }
 
     @Override
@@ -62,8 +62,8 @@ public class RankManager extends RankManagerAPI {
     public void loadRanks() {
         this.ranks.clear();
         //load ranks from config
-        for (String rankName : Ranks.file().getSection("Ranks").getRoutesAsStrings(false)) {
-            Section rankSection = Ranks.file().getSection("Ranks." + rankName);
+        for (String rankName : RPRanksConfig.file().getSection("Ranks").getRoutesAsStrings(false)) {
+            Section rankSection = RPRanksConfig.file().getSection("Ranks." + rankName);
             Material icon = Material.matchMaterial(rankSection.getString("Icon"));
             String prefix = rankSection.getString("Prefix");
             String chat = rankSection.getString("Chat");
@@ -87,7 +87,7 @@ public class RankManager extends RankManagerAPI {
         }
 
         //load default rank
-        this.defaultRank = this.rp.getRankManager().getRank(Ranks.file().getString("Default-Rank"));
+        this.defaultRank = this.rp.getRankManager().getRank(RPRanksConfig.file().getString("Default-Rank"));
     }
 
     @Override
@@ -180,18 +180,18 @@ public class RankManager extends RankManagerAPI {
     @Override
     public void setDefaultRank(Rank newR) {
         this.defaultRank = newR;
-        Ranks.file().set("Default-Rank", newR.getName());
-        Ranks.save();
+        RPRanksConfig.file().set("Default-Rank", newR.getName());
+        RPRanksConfig.save();
     }
 
     @Override
     public void loadRankups() {
         if (isRankupEnabled()) {
             this.rankups.clear();
-            if (Rankups.file().isSection("Rankups")) {
-                for (String rankup : Rankups.file().getSection("Rankups").getRoutesAsStrings(false)) {
-                    String displayName = Rankups.file().getString("Rankups." + rankup + ".Display-Name");
-                    String perm = Rankups.file().getString("Rankups." + rankup + ".Permission");
+            if (RPRankupsConfig.file().isSection("Rankups")) {
+                for (String rankup : RPRankupsConfig.file().getSection("Rankups").getRoutesAsStrings(false)) {
+                    String displayName = RPRankupsConfig.file().getString("Rankups." + rankup + ".Display-Name");
+                    String perm = RPRankupsConfig.file().getString("Rankups." + rankup + ".Permission");
 
                     if (displayName.isEmpty()) {
                         displayName = rankup;
@@ -199,12 +199,12 @@ public class RankManager extends RankManagerAPI {
 
                     Material m = Material.FILLED_MAP;
                     try {
-                        m = Material.valueOf(Rankups.file().getString("Rankups." + rankup + ".Icon"));
+                        m = Material.valueOf(RPRankupsConfig.file().getString("Rankups." + rankup + ".Icon"));
                     } catch (Exception ignored) { }
 
-                    List<String> desc = new ArrayList<>(Rankups.file().getStringList("Rankups." + rankup + ".Description"));
+                    List<String> desc = new ArrayList<>(RPRankupsConfig.file().getStringList("Rankups." + rankup + ".Description"));
 
-                    List<String> rankupEntries = Rankups.file().getStringList("Rankups." + rankup + ".Entries");
+                    List<String> rankupEntries = RPRankupsConfig.file().getStringList("Rankups." + rankup + ".Entries");
                     List<RankupEntry> rankupObjectEntries = new ArrayList<>();
                     for (String rankupDatum : rankupEntries) {
                         String[] dataSplit = rankupDatum.split("=");
@@ -293,8 +293,8 @@ public class RankManager extends RankManagerAPI {
     @Override
     public void removeRankup(String name) {
         this.getRankups().remove(name);
-        Rankups.file().remove("Rankups." + name);
-        Rankups.save();
+        RPRankupsConfig.file().remove("Rankups." + name);
+        RPRankupsConfig.save();
     }
 
     @Override

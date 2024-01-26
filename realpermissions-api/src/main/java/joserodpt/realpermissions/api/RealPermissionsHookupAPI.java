@@ -13,7 +13,7 @@ package joserodpt.realpermissions.api;
  * @link https://github.com/joserodpt/RealPermissions
  */
 
-import joserodpt.realpermissions.api.config.Config;
+import joserodpt.realpermissions.api.config.RPConfig;
 import joserodpt.realpermissions.api.pluginhookup.ExternalPlugin;
 import joserodpt.realpermissions.api.pluginhookup.ExternalPluginPermission;
 import joserodpt.realpermissions.api.utils.Text;
@@ -50,7 +50,7 @@ public class RealPermissionsHookupAPI {
         if (this.externalPluginList.containsKey(externalPluginID)) {
             this.externalPluginList.get(externalPluginID).getPermissionList().add(epp);
         }
-        if (Config.file().getBoolean("RealPermissions.Warn-Modifications-To-Plugins-Via-API")) {
+        if (RPConfig.file().getBoolean("RealPermissions.Warn-Modifications-To-Plugins-Via-API")) {
             rpa.getLogger().info("[API] " + externalPluginID + " added 1 new permission to RealPermissions.");
         }
     }
@@ -65,7 +65,7 @@ public class RealPermissionsHookupAPI {
             if (this.externalPluginList.containsKey(externalPluginID)) {
                 epp.forEach(externalPluginPermission -> this.externalPluginList.get(externalPluginID).getPermissionList().add(externalPluginPermission));
             }
-            if (Config.file().getBoolean("RealPermissions.Warn-Modifications-To-Plugins-Via-API")) {
+            if (RPConfig.file().getBoolean("RealPermissions.Warn-Modifications-To-Plugins-Via-API")) {
                 rpa.getLogger().info("[API] " + externalPluginID + " added " + epp.size() + " new permissions to RealPermissions.");
             }
         }
@@ -75,7 +75,7 @@ public class RealPermissionsHookupAPI {
         if (this.externalPluginList.containsKey(externalPluginID)) {
             removeEPPString(externalPluginID, epp);
         }
-        if (Config.file().getBoolean("RealPermissions.Warn-Modifications-To-Plugins-Via-API")) {
+        if (RPConfig.file().getBoolean("RealPermissions.Warn-Modifications-To-Plugins-Via-API")) {
             rpa.getLogger().info("[API] " + externalPluginID + " removed 1 permission from RealPermissions.");
         }
     }
@@ -105,7 +105,7 @@ public class RealPermissionsHookupAPI {
                     removeEPPString(externalPluginID, toRemove);
                 }
             }
-            if (Config.file().getBoolean("RealPermissions.Warn-Modifications-To-Plugins-Via-API")) {
+            if (RPConfig.file().getBoolean("RealPermissions.Warn-Modifications-To-Plugins-Via-API")) {
                 rpa.getLogger().info("[API] " + externalPluginID + " removed " + epp.size() + " permissions to RealPermissions.");
             }
         }

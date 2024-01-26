@@ -13,11 +13,11 @@ package joserodpt.realpermissions.plugin;
  * @link https://github.com/joserodpt/RealPermissions
  */
 
-import joserodpt.realpermissions.api.config.Config;
-import joserodpt.realpermissions.api.config.Language;
-import joserodpt.realpermissions.api.config.Players;
-import joserodpt.realpermissions.api.config.Ranks;
-import joserodpt.realpermissions.api.config.Rankups;
+import joserodpt.realpermissions.api.config.RPConfig;
+import joserodpt.realpermissions.api.config.RPLanguageConfig;
+import joserodpt.realpermissions.api.config.RPPlayersConfig;
+import joserodpt.realpermissions.api.config.RPRanksConfig;
+import joserodpt.realpermissions.api.config.RPRankupsConfig;
 import joserodpt.realpermissions.api.player.RPPlayer;
 import joserodpt.realpermissions.api.pluginhookup.ExternalPluginPermission;
 import joserodpt.realpermissions.api.rank.Rank;
@@ -58,18 +58,18 @@ public final class RealPermissionsPlugin extends JavaPlugin {
 
         final long start = System.currentTimeMillis();
 
-        Config.setup(this);
+        RPConfig.setup(this);
         realPermissions = new RealPermissions(this);
         RealPermissions.setInstance(realPermissions);
 
         new Metrics(this, 19519);
 
         saveDefaultConfig();
-        Config.setup(this);
-        Language.setup(this);
-        Ranks.setup(this);
-        Rankups.setup(this);
-        Players.setup(this);
+        RPConfig.setup(this);
+        RPLanguageConfig.setup(this);
+        RPRanksConfig.setup(this);
+        RPRankupsConfig.setup(this);
+        RPPlayersConfig.setup(this);
 
         //load ranks
         realPermissions.getRankManager().loadRanks();

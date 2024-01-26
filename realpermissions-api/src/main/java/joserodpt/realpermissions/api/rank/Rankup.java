@@ -14,7 +14,7 @@ package joserodpt.realpermissions.api.rank;
  */
 
 import joserodpt.realpermissions.api.RealPermissionsAPI;
-import joserodpt.realpermissions.api.config.Rankups;
+import joserodpt.realpermissions.api.config.RPRankupsConfig;
 import joserodpt.realpermissions.api.utils.Items;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -135,20 +135,20 @@ public class Rankup {
     public void saveData(RankupData rd, boolean save) {
         switch (rd) {
             case ICON:
-                Rankups.file().set("Rankups." + this.getName() + ".Icon", this.getIcon().name());
+                RPRankupsConfig.file().set("Rankups." + this.getName() + ".Icon", this.getIcon().name());
                 break;
             case ENTRIES:
-                Rankups.file().set("Rankups." + this.getName() + ".Entries", this.getRankupEntries().stream().sorted(Comparator.comparingDouble(RankupEntry::getCost)).map(rankupEntry -> rankupEntry.getRank().getName() + "=" + rankupEntry.getCost()).collect(Collectors.toList()));
+                RPRankupsConfig.file().set("Rankups." + this.getName() + ".Entries", this.getRankupEntries().stream().sorted(Comparator.comparingDouble(RankupEntry::getCost)).map(rankupEntry -> rankupEntry.getRank().getName() + "=" + rankupEntry.getCost()).collect(Collectors.toList()));
                 break;
             case DISPLAYNAME:
-                Rankups.file().set("Rankups." + this.getName() + ".Display-Name", this.getDisplayName());
+                RPRankupsConfig.file().set("Rankups." + this.getName() + ".Display-Name", this.getDisplayName());
                 break;
             case DESCRIPTION:
-                Rankups.file().set("Rankups." + this.getName() + ".Description", this.getDesc());
+                RPRankupsConfig.file().set("Rankups." + this.getName() + ".Description", this.getDesc());
                 break;
             case PERMISSION:
                 if (this.hasPermission()) {
-                    Rankups.file().set("Rankups." + this.getName() + ".Permission", this.getPermission());
+                    RPRankupsConfig.file().set("Rankups." + this.getName() + ".Permission", this.getPermission());
                 }
                 break;
             case ALL:
@@ -160,7 +160,7 @@ public class Rankup {
                 break;
         }
         if (save) {
-            Rankups.save();
+            RPRankupsConfig.save();
         }
     }
 }

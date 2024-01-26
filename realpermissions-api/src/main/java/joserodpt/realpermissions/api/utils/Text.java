@@ -13,7 +13,7 @@ package joserodpt.realpermissions.api.utils;
  * @link https://github.com/joserodpt/RealPermissions
  */
 
-import joserodpt.realpermissions.api.config.Config;
+import joserodpt.realpermissions.api.config.RPConfig;
 import joserodpt.realpermissions.api.rank.Rank;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -42,10 +42,10 @@ public class Text {
 	}
 
 	public static void send(Player p, String string) {
-		p.sendMessage(Text.color(Config.file().getString("RealPermissions.Prefix") + "&r " + string));
+		p.sendMessage(Text.color(RPConfig.file().getString("RealPermissions.Prefix") + "&r " + string));
 	}
 	public static void send(CommandSender p, String string) {
-		p.sendMessage(Text.color(Config.file().getString("RealPermissions.Prefix") + "&r " + string));
+		p.sendMessage(Text.color(RPConfig.file().getString("RealPermissions.Prefix") + "&r " + string));
 	}
 
 	public static String formatChat(Player player, String message, Rank r) {
@@ -100,13 +100,11 @@ public class Text {
 		return ChatColor.stripColor(input);
 	}
 
-	public static Comparator<String> ALPHABETICAL_ORDER = new Comparator<String>() {
-		public int compare(String str1, String str2) {
-			int res = String.CASE_INSENSITIVE_ORDER.compare(str1, str2);
-			if (res == 0) {
-				res = str1.compareTo(str2);
-			}
-			return res;
-		}
-	};
+	public static Comparator<String> ALPHABETICAL_ORDER = (str1, str2) -> {
+        int res = String.CASE_INSENSITIVE_ORDER.compare(str1, str2);
+        if (res == 0) {
+            res = str1.compareTo(str2);
+        }
+        return res;
+    };
 }

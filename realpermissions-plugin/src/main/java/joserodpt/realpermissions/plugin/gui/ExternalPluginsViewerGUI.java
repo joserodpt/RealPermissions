@@ -14,7 +14,7 @@ package joserodpt.realpermissions.plugin.gui;
  */
 
 import joserodpt.realpermissions.api.RealPermissionsAPI;
-import joserodpt.realpermissions.api.config.Language;
+import joserodpt.realpermissions.api.config.RPLanguageConfig;
 import joserodpt.realpermissions.api.player.RPPlayer;
 import joserodpt.realpermissions.api.pluginhookup.ExternalPlugin;
 import joserodpt.realpermissions.api.pluginhookup.ExternalPluginPermission;
@@ -302,21 +302,21 @@ public class ExternalPluginsViewerGUI {
                                             } else {
                                                 if (current.rank != null) {
                                                     if (current.rank.hasPermission(perm)) {
-                                                        Text.send(p, Language.file().getString("Permissions.Rank-Already-Has-Permission").replace("%perm%", perm));
+                                                        Text.send(p, RPLanguageConfig.file().getString("Permissions.Rank-Already-Has-Permission").replace("%perm%", perm));
                                                     } else {
                                                         current.rank.addPermission(perm);
                                                         current.rp.getRankManager().refreshPermsAndPlayers();
-                                                        Text.send(p, Language.file().getString("Permissions.Rank-Perm-Add").replace("%perm%", perm).replace("%rank%", current.rank.getPrefix()));
+                                                        Text.send(p, RPLanguageConfig.file().getString("Permissions.Rank-Perm-Add").replace("%perm%", perm).replace("%rank%", current.rank.getPrefix()));
                                                     }
                                                 }
 
                                                 if (current.pa != null) {
                                                     if (current.pa.hasPermission(perm)) {
-                                                        Text.send(p, Language.file().getString("Permissions.Player.Already-Has-Permission").replace("%perm%", perm));
+                                                        Text.send(p, RPLanguageConfig.file().getString("Permissions.Player.Already-Has-Permission").replace("%perm%", perm));
                                                     } else {
                                                         current.pa.addPermission(perm);
                                                         //current.rp.getRankManager().refreshPermsAndPlayers();
-                                                        Text.send(p, Language.file().getString("Permissions.Player.Add").replace("%perm%", perm).replace("%player%", current.pa.getPlayer().getName()));
+                                                        Text.send(p, RPLanguageConfig.file().getString("Permissions.Player.Add").replace("%perm%", perm).replace("%player%", current.pa.getPlayer().getName()));
                                                     }
                                                 }
 

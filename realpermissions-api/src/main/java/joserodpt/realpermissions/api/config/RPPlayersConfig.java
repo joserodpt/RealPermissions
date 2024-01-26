@@ -21,8 +21,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 import java.io.IOException;
 
-public class Players implements Listener {
-	private static String name = "players.yml";
+public class RPPlayersConfig implements Listener {
+	private static final String name = "players.yml";
 	private static YamlDocument document;
 
 	public static void setup(final JavaPlugin rm) {

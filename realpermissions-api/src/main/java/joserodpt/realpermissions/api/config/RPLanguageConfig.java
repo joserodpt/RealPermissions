@@ -26,7 +26,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 import java.io.IOException;
 
-public class Language implements Listener {
+public class RPLanguageConfig implements Listener {
 
     private static final String name = "language.yml";
     private static YamlDocument document;

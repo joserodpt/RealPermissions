@@ -14,7 +14,7 @@ package joserodpt.realpermissions.plugin.gui;
  */
 
 import joserodpt.realpermissions.api.RealPermissionsAPI;
-import joserodpt.realpermissions.api.config.Language;
+import joserodpt.realpermissions.api.config.RPLanguageConfig;
 import joserodpt.realpermissions.api.permission.Permission;
 import joserodpt.realpermissions.api.rank.Rank;
 import joserodpt.realpermissions.api.utils.Items;
@@ -216,11 +216,11 @@ public class RankPermissionsGUI {
                                 if (perm.getAssociatedRankName().equalsIgnoreCase(current.r.getName())) {
                                     current.r.removePermission(perm);
                                     current.rp.getRankManager().refreshPermsAndPlayers();
-                                    Text.send(p, Language.file().getString("Permissions.Rank-Perm-Remove").replace("%perm%", perm.getPermissionString()).replace("%rank%", current.r.getPrefix()));
+                                    Text.send(p, RPLanguageConfig.file().getString("Permissions.Rank-Perm-Remove").replace("%perm%", perm.getPermissionString()).replace("%rank%", current.r.getPrefix()));
 
                                     current.load();
                                 } else {
-                                    Text.send(p, Language.file().getString("Permissions.Permission-Associated-With-Other-Rank").replace("%rank%", perm.getAssociatedRankName()));
+                                    Text.send(p, RPLanguageConfig.file().getString("Permissions.Permission-Associated-With-Other-Rank").replace("%rank%", perm.getAssociatedRankName()));
                                 }
                             }
                         }

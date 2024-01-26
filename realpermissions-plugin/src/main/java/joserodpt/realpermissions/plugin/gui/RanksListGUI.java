@@ -14,7 +14,7 @@ package joserodpt.realpermissions.plugin.gui;
  */
 
 import joserodpt.realpermissions.api.RealPermissionsAPI;
-import joserodpt.realpermissions.api.config.Language;
+import joserodpt.realpermissions.api.config.RPLanguageConfig;
 import joserodpt.realpermissions.api.player.RPPlayer;
 import joserodpt.realpermissions.api.rank.Rank;
 import joserodpt.realpermissions.api.rank.Rankup;
@@ -252,16 +252,16 @@ public class RanksListGUI {
                                     case DROP:
                                         if (clickedRank.equals(current.rp.getRankManager().getDefaultRank())) {
                                             p.closeInventory();
-                                            Text.send(p, Language.file().getString("Ranks.Cant-Delete-Default-Rank"));
+                                            Text.send(p, RPLanguageConfig.file().getString("Ranks.Cant-Delete-Default-Rank"));
                                         } else {
                                             current.rp.getRankManager().deleteRank(clickedRank);
-                                            Text.send(p, Language.file().getString("Ranks.Deleted").replace("%rank%", clickedRank.getPrefix()));
+                                            Text.send(p, RPLanguageConfig.file().getString("Ranks.Deleted").replace("%rank%", clickedRank.getPrefix()));
                                             current.load();
                                         }
                                         break;
                                     case RIGHT:
                                         current.rp.getRankManager().setDefaultRank(clickedRank);
-                                        Text.send(p, Language.file().getString("Ranks.Set-Default").replace("%rank%", clickedRank.getPrefix()));
+                                        Text.send(p, RPLanguageConfig.file().getString("Ranks.Set-Default").replace("%rank%", clickedRank.getPrefix()));
                                         break;
                                     default:
                                         p.closeInventory();
@@ -273,7 +273,7 @@ public class RanksListGUI {
                                 p.closeInventory();
                                 //assign rank to that player attatchment
                                 current.paSelected.setRank(clickedRank);
-                                Text.send(p, Language.file().getString("Ranks.Rank-Set").replace("%player%", p.getName()).replace("%rank%", clickedRank.getPrefix()));
+                                Text.send(p, RPLanguageConfig.file().getString("Ranks.Rank-Set").replace("%player%", p.getName()).replace("%rank%", clickedRank.getPrefix()));
                                 p.closeInventory();
                                 PlayerPermissionsGUI rv = new PlayerPermissionsGUI(p, current.paSelected, current.rp);
                                 rv.openInventory(p);

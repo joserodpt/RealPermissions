@@ -14,7 +14,7 @@ package joserodpt.realpermissions.plugin.gui;
  */
 
 import joserodpt.realpermissions.api.RealPermissionsAPI;
-import joserodpt.realpermissions.api.config.Config;
+import joserodpt.realpermissions.api.config.RPConfig;
 import joserodpt.realpermissions.api.utils.Items;
 import joserodpt.realpermissions.api.utils.PlayerInput;
 import joserodpt.realpermissions.api.utils.Text;
@@ -71,12 +71,12 @@ public class SettingsGUI {
 
         switch (def) {
             case REALP:
-                this.inv.setItem(13, Items.createItem(Material.WRITABLE_BOOK, 1, "&ePlugin Prefix", Arrays.asList("&fCurrent: &r" + Config.file().getString("RealPermissions.Prefix"), "", "&fClick here to change the plugin's prefix.")));
+                this.inv.setItem(13, Items.createItem(Material.WRITABLE_BOOK, 1, "&ePlugin Prefix", Arrays.asList("&fCurrent: &r" + RPConfig.file().getString("RealPermissions.Prefix"), "", "&fClick here to change the plugin's prefix.")));
                 break;
             case CHAT_TABLIST:
-                this.inv.setItem(22, Items.createItem(Material.NAME_TAG, 1, "&eChat Formatting " + (Config.file().getBoolean("RealPermissions.Chat-Formatting") ? "&a&lON" : "&c&lOFF"), Arrays.asList("", "&fClick here to turn on/off chat formatting.")));
-                this.inv.setItem(23, Items.createItem(Material.FILLED_MAP, 1, "&eTab Formatting " + (Config.file().getBoolean("RealPermissions.Prefix-In-Tablist") ? "&a&lON" : "&c&lOFF"), Arrays.asList("", "&fClick here to turn on/off prefixes in tablist.")));
-                this.inv.setItem(24, Items.createItem(Material.EXPERIENCE_BOTTLE, 1, "&eRankup " + (Config.file().getBoolean("RealPermissions.Enable-Rankup") ? "&a&lON" : "&c&lOFF"), Arrays.asList("", "&fClick here to turn on/off rankup.")));
+                this.inv.setItem(22, Items.createItem(Material.NAME_TAG, 1, "&eChat Formatting " + (RPConfig.file().getBoolean("RealPermissions.Chat-Formatting") ? "&a&lON" : "&c&lOFF"), Arrays.asList("", "&fClick here to turn on/off chat formatting.")));
+                this.inv.setItem(23, Items.createItem(Material.FILLED_MAP, 1, "&eTab Formatting " + (RPConfig.file().getBoolean("RealPermissions.Prefix-In-Tablist") ? "&a&lON" : "&c&lOFF"), Arrays.asList("", "&fClick here to turn on/off prefixes in tablist.")));
+                this.inv.setItem(24, Items.createItem(Material.EXPERIENCE_BOTTLE, 1, "&eRankup " + (RPConfig.file().getBoolean("RealPermissions.Enable-Rankup") ? "&a&lON" : "&c&lOFF"), Arrays.asList("", "&fClick here to turn on/off rankup.")));
 
                 break;
         }
@@ -135,8 +135,8 @@ public class SettingsGUI {
                                 p.closeInventory();
 
                                 new PlayerInput(p, input -> {
-                                    Config.file().set("RealPermissions.Prefix", input);
-                                    Config.save();
+                                    RPConfig.file().set("RealPermissions.Prefix", input);
+                                    RPConfig.save();
                                     Text.send(p, "The plugin's prefix is now " + input);
 
                                     SettingsGUI wv = new SettingsGUI(p, current.rp);
@@ -182,8 +182,8 @@ public class SettingsGUI {
             }
 
             private void toggle(String s, SettingsGUI sg) {
-                Config.file().set("RealPermissions." + s, !Config.file().getBoolean("RealPermissions." + s));
-                Config.save();
+                RPConfig.file().set("RealPermissions." + s, !RPConfig.file().getBoolean("RealPermissions." + s));
+                RPConfig.save();
                 sg.fillChest();
             }
         };

@@ -14,7 +14,7 @@ package joserodpt.realpermissions.plugin.gui;
  */
 
 import joserodpt.realpermissions.api.RealPermissionsAPI;
-import joserodpt.realpermissions.api.config.Language;
+import joserodpt.realpermissions.api.config.RPLanguageConfig;
 import joserodpt.realpermissions.api.player.PlayerObject;
 import joserodpt.realpermissions.api.utils.Items;
 import joserodpt.realpermissions.api.utils.Pagination;
@@ -225,7 +225,7 @@ public class PlayersGUI {
                                 if (e.getClick().equals(ClickType.RIGHT) && po.hasTimedRank()) {
                                     //eliminar timed rank
                                     current.rp.getPlayerManager().getPlayer(p).removeTimedRank();
-                                    Text.send(p, Language.file().getString("Ranks.Player-Remove-Timed-Rank").replace("%player%", po.getName()));
+                                    Text.send(p, RPLanguageConfig.file().getString("Ranks.Player-Remove-Timed-Rank").replace("%player%", po.getName()));
                                     current.load();
                                 } else {
                                     //edit player

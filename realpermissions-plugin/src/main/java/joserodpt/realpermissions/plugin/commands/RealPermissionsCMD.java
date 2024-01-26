@@ -14,11 +14,11 @@ package joserodpt.realpermissions.plugin.commands;
  */
 
 import joserodpt.realpermissions.api.RealPermissionsAPI;
-import joserodpt.realpermissions.api.config.Config;
-import joserodpt.realpermissions.api.config.Language;
-import joserodpt.realpermissions.api.config.Players;
-import joserodpt.realpermissions.api.config.Ranks;
-import joserodpt.realpermissions.api.config.Rankups;
+import joserodpt.realpermissions.api.config.RPConfig;
+import joserodpt.realpermissions.api.config.RPLanguageConfig;
+import joserodpt.realpermissions.api.config.RPPlayersConfig;
+import joserodpt.realpermissions.api.config.RPRanksConfig;
+import joserodpt.realpermissions.api.config.RPRankupsConfig;
 import joserodpt.realpermissions.api.player.RPPlayer;
 import joserodpt.realpermissions.api.pluginhookup.ExternalPlugin;
 import joserodpt.realpermissions.api.rank.Rank;
@@ -64,14 +64,14 @@ public class RealPermissionsCMD extends CommandBase {
     @Alias("rl")
     @Permission("realpermissions.admin")
     public void reloadcmd(final CommandSender commandSender) {
-        Config.reload();
-        Language.reload();
-        Ranks.reload();
-        Rankups.reload();
+        RPConfig.reload();
+        RPLanguageConfig.reload();
+        RPRanksConfig.reload();
+        RPRankupsConfig.reload();
         rp.getRankManager().loadRanks();
         rp.getRankManager().loadRankups();
-        Players.reload();
-        Text.send(commandSender, Language.file().getString("System.Reloaded"));
+        RPPlayersConfig.reload();
+        Text.send(commandSender, RPLanguageConfig.file().getString("System.Reloaded"));
     }
 
     @SubCommand("rank")
@@ -84,7 +84,7 @@ public class RealPermissionsCMD extends CommandBase {
 
             Rank r = rp.getRankManager().getRank(rank);
             if (r == null) {
-                Text.send(p, Language.file().getString("Ranks.No-Rank-Found").replace("%name%", rank));
+                Text.send(p, RPLanguageConfig.file().getString("Ranks.No-Rank-Found").replace("%name%", rank));
                 return;
             }
 
@@ -135,12 +135,12 @@ public class RealPermissionsCMD extends CommandBase {
         }
 
         if (p == null) {
-            Text.send(commandSender, Language.file().getString("System.No-Player-Found"));
+            Text.send(commandSender, RPLanguageConfig.file().getString("System.No-Player-Found"));
             return;
         }
 
         rp.getPlayerManager().getPlayer(p).setSuperUser(!rp.getPlayerManager().getPlayer(p).isSuperUser());
-        Text.send(commandSender, Language.file().getString("System.Super-User-State").replace("%player%", p.getName()).replace("%state%", (rp.getPlayerManager().getPlayer(p).isSuperUser() ? "&aON" : "&cOFF")));
+        Text.send(commandSender, RPLanguageConfig.file().getString("System.Super-User-State").replace("%player%", p.getName()).replace("%state%", (rp.getPlayerManager().getPlayer(p).isSuperUser() ? "&aON" : "&cOFF")));
     }
 
     @SubCommand("set")
@@ -151,23 +151,23 @@ public class RealPermissionsCMD extends CommandBase {
     public void setrankcmd(final CommandSender commandSender, final Player p, final String rank) {
         if (commandSender instanceof Player) {
             if (rp.getPlayerManager().isNotSuperUser((Player) commandSender)) {
-                Text.send(commandSender, Language.file().getString("System.No-Permission-Command"));
+                Text.send(commandSender, RPLanguageConfig.file().getString("System.No-Permission-Command"));
                 return;
             }
         }
 
         if (p == null) {
-            Text.send(commandSender, Language.file().getString("System.No-Player-Found"));
+            Text.send(commandSender, RPLanguageConfig.file().getString("System.No-Player-Found"));
             return;
         }
 
         Rank r = rp.getRankManager().getRank(rank);
         if (r == null) {
-            Text.send(p, Language.file().getString("Ranks.No-Rank-Found").replace("%name%", rank));            return;
+            Text.send(p, RPLanguageConfig.file().getString("Ranks.No-Rank-Found").replace("%name%", rank));            return;
         }
 
         rp.getPlayerManager().getPlayer(p).setRank(r);
-        Text.send(commandSender, Language.file().getString("Ranks.Rank-Set").replace("%player%", p.getName()).replace("%rank%", r.getPrefix()));
+        Text.send(commandSender, RPLanguageConfig.file().getString("Ranks.Rank-Set").replace("%player%", p.getName()).replace("%rank%", r.getPrefix()));
     }
 
     @SubCommand("settimedrank")
@@ -178,28 +178,28 @@ public class RealPermissionsCMD extends CommandBase {
     public void settimedrankcmd(final CommandSender commandSender, final Player p, final String rank, final Integer seconds) {
         if (commandSender instanceof Player) {
             if (rp.getPlayerManager().isNotSuperUser((Player) commandSender)) {
-                Text.send(commandSender, Language.file().getString("System.No-Permission-Command"));
+                Text.send(commandSender, RPLanguageConfig.file().getString("System.No-Permission-Command"));
                 return;
             }
         }
 
         if (p == null) {
-            Text.send(commandSender, Language.file().getString("System.No-Player-Found"));
+            Text.send(commandSender, RPLanguageConfig.file().getString("System.No-Player-Found"));
             return;
         }
 
         Rank r = rp.getRankManager().getRank(rank);
         if (r == null) {
-            Text.send(p, Language.file().getString("Ranks.No-Rank-Found").replace("%name%", rank));            return;
+            Text.send(p, RPLanguageConfig.file().getString("Ranks.No-Rank-Found").replace("%name%", rank));            return;
         }
 
         if (seconds == null || seconds <= 0) {
-            Text.send(commandSender, Language.file().getString("Ranks.Timed-Rank-Above-Zero"));
+            Text.send(commandSender, RPLanguageConfig.file().getString("Ranks.Timed-Rank-Above-Zero"));
             return;
         }
 
         rp.getPlayerManager().getPlayer(p).setTimedRank(r, seconds);
-        Text.send(commandSender, Language.file().getString("Ranks.Timed-Rank-Set").replace("%player%", p.getName()).replace("%rank%", r.getPrefix()));
+        Text.send(commandSender, RPLanguageConfig.file().getString("Ranks.Timed-Rank-Set").replace("%player%", p.getName()).replace("%rank%", r.getPrefix()));
     }
 
     @SubCommand("cleartimedrank")
@@ -210,21 +210,21 @@ public class RealPermissionsCMD extends CommandBase {
     public void cleartimedcmd(final CommandSender commandSender, final Player p) {
         if (commandSender instanceof Player) {
             if (rp.getPlayerManager().isNotSuperUser((Player) commandSender)) {
-                Text.send(commandSender, Language.file().getString("System.No-Permission-Command"));
+                Text.send(commandSender, RPLanguageConfig.file().getString("System.No-Permission-Command"));
                 return;
             }
         }
 
         if (p == null) {
-            Text.send(commandSender, Language.file().getString("System.No-Player-Found"));
+            Text.send(commandSender, RPLanguageConfig.file().getString("System.No-Player-Found"));
             return;
         }
 
         if (rp.getPlayerManager().getPlayer(p).hasTimedRank()) {
             rp.getPlayerManager().getPlayer(p).removeTimedRank();
-            Text.send(commandSender, Language.file().getString("Ranks.Player-Remove-Timed-Rank").replace("%player%", p.getName()));
+            Text.send(commandSender, RPLanguageConfig.file().getString("Ranks.Player-Remove-Timed-Rank").replace("%player%", p.getName()));
         } else {
-            Text.send(commandSender, Language.file().getString("Ranks.Player-No-Timed-Rank").replace("%player%", p.getName()));
+            Text.send(commandSender, RPLanguageConfig.file().getString("Ranks.Player-No-Timed-Rank").replace("%player%", p.getName()));
         }
     }
 
@@ -236,16 +236,16 @@ public class RealPermissionsCMD extends CommandBase {
     public void renamecmd(final CommandSender commandSender, final String rank, final String name) {
         Rank r = rp.getRankManager().getRank(rank);
         if (r == null) {
-            Text.send(commandSender, Language.file().getString("Ranks.No-Rank-Found").replace("%name%", rank));            return;
+            Text.send(commandSender, RPLanguageConfig.file().getString("Ranks.No-Rank-Found").replace("%name%", rank));            return;
         }
 
         if (name.isEmpty()) {
-            Text.send(commandSender, Language.file().getString("Ranks.Name-Empty"));
+            Text.send(commandSender, RPLanguageConfig.file().getString("Ranks.Name-Empty"));
             return;
         }
 
         rp.getRankManager().renameRank(r, name);
-        Text.send(commandSender, Language.file().getString("Ranks.New-Name").replace("%name%", name));
+        Text.send(commandSender, RPLanguageConfig.file().getString("Ranks.New-Name").replace("%name%", name));
     }
 
     @SubCommand("delete")
@@ -256,21 +256,21 @@ public class RealPermissionsCMD extends CommandBase {
     public void delrankcmd(final CommandSender commandSender, final String rank) {
         if (commandSender instanceof Player) {
             if (rp.getPlayerManager().isNotSuperUser((Player) commandSender)) {
-                Text.send(commandSender, Language.file().getString("System.No-Permission-Command"));
+                Text.send(commandSender, RPLanguageConfig.file().getString("System.No-Permission-Command"));
                 return;
             }
         }
 
         Rank r = rp.getRankManager().getRank(rank);
         if (r == null) {
-            Text.send(commandSender, Language.file().getString("Ranks.No-Rank-Found").replace("%name%", rank));            return;
+            Text.send(commandSender, RPLanguageConfig.file().getString("Ranks.No-Rank-Found").replace("%name%", rank));            return;
         }
 
         if (rp.getRankManager().getDefaultRank() == r) {
-            Text.send(commandSender, Language.file().getString("Ranks.Cant-Delete-Default-Rank"));
+            Text.send(commandSender, RPLanguageConfig.file().getString("Ranks.Cant-Delete-Default-Rank"));
         } else {
             rp.getRankManager().deleteRank(r);
-            Text.send(commandSender, Language.file().getString("Ranks.Deleted").replace("%rank%", r.getPrefix()));
+            Text.send(commandSender, RPLanguageConfig.file().getString("Ranks.Deleted").replace("%rank%", r.getPrefix()));
         }
     }
 
@@ -282,7 +282,7 @@ public class RealPermissionsCMD extends CommandBase {
     public void permcmd(final CommandSender commandSender, final String operation, final String rank, final String perm) {
         if (commandSender instanceof Player) {
             if (rp.getPlayerManager().isNotSuperUser((Player) commandSender)) {
-                Text.send(commandSender, Language.file().getString("System.No-Permission-Command"));
+                Text.send(commandSender, RPLanguageConfig.file().getString("System.No-Permission-Command"));
                 return;
             }
         }
@@ -301,28 +301,28 @@ public class RealPermissionsCMD extends CommandBase {
 
         Rank r = rp.getRankManager().getRank(rank);
         if (r == null) {
-            Text.send(commandSender, Language.file().getString("Ranks.No-Rank-Found").replace("%name%", rank));            return;
+            Text.send(commandSender, RPLanguageConfig.file().getString("Ranks.No-Rank-Found").replace("%name%", rank));            return;
         }
 
         if (add) {
             if (r.hasPermission(perm)) {
-                Text.send(commandSender, Language.file().getString("Permissions.Rank-Already-Has-Permission").replace("%perm%", perm));
+                Text.send(commandSender, RPLanguageConfig.file().getString("Permissions.Rank-Already-Has-Permission").replace("%perm%", perm));
             } else {
                 r.addPermission(perm);
                 rp.getRankManager().refreshPermsAndPlayers();
-                Text.send(commandSender, Language.file().getString("Permissions.Rank-Perm-Add").replace("%perm%", perm).replace("%rank%", r.getPrefix()));
+                Text.send(commandSender, RPLanguageConfig.file().getString("Permissions.Rank-Perm-Add").replace("%perm%", perm).replace("%rank%", r.getPrefix()));
             }
         } else {
             if (!r.hasPermission(perm)) {
-                Text.send(commandSender, Language.file().getString("Permissions.Rank-Doesnt-Have-Permission").replace("%perm%", perm));
+                Text.send(commandSender, RPLanguageConfig.file().getString("Permissions.Rank-Doesnt-Have-Permission").replace("%perm%", perm));
             } else {
                 joserodpt.realpermissions.api.permission.Permission p = r.getPermission(perm);
                 if (!p.getAssociatedRankName().equalsIgnoreCase(r.getName())) {
-                    Text.send(commandSender, Language.file().getString("Permissions.Permission-Associated-With-Other-Rank").replace("%rank%", p.getAssociatedRankName()));
+                    Text.send(commandSender, RPLanguageConfig.file().getString("Permissions.Permission-Associated-With-Other-Rank").replace("%rank%", p.getAssociatedRankName()));
                 } else {
                     r.removePermission(perm);
                     rp.getRankManager().refreshPermsAndPlayers();
-                    Text.send(commandSender, Language.file().getString("Permissions.Rank-Perm-Remove").replace("%perm%", perm).replace("%rank%", r.getPrefix()));
+                    Text.send(commandSender, RPLanguageConfig.file().getString("Permissions.Rank-Perm-Remove").replace("%perm%", perm).replace("%rank%", r.getPrefix()));
                 }
             }
         }
@@ -336,7 +336,7 @@ public class RealPermissionsCMD extends CommandBase {
     public void permcmd(final CommandSender commandSender, final String operation, final Player p, final String perm) {
         if (commandSender instanceof Player) {
             if (rp.getPlayerManager().isNotSuperUser((Player) commandSender)) {
-                Text.send(commandSender, Language.file().getString("System.No-Permission-Command"));
+                Text.send(commandSender, RPLanguageConfig.file().getString("System.No-Permission-Command"));
                 return;
             }
         }
@@ -354,7 +354,7 @@ public class RealPermissionsCMD extends CommandBase {
         }
 
         if (p == null) {
-            Text.send(commandSender, Language.file().getString("System.No-Player-Found"));
+            Text.send(commandSender, RPLanguageConfig.file().getString("System.No-Player-Found"));
             return;
         }
 
@@ -362,17 +362,17 @@ public class RealPermissionsCMD extends CommandBase {
 
         if (add) {
             if (pa.hasPermission(perm)) {
-                Text.send(commandSender, Language.file().getString("Permissions.Player.Already-Has-Permission").replace("%perm%", perm));
+                Text.send(commandSender, RPLanguageConfig.file().getString("Permissions.Player.Already-Has-Permission").replace("%perm%", perm));
             } else {
                 pa.addPermission(perm);
-                Text.send(commandSender, Language.file().getString("Permissions.Player.Add").replace("%perm%", perm).replace("%player%", p.getName()));
+                Text.send(commandSender, RPLanguageConfig.file().getString("Permissions.Player.Add").replace("%perm%", perm).replace("%player%", p.getName()));
             }
         } else {
             if (!pa.hasPermission(perm)) {
-                Text.send(commandSender, Language.file().getString("Permissions.Player.Doesnt-Have-Permission").replace("%perm%", perm));
+                Text.send(commandSender, RPLanguageConfig.file().getString("Permissions.Player.Doesnt-Have-Permission").replace("%perm%", perm));
             } else {
                 pa.removePermission(perm);
-                Text.send(commandSender, Language.file().getString("Permissions.Player.Remove").replace("%perm%", perm).replace("%player%", p.getName()));
+                Text.send(commandSender, RPLanguageConfig.file().getString("Permissions.Player.Remove").replace("%perm%", perm).replace("%player%", p.getName()));
             }
         }
     }
@@ -385,7 +385,7 @@ public class RealPermissionsCMD extends CommandBase {
     public void playercmd(final CommandSender commandSender, final Player p) {
         if (commandSender instanceof Player) {
             if (p == null) {
-                Text.send(commandSender, Language.file().getString("System.No-Player-Found"));
+                Text.send(commandSender, RPLanguageConfig.file().getString("System.No-Player-Found"));
                 return;
             }
 

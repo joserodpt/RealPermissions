@@ -42,7 +42,7 @@ public class RealPermissionsGUI {
     public RealPermissionsGUI(Player as, RealPermissionsAPI rp) {
         this.rp = rp;
         this.uuid = as.getUniqueId();
-        this.inv = Bukkit.getServer().createInventory(null, 27, Text.color("&fReal&cPermissions &8Version " + rp.getVersion()));
+        this.inv = Bukkit.getServer().createInventory(null, 27, Text.color("&fReal&cPermissions &8v" + rp.getVersion() + " | Home"));
 
         this.inv.clear();
 
