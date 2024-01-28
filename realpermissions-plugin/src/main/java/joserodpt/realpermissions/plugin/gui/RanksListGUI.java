@@ -59,7 +59,7 @@ public class RanksListGUI {
 
     public RanksListGUI(Player pl, RealPermissionsAPI rp) {
         this.rp = rp;
-        this.inv = Bukkit.getServer().createInventory(null, 54, Text.color("&fReal&cPermissions &8| &eRanks"));
+        this.inv = Bukkit.getServer().createInventory(null, 54, Text.color("&f&lReal&c&lPermissions &8| &eRanks"));
         this.uuid = pl.getUniqueId();
 
         this.load();
@@ -72,7 +72,7 @@ public class RanksListGUI {
     public RanksListGUI(RPPlayer pl, RealPermissionsAPI rp, RPPlayer pa) {
         this.paSelected = pa;
         this.rp = rp;
-        this.inv = Bukkit.getServer().createInventory(null, 54, Text.color("&fReal&cPermissions &8| &eRanks"));
+        this.inv = Bukkit.getServer().createInventory(null, 54, Text.color("&f&lReal&c&lPermissions &8| &eRanks"));
         this.uuid = pl.getUUID();
 
         this.load();
@@ -89,7 +89,7 @@ public class RanksListGUI {
         this.rk = rk;
         this.rpPlayer = pl;
         this.rp = rp;
-        this.inv = Bukkit.getServer().createInventory(null, 54, Text.color("&fReal&cPermissions &8| &eRanks"));
+        this.inv = Bukkit.getServer().createInventory(null, 54, Text.color("&f&lReal&c&lPermissions &8| &eRanks"));
         this.uuid = pl.getUUID();
 
         this.load();

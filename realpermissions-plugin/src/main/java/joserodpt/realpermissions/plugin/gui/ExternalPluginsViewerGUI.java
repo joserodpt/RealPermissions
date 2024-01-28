@@ -75,7 +75,7 @@ public class ExternalPluginsViewerGUI {
 
     public ExternalPluginsViewerGUI(Player pl, RealPermissionsAPI rp, String search) {
         this.rp = rp;
-        this.inv = Bukkit.getServer().createInventory(null, 54, Text.color("&fReal&cPermissions &8| Plugins"));
+        this.inv = Bukkit.getServer().createInventory(null, 54, Text.color("&f&lReal&c&lPermissions &8| Plugins"));
         this.uuid = pl.getUniqueId();
 
         this.load(search);

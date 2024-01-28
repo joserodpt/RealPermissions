@@ -72,7 +72,7 @@ public class EPPermissionsViewerGUI {
     public EPPermissionsViewerGUI(Player pl, RealPermissionsAPI rp, ExternalPlugin ep, String search) {
         this.ep = ep;
         this.rp = rp;
-        this.inv = Bukkit.getServer().createInventory(null, 54, Text.color("&fReal&cPermissions &8| " + ep.getName()));
+        this.inv = Bukkit.getServer().createInventory(null, 54, Text.color("&f&lReal&c&lPermissions &8| " + ep.getName()));
         this.uuid = pl.getUniqueId();
 
         this.load(search);
@@ -93,7 +93,7 @@ public class EPPermissionsViewerGUI {
     public EPPermissionsViewerGUI(Player p, RealPermissionsAPI rp, Rank rank, List<ExternalPluginPermission> search) {
         this.rank = rank;
         this.rp = rp;
-        this.inv = Bukkit.getServer().createInventory(null, 54, Text.color("&fReal&cPermissions &8| Search:"));
+        this.inv = Bukkit.getServer().createInventory(null, 54, Text.color("&f&lReal&c&lPermissions &8| Search:"));
         this.uuid = p.getUniqueId();
 
         enableSearch = false;
@@ -107,7 +107,7 @@ public class EPPermissionsViewerGUI {
     public EPPermissionsViewerGUI(Player p, RealPermissionsAPI rp, RPPlayer pa, List<ExternalPluginPermission> search) {
         this.pa = pa;
         this.rp = rp;
-        this.inv = Bukkit.getServer().createInventory(null, 54, Text.color("&fReal&cPermissions &8| Search:"));
+        this.inv = Bukkit.getServer().createInventory(null, 54, Text.color("&f&lReal&c&lPermissions &8| Search:"));
         this.uuid = p.getUniqueId();
 
         enableSearch = false;
@@ -120,7 +120,7 @@ public class EPPermissionsViewerGUI {
 
     public EPPermissionsViewerGUI(Player p, RealPermissionsAPI rp, ExternalPlugin externalPlugin) {
         this.rp = rp;
-        this.inv = Bukkit.getServer().createInventory(null, 54, Text.color("&fReal&cPermissions &8| " + externalPlugin.getName()));
+        this.inv = Bukkit.getServer().createInventory(null, 54, Text.color("&f&lReal&c&lPermissions &8| " + externalPlugin.getName()));
         this.uuid = p.getUniqueId();
 
         enableSearch = false;

@@ -64,7 +64,7 @@ public class RankupGUI {
         this.rp = rp;
         this.player = player;
         if (rp.getRankManager().isRankupEnabled()) {
-            this.inv = Bukkit.getServer().createInventory(null, 54, Text.color("&fReal&cPermissions &8| &cRankup"));
+            this.inv = Bukkit.getServer().createInventory(null, 54, Text.color("&f&lReal&c&lPermissions &8| &cRankup"));
             this.uuid = player.getUUID();
 
             load();

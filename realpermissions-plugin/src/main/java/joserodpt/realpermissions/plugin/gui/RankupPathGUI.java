@@ -70,7 +70,7 @@ public class RankupPathGUI {
         this.player = player;
         this.rp = rp;
         this.rk = rk;
-        this.inv = Bukkit.getServer().createInventory(null, 54, Text.color("&fReal&cPermissions &8| " + rk.getDisplayName()));
+        this.inv = Bukkit.getServer().createInventory(null, 54, Text.color("&f&lReal&c&lPermissions &8| " + rk.getDisplayName()));
         this.uuid = player.getUUID();
 
         load();

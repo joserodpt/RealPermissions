@@ -53,7 +53,7 @@ public class SettingsGUI {
     public SettingsGUI(Player as, RealPermissionsAPI rp) {
         this.rp = rp;
         this.uuid = as.getUniqueId();
-        this.inv = Bukkit.getServer().createInventory(null, 54, Text.color("&fReal&cPermissions &8| &eSettings"));
+        this.inv = Bukkit.getServer().createInventory(null, 54, Text.color("&f&lReal&c&lPermissions &8| Settings"));
 
         fillChest();
     }
@@ -66,7 +66,7 @@ public class SettingsGUI {
         }
 
         //selection items
-        this.inv.setItem(10, Items.createItem(Material.ENDER_CHEST, 1, "&fReal&cPermissions"));
+        this.inv.setItem(10, Items.createItem(Material.ENDER_CHEST, 1, "&f&lReal&c&lPermissions"));
         this.inv.setItem(19, Items.createItem(Material.LEVER, 1, "&bToggles"));
 
         switch (def) {

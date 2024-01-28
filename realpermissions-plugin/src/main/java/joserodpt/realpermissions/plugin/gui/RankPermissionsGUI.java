@@ -59,7 +59,7 @@ public class RankPermissionsGUI {
     public RankPermissionsGUI(Player as, Rank r, RealPermissionsAPI rp) {
         this.rp = rp;
         this.uuid = as.getUniqueId();
-        this.inv = Bukkit.getServer().createInventory(null, 54, Text.color("&fReal&cPermissions &8| &9" + r.getPrefix()));
+        this.inv = Bukkit.getServer().createInventory(null, 54, Text.color("&f&lReal&c&lPermissions &8| &9" + r.getPrefix()));
 
         this.r = r;
         load();
