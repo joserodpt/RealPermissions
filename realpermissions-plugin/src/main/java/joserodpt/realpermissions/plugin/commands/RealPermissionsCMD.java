@@ -140,7 +140,7 @@ public class RealPermissionsCMD extends CommandBase {
         }
 
         rp.getPlayerManager().getPlayer(p).setSuperUser(!rp.getPlayerManager().getPlayer(p).isSuperUser());
-        Text.send(commandSender, RPLanguageConfig.file().getString("System.Super-User-State").replace("%player%", p.getName()).replace("%state%", (rp.getPlayerManager().getPlayer(p).isSuperUser() ? "&aON" : "&cOFF")));
+        Text.send(commandSender, RPLanguageConfig.file().getString("System.Super-User-State").replace("%player%", p.getName()) + (rp.getPlayerManager().getPlayer(p).isSuperUser() ? "&aON" : "&cOFF"));
     }
 
     @SubCommand("set")
