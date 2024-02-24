@@ -94,6 +94,11 @@ public final class RealPermissionsPlugin extends JavaPlugin {
             getLogger().warning("Vault not found. Rankup will be disabled.");
         }
 
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+            new RealPermissionsPlaceholderAPI(realPermissions).register();
+            getLogger().info("Hooked onto PlaceholderAPI!");
+        }
+
         //register commands
         CommandManager cm = new CommandManager(this);
 

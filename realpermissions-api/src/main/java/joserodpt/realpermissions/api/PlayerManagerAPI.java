@@ -15,6 +15,7 @@ package joserodpt.realpermissions.api;
 
 import joserodpt.realpermissions.api.player.PlayerObject;
 import joserodpt.realpermissions.api.player.RPPlayer;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;

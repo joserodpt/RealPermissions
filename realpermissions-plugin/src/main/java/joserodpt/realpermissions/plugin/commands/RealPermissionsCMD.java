@@ -143,10 +143,10 @@ public class RealPermissionsCMD extends CommandBase {
         Text.send(commandSender, RPLanguageConfig.file().getString("System.Super-User-State").replace("%player%", p.getName()) + (rp.getPlayerManager().getPlayer(p).isSuperUser() ? "&aON" : "&cOFF"));
     }
 
-    @SubCommand("set")
-    @Alias("s")
+    @SubCommand("setrank")
+    @Alias("sr")
     @Completion({"#players","#ranks"})
-    @WrongUsage("/rp set <player> <rank>")
+    @WrongUsage("/rp setrank <player> <rank>")
     @Permission("realpermissions.admin")
     public void setrankcmd(final CommandSender commandSender, final Player p, final String rank) {
         if (commandSender instanceof Player) {
