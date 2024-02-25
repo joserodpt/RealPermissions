@@ -14,7 +14,7 @@ package joserodpt.realpermissions.plugin.gui;
  */
 
 import joserodpt.realpermissions.api.RealPermissionsAPI;
-import joserodpt.realpermissions.api.config.RPLanguageConfig;
+import joserodpt.realpermissions.api.config.TranslatableLine;
 import joserodpt.realpermissions.api.player.RPPlayer;
 import joserodpt.realpermissions.api.rank.Rank;
 import joserodpt.realpermissions.api.rank.Rankup;
@@ -43,12 +43,12 @@ public class RanksListGUI {
     private static Map<UUID, RanksListGUI> inventories = new HashMap<>();
     private Inventory inv;
 
-    private ItemStack placeholder = Items.createItem(Material.BLACK_STAINED_GLASS_PANE, 1, "");
-    private ItemStack next = Items.createItem(Material.GREEN_STAINED_GLASS, 1, "&aNext",
+    private final ItemStack placeholder = Items.createItem(Material.BLACK_STAINED_GLASS_PANE, 1, "");
+    private final ItemStack next = Items.createItem(Material.GREEN_STAINED_GLASS, 1, "&aNext",
             Collections.singletonList("&fClick here to go to the next page."));
-    private ItemStack back = Items.createItem(Material.YELLOW_STAINED_GLASS, 1, "&6Back",
+    private final ItemStack back = Items.createItem(Material.YELLOW_STAINED_GLASS, 1, "&6Back",
             Collections.singletonList("&fClick here to go back to the next page."));
-    private ItemStack close = Items.createItem(Material.ACACIA_DOOR, 1, "&cGo Back",
+    private final ItemStack close = Items.createItem(Material.ACACIA_DOOR, 1, "&cGo Back",
             Collections.singletonList("&fClick here to close this menu."));
 
     private UUID uuid;
@@ -239,7 +239,7 @@ public class RanksListGUI {
                                 current.rpe.setRank(clickedRank);
                                 current.rk.saveData(Rankup.RankupData.ENTRIES, true);
 
-                                Text.send(p, "&fRank of Rank Entry is now: " + clickedRank.getPrefix());
+                                Text.send(p, "&fRank of Rankup Entry is now: " + clickedRank.getPrefix());
                                 p.closeInventory();
                                 RankupPathGUI rpg = new RankupPathGUI(current.rpPlayer, current.rk, current.rp, true);
                                 rpg.openInventory(p);
@@ -252,16 +252,16 @@ public class RanksListGUI {
                                     case DROP:
                                         if (clickedRank.equals(current.rp.getRankManager().getDefaultRank())) {
                                             p.closeInventory();
-                                            Text.send(p, RPLanguageConfig.file().getString("Ranks.Cant-Delete-Default-Rank"));
+                                            TranslatableLine.RANKS_CANT_DELETE_DEFAULT_RANK.send(p);
                                         } else {
                                             current.rp.getRankManager().deleteRank(clickedRank);
-                                            Text.send(p, RPLanguageConfig.file().getString("Ranks.Deleted").replace("%rank%", clickedRank.getPrefix()));
+                                            TranslatableLine.RANKS_DELETED.setV1(TranslatableLine.ReplacableVar.RANK.eq(clickedRank.getPrefix())).send(p);
                                             current.load();
                                         }
                                         break;
                                     case RIGHT:
                                         current.rp.getRankManager().setDefaultRank(clickedRank);
-                                        Text.send(p, RPLanguageConfig.file().getString("Ranks.Set-Default").replace("%rank%", clickedRank.getPrefix()));
+                                        TranslatableLine.RANKS_SET_DEFAULT.setV1(TranslatableLine.ReplacableVar.RANK.eq(clickedRank.getPrefix())).send(p);
                                         break;
                                     default:
                                         p.closeInventory();
@@ -273,7 +273,7 @@ public class RanksListGUI {
                                 p.closeInventory();
                                 //assign rank to that player attatchment
                                 current.paSelected.setRank(clickedRank);
-                                Text.send(p, RPLanguageConfig.file().getString("Ranks.Rank-Set").replace("%player%", p.getName()).replace("%rank%", clickedRank.getPrefix()));
+                                TranslatableLine.RANKS_RANK_SET.setV1(TranslatableLine.ReplacableVar.PLAYER.eq(p.getName())).setV2(TranslatableLine.ReplacableVar.RANK.eq(clickedRank.getPrefix())).send(p);
                                 p.closeInventory();
                                 PlayerPermissionsGUI rv = new PlayerPermissionsGUI(p, current.paSelected, current.rp);
                                 rv.openInventory(p);

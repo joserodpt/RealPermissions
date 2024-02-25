@@ -26,8 +26,6 @@ import java.util.Map;
 public abstract class RankManagerAPI {
     public abstract Boolean isRankupEnabled();
 
-    public abstract void setRankupEnabled(Boolean rankupEnabled);
-
     public abstract void loadRanks();
 
     public abstract List<Rank> getRanksList();

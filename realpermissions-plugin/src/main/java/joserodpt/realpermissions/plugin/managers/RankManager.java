@@ -19,6 +19,7 @@ import joserodpt.realpermissions.api.config.RPConfig;
 import joserodpt.realpermissions.api.config.RPRanksConfig;
 import joserodpt.realpermissions.api.config.RPRankupsConfig;
 import joserodpt.realpermissions.api.RankManagerAPI;
+import joserodpt.realpermissions.api.config.TranslatableLine;
 import joserodpt.realpermissions.api.permission.Permission;
 import joserodpt.realpermissions.api.player.RPPlayer;
 import joserodpt.realpermissions.api.rank.Rank;
@@ -43,19 +44,13 @@ public class RankManager extends RankManagerAPI {
     private Map<String, Rank> ranks = new HashMap<>();
     private Map<String, Rankup> rankups = new HashMap<>();
     private Rank defaultRank;
-    private Boolean rankupEnabled;
     public RankManager(RealPermissionsAPI rp) {
         this.rp = rp;
     }
 
     @Override
     public Boolean isRankupEnabled() {
-        return this.rankupEnabled || RPConfig.file().getBoolean("RealPermissions.Enable-Rankup");
-    }
-
-    @Override
-    public void setRankupEnabled(Boolean rankupEnabled) {
-        this.rankupEnabled = rankupEnabled;
+        return RPConfig.file().getBoolean("RealPermissions.Enable-Rankup") || rp.getEcon() != null;
     }
 
     @Override
@@ -263,8 +258,13 @@ public class RankManager extends RankManagerAPI {
 
     @Override
     public void processRankup(RPPlayer player, Rankup rk, RankupEntry po) {
+        if (!rp.getRankManager().isRankupEnabled()) {
+            TranslatableLine.RANKUP_DISABLED.send(player.getPlayer());
+            return;
+        }
+
         if (player.getRank().equals(po.getRank())) {
-            Text.send(player.getPlayer(), "&cYou already have this rank.");
+            TranslatableLine.RANKUP_ALREADY_HAS_RANK.send(player.getPlayer());
             return;
         }
 
@@ -275,18 +275,22 @@ public class RankManager extends RankManagerAPI {
         if (prev >= 0) {
             Rank previousRank = rk.getRankupEntries().get(prev).getRank();
             if (player.getRank().equals(previousRank)) {
-                EconomyResponse r = rp.getEcon().withdrawPlayer(player.getPlayer(), po.getCost());
-                if(r.transactionSuccess()) {
-                    player.setRank(po.getRank());
-                    Text.send(player.getPlayer(), "&fYou ranked up to " + po.getRank().getPrefix() + " &ffor " + Text.formatCost(po.getCost()) + " coins");
+                if (rp.getEcon().getBalance(player.getPlayer()) > po.getCost()) {
+                    EconomyResponse r = rp.getEcon().withdrawPlayer(player.getPlayer(), po.getCost());
+                    if(r.transactionSuccess()) {
+                        player.setRank(po.getRank());
+                        TranslatableLine.RANKUP_RANKED_UP.setV1(TranslatableLine.ReplacableVar.RANK.eq(po.getRank().getPrefix())).setV2(TranslatableLine.ReplacableVar.STRING.eq(Text.formatCost(po.getCost()))).send(player.getPlayer());
+                    } else {
+                        TranslatableLine.RANKUP_ERROR.setV1(TranslatableLine.ReplacableVar.STRING.eq(r.errorMessage)).send(player.getPlayer());
+                    }
                 } else {
-                    Text.send(player.getPlayer(), "An error occured: " + r.errorMessage);
+                    TranslatableLine.RANKUP_INSUFICIENT_FUNDS.send(player.getPlayer());
                 }
             } else {
-                Text.send(player.getPlayer(), "&cYou can't rankup to this rank.");
+                TranslatableLine.RANKUP_CANT_RANKUP.send(player.getPlayer());
             }
         } else {
-            Text.send(player.getPlayer(), "&cYou can't rankdown.");
+            TranslatableLine.RANKUP_CANT_RANKDOWN.send(player.getPlayer());
         }
     }
 

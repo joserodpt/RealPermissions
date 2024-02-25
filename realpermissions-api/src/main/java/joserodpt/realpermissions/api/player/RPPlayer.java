@@ -16,6 +16,7 @@ package joserodpt.realpermissions.api.player;
 import joserodpt.realpermissions.api.RealPermissionsAPI;
 import joserodpt.realpermissions.api.config.RPConfig;
 import joserodpt.realpermissions.api.config.RPPlayersConfig;
+import joserodpt.realpermissions.api.config.TranslatableLine;
 import joserodpt.realpermissions.api.permission.Permission;
 import joserodpt.realpermissions.api.permission.PermissionBase;
 import joserodpt.realpermissions.api.rank.Rank;
@@ -179,7 +180,7 @@ public class RPPlayer {
         //set if it's super user again
         this.setSuperUser(this.isSuperUser());
 
-        Text.send(this.getPlayer(), "&fYour rank is now " + this.getRank().getPrefix());
+        TranslatableLine.RANKS_PLAYER_RANK_UPDATED.setV1(TranslatableLine.ReplacableVar.RANK.eq(this.getRank().getPrefix())).send(this.getPlayer());
     }
 
     private void setVisual() {

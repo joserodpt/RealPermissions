@@ -14,6 +14,7 @@ package joserodpt.realpermissions.plugin.gui;
  */
 
 import joserodpt.realpermissions.api.RealPermissionsAPI;
+import joserodpt.realpermissions.api.config.TranslatableLine;
 import joserodpt.realpermissions.api.player.RPPlayer;
 import joserodpt.realpermissions.api.rank.Rankup;
 import joserodpt.realpermissions.api.utils.Items;
@@ -43,12 +44,12 @@ public class RankupGUI {
     private static Map<UUID, RankupGUI> inventories = new HashMap<>();
     private Inventory inv;
 
-    private ItemStack placeholder = Items.createItem(Material.BLACK_STAINED_GLASS_PANE, 1, "");
-    private ItemStack next = Items.createItem(Material.GREEN_STAINED_GLASS, 1, "&aNext",
+    private final ItemStack placeholder = Items.createItem(Material.BLACK_STAINED_GLASS_PANE, 1, "");
+    private final ItemStack next = Items.createItem(Material.GREEN_STAINED_GLASS, 1, "&aNext",
             Collections.singletonList("&fClick here to go to the next page."));
-    private ItemStack back = Items.createItem(Material.YELLOW_STAINED_GLASS, 1, "&6Back",
+    private final ItemStack back = Items.createItem(Material.YELLOW_STAINED_GLASS, 1, "&6Back",
             Collections.singletonList("&fClick here to go back to the next page."));
-    private ItemStack close = Items.createItem(Material.OAK_DOOR, 1, "&cGo Back",
+    private final ItemStack close = Items.createItem(Material.OAK_DOOR, 1, "&cGo Back",
             Collections.singletonList("&fClick here to close this menu."));
 
     private UUID uuid;
@@ -123,7 +124,7 @@ public class RankupGUI {
 
     public void openInventory(Player target) {
         if (!rp.getRankManager().isRankupEnabled()) {
-            Text.send(player.getPlayer(), "&cRankup is disabled on this server.");
+            TranslatableLine.RANKUP_DISABLED.send(player.getPlayer());
             return;
         }
 

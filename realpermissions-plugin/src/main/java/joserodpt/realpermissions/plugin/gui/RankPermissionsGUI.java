@@ -14,7 +14,7 @@ package joserodpt.realpermissions.plugin.gui;
  */
 
 import joserodpt.realpermissions.api.RealPermissionsAPI;
-import joserodpt.realpermissions.api.config.RPLanguageConfig;
+import joserodpt.realpermissions.api.config.TranslatableLine;
 import joserodpt.realpermissions.api.permission.Permission;
 import joserodpt.realpermissions.api.rank.Rank;
 import joserodpt.realpermissions.api.utils.Items;
@@ -41,10 +41,9 @@ public class RankPermissionsGUI {
     private static Map<UUID, RankPermissionsGUI> inventories = new HashMap<>();
     private Inventory inv;
 
-    private ItemStack placeholder = Items.createItem(Material.BLACK_STAINED_GLASS_PANE, 1, "&7Permissions");
-    private ItemStack newr = Items.createItem(Material.SIGN, 1, "&b&lNew Permission", Collections.singletonList("&FClick to add a new permission."));
-
-    private ItemStack close = Items.createItem(Material.OAK_DOOR, 1, "&cClose",
+    private final ItemStack placeholder = Items.createItem(Material.BLACK_STAINED_GLASS_PANE, 1, "&7Permissions");
+    private final ItemStack newr = Items.createItem(Material.SIGN, 1, "&b&lNew Permission", Collections.singletonList("&FClick to add a new permission."));
+    private final ItemStack close = Items.createItem(Material.OAK_DOOR, 1, "&cClose",
             Collections.singletonList("&fClick here to close this menu."));
 
     private final UUID uuid;
@@ -166,7 +165,7 @@ public class RankPermissionsGUI {
                                 p.closeInventory();
                                 new PlayerInput(p, input -> {
                                     current.r.setPrefix(input);
-                                    Text.send(p, "The rank's prefix is now " + input);
+                                    TranslatableLine.RANKS_PREFIX_SET.setV1(TranslatableLine.ReplacableVar.NAME.eq(input)).send(p);
 
                                     RankPermissionsGUI wv = new RankPermissionsGUI(p, current.r, current.rp);
                                     wv.openInventory(p);
@@ -179,7 +178,7 @@ public class RankPermissionsGUI {
                                 p.closeInventory();
                                 new PlayerInput(p, input -> {
                                     current.rp.getRankManager().renameRank(current.r, input);
-                                    Text.send(p, "The rank's name is now " + input);
+                                    TranslatableLine.RANKS_NAME_SET.setV1(TranslatableLine.ReplacableVar.NAME.eq(input)).send(p);
 
                                     RankPermissionsGUI wv = new RankPermissionsGUI(p, current.rp.getRankManager().getRank(input), current.rp);
                                     wv.openInventory(p);
@@ -216,11 +215,10 @@ public class RankPermissionsGUI {
                                 if (perm.getAssociatedRankName().equalsIgnoreCase(current.r.getName())) {
                                     current.r.removePermission(perm);
                                     current.rp.getRankManager().refreshPermsAndPlayers();
-                                    Text.send(p, RPLanguageConfig.file().getString("Permissions.Rank-Perm-Remove").replace("%perm%", perm.getPermissionString()).replace("%rank%", current.r.getPrefix()));
-
+                                    TranslatableLine.PERMISSIONS_RANK_PERM_REMOVE.setV1(TranslatableLine.ReplacableVar.PERM.eq(perm.getPermissionString())).setV2(TranslatableLine.ReplacableVar.RANK.eq(current.r.getPrefix())).send(p);
                                     current.load();
                                 } else {
-                                    Text.send(p, RPLanguageConfig.file().getString("Permissions.Permission-Associated-With-Other-Rank").replace("%rank%", perm.getAssociatedRankName()));
+                                    TranslatableLine.PERMISSIONS_PERMISSION_ASSOCIATED_WITH_OTHER_RANK.setV1(TranslatableLine.ReplacableVar.RANK.eq(perm.getAssociatedRankName())).send(p);
                                 }
                             }
                         }

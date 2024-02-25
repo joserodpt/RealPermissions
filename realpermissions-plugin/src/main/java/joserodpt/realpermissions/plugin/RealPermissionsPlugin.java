@@ -84,13 +84,11 @@ public final class RealPermissionsPlugin extends JavaPlugin {
 
         //hook into vault
         if (setupEconomy()) {
-            realPermissions.getRankManager().setRankupEnabled(true);
             realPermissions.getHookupAPI().injectVaultPermissions(getServer().getPluginManager().getPlugin("Vault").getDescription().getVersion());
             getLogger().info("Vault found and Hooked into!");
             realPermissions.getRankManager().loadRankups();
             getLogger().info("Loaded " + realPermissions.getRankManager().getRankups().size() + " rankups.");
         } else {
-            realPermissions.getRankManager().setRankupEnabled(false);
             getLogger().warning("Vault not found. Rankup will be disabled.");
         }
 
@@ -102,10 +100,10 @@ public final class RealPermissionsPlugin extends JavaPlugin {
         //register commands
         CommandManager cm = new CommandManager(this);
 
-        cm.getMessageHandler().register("cmd.no.permission", (sender) -> Text.send(sender, " &cYou don't have permission to execute this command!"));
-        cm.getMessageHandler().register("cmd.no.exists", (sender) -> Text.send(sender, " &cThe command you're trying to use doesn't exist"));
-        cm.getMessageHandler().register("cmd.wrong.usage", (sender) -> Text.send(sender, " &cWrong usage for the command!"));
-        cm.getMessageHandler().register("cmd.no.console", sender -> Text.send(sender, " &cCommand can't be used in the console!"));
+        cm.getMessageHandler().register("cmd.no.permission", (sender) -> Text.send(sender, "&cYou don't have permission to execute this command!"));
+        cm.getMessageHandler().register("cmd.no.exists", (sender) -> Text.send(sender, "&cThe command you're trying to use doesn't exist"));
+        cm.getMessageHandler().register("cmd.wrong.usage", (sender) -> Text.send(sender, "&cWrong usage for the command!"));
+        cm.getMessageHandler().register("cmd.no.console", sender -> Text.send(sender, "&cCommand can't be used in the console!"));
 
         cm.hideTabComplete(true);
         cm.getCompletionHandler().register("#ranks", input ->

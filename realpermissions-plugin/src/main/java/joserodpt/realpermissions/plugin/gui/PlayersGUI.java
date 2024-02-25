@@ -14,7 +14,7 @@ package joserodpt.realpermissions.plugin.gui;
  */
 
 import joserodpt.realpermissions.api.RealPermissionsAPI;
-import joserodpt.realpermissions.api.config.RPLanguageConfig;
+import joserodpt.realpermissions.api.config.TranslatableLine;
 import joserodpt.realpermissions.api.player.PlayerObject;
 import joserodpt.realpermissions.api.utils.Items;
 import joserodpt.realpermissions.api.utils.Pagination;
@@ -49,12 +49,12 @@ public class PlayersGUI {
     private static Map<UUID, PlayersGUI> inventories = new HashMap<>();
     private Inventory inv;
 
-    private ItemStack placeholder = Items.createItem(Material.BLACK_STAINED_GLASS_PANE, 1, "");
-    private ItemStack next = Items.createItem(Material.GREEN_STAINED_GLASS, 1, "&aNext",
+    private final ItemStack placeholder = Items.createItem(Material.BLACK_STAINED_GLASS_PANE, 1, "");
+    private final ItemStack next = Items.createItem(Material.GREEN_STAINED_GLASS, 1, "&aNext",
             Collections.singletonList("&fClick here to go to the next page."));
-    private ItemStack back = Items.createItem(Material.YELLOW_STAINED_GLASS, 1, "&6Back",
+    private final ItemStack back = Items.createItem(Material.YELLOW_STAINED_GLASS, 1, "&6Back",
             Collections.singletonList("&fClick here to go back to the next page."));
-    private ItemStack close = Items.createItem(Material.ACACIA_DOOR, 1, "&cGo Back",
+    private final ItemStack close = Items.createItem(Material.ACACIA_DOOR, 1, "&cGo Back",
             Collections.singletonList("&fClick here to close this menu."));
 
     private UUID uuid;
@@ -218,14 +218,14 @@ public class PlayersGUI {
 
                             if (Objects.requireNonNull(e.getClick()) == ClickType.DROP) {//delete player
                                 current.rp.getPlayerManager().deletePlayer(po);
-                                Text.send(p, "Player " + po.getName() + " &cdeleted.");
+                                TranslatableLine.PERMISSIONS_PLAYER_DELETE.setV1(TranslatableLine.ReplacableVar.PLAYER.eq(po.getName())).send(p);
 
                                 current.load();
                             } else {
                                 if (e.getClick().equals(ClickType.RIGHT) && po.hasTimedRank()) {
                                     //eliminar timed rank
                                     current.rp.getPlayerManager().getPlayer(p).removeTimedRank();
-                                    Text.send(p, RPLanguageConfig.file().getString("Ranks.Player-Remove-Timed-Rank").replace("%player%", po.getName()));
+                                    TranslatableLine.RANKS_PLAYER_REMOVE_TIMED_RANK.setV1(TranslatableLine.ReplacableVar.PLAYER.eq(po.getName())).send(p);
                                     current.load();
                                 } else {
                                     //edit player

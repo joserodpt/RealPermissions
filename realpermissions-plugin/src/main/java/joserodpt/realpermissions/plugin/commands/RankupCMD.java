@@ -14,6 +14,7 @@ package joserodpt.realpermissions.plugin.commands;
  */
 
 import joserodpt.realpermissions.api.RealPermissionsAPI;
+import joserodpt.realpermissions.api.config.TranslatableLine;
 import joserodpt.realpermissions.api.utils.Text;
 import joserodpt.realpermissions.plugin.gui.RankupGUI;
 import me.mattstudios.mf.annotations.Alias;
@@ -37,7 +38,7 @@ public class RankupCMD extends CommandBase {
     @Permission("realpermissions.rankup")
     public void defaultCommand(final CommandSender commandSender) {
         if (!rp.getRankManager().isRankupEnabled()) {
-            Text.send(commandSender, "&cRackup is disabled on this server.");
+            TranslatableLine.RANKUP_DISABLED.send(commandSender);
             return;
         }
 

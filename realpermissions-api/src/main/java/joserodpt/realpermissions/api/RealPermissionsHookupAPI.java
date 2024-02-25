@@ -153,8 +153,12 @@ public class RealPermissionsHookupAPI {
                         "rp permission",
                         "rp playerperm"
                 )),
-                new ExternalPluginPermission("realpermissions.prefix-in-tablist", "Permission to show prefix in the tablist."),
-                new ExternalPluginPermission("realpermissions.rankup.<rank>", "Permission to rankup to the specified <rank>.")
+                new ExternalPluginPermission("realpermissions.rankup", "Main permission for the RealPermissions rankup command.", Arrays.asList(
+                        "realpermissions rankup",
+                        "rp rankup"
+                )),
+                new ExternalPluginPermission("realpermissions.rankup.<rank>", "Permission to rankup to the specified <rank>."),
+                new ExternalPluginPermission("realpermissions.prefix-in-tablist", "Permission to show prefix in the tablist.")
         ), rpa.getPlugin().getDescription().getVersion(), ExternalPlugin.PluginSource.API));
 
         int counter = 0;

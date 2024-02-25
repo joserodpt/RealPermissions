@@ -29,15 +29,12 @@ public final class RealPermissions extends RealPermissionsAPI {
     private final RankManager rankManager;
     private final PlayerManager playerManager;
     private final RealPermissionsPlugin plugin;
-    private final Economy econ;
-
     public RealPermissions(RealPermissionsPlugin plugin) {
         this.plugin = plugin;
         this.logger = plugin.getLogger();
 
         this.rankManager = new RankManager(this);
         this.playerManager = new PlayerManager(this);
-        this.econ = plugin.getEconomy();
     }
 
     @Override
@@ -57,7 +54,7 @@ public final class RealPermissions extends RealPermissionsAPI {
 
     @Override
     public Economy getEcon() {
-        return this.econ;
+        return this.plugin.getEconomy();
     }
 
     @Override

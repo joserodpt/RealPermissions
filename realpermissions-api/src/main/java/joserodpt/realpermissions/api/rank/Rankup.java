@@ -37,9 +37,9 @@ public class Rankup {
     private Boolean interactable = true;
 
     public Rankup() {
-        this.displayName = "No Ranks for You";
+        this.displayName = "&c&nNo Rankups Available";
         this.interactable = false;
-        this.desc = new ArrayList<>();
+        this.desc = Arrays.asList("&fThere are no avaiable ranks", "&ffor you to upgrade right now.");
         this.rankupEntries = new ArrayList<>();
         this.icon = Material.BARRIER;
     }

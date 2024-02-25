@@ -14,7 +14,7 @@ package joserodpt.realpermissions.plugin.gui;
  */
 
 import joserodpt.realpermissions.api.RealPermissionsAPI;
-import joserodpt.realpermissions.api.config.RPLanguageConfig;
+import joserodpt.realpermissions.api.config.TranslatableLine;
 import joserodpt.realpermissions.api.player.RPPlayer;
 import joserodpt.realpermissions.api.pluginhookup.ExternalPlugin;
 import joserodpt.realpermissions.api.pluginhookup.ExternalPluginPermission;
@@ -48,13 +48,13 @@ public class EPPermissionsViewerGUI {
     private static Map<UUID, EPPermissionsViewerGUI> inventories = new HashMap<>();
     private Inventory inv;
 
-    private ItemStack search = Items.createItem(Material.COMPASS, 1, "&fClick here to search for a permission.");
-    private ItemStack placeholder = Items.createItem(Material.BLACK_STAINED_GLASS_PANE, 1, "");
-    private ItemStack next = Items.createItem(Material.GREEN_STAINED_GLASS, 1, "&aNext",
+    private final ItemStack search = Items.createItem(Material.COMPASS, 1, "&fClick here to search for a permission.");
+    private final ItemStack placeholder = Items.createItem(Material.BLACK_STAINED_GLASS_PANE, 1, "");
+    private final ItemStack next = Items.createItem(Material.GREEN_STAINED_GLASS, 1, "&aNext",
             Collections.singletonList("&fClick here to go to the next page."));
-    private ItemStack back = Items.createItem(Material.YELLOW_STAINED_GLASS, 1, "&6Back",
+    private final ItemStack back = Items.createItem(Material.YELLOW_STAINED_GLASS, 1, "&6Back",
             Collections.singletonList("&fClick here to go back to the next page."));
-    private ItemStack close = Items.createItem(Material.ACACIA_DOOR, 1, "&cGo Back",
+    private final ItemStack close = Items.createItem(Material.ACACIA_DOOR, 1, "&cGo Back",
             Collections.singletonList("&fClick here to close this menu."));
 
     private UUID uuid;
@@ -315,9 +315,9 @@ public class EPPermissionsViewerGUI {
                                 if (current.rank != null) {
                                     if (!current.rank.hasPermission(clickedExtPerm.getPermission())) {
                                         current.rank.addPermission(clickedExtPerm.getPermission());
-                                        Text.send(p, RPLanguageConfig.file().getString("Permissions.Rank-Perm-Add").replace("%perm%", clickedExtPerm.getPermission()).replace("%rank%", current.rank.getPrefix()));
+                                        TranslatableLine.PERMISSIONS_RANK_PERM_ADD.setV1(TranslatableLine.ReplacableVar.PERM.eq(clickedExtPerm.getPermission())).setV2(TranslatableLine.ReplacableVar.RANK.eq(current.rank.getPrefix())).send(p);
                                     } else {
-                                        Text.send(p, RPLanguageConfig.file().getString("Permissions.Rank-Already-Has-Permission").replace("%perm%", clickedExtPerm.getPermission()));
+                                        TranslatableLine.PERMISSIONS_RANK_ALREADY_HAS_PERMISSION.setV1(TranslatableLine.ReplacableVar.PERM.eq(clickedExtPerm.getPermission())).send(p);
                                     }
                                     RankPermissionsGUI rg = new RankPermissionsGUI(p, current.rank, current.rp);
                                     rg.openInventory(p);
@@ -325,9 +325,9 @@ public class EPPermissionsViewerGUI {
                                 if (current.pa != null) {
                                     if (!current.pa.hasPermission(clickedExtPerm.getPermission())) {
                                         current.pa.addPermission(clickedExtPerm.getPermission());
-                                        Text.send(p, RPLanguageConfig.file().getString("Permissions.Player.Add").replace("%perm%", clickedExtPerm.getPermission()).replace("%player%", p.getName()));
+                                        TranslatableLine.PERMISSIONS_PLAYER_ADD.setV1(TranslatableLine.ReplacableVar.PERM.eq(clickedExtPerm.getPermission())).setV2(TranslatableLine.ReplacableVar.PLAYER.eq(p.getName())).send(p);
                                     } else {
-                                        Text.send(p, RPLanguageConfig.file().getString("Permissions.Player.Already-Has-Permission").replace("%perm%", clickedExtPerm.getPermission()));
+                                        TranslatableLine.PERMISSIONS_PLAYER_ALREADY_HAS_PERMISSION_UNDER_PLAYER.setV1(TranslatableLine.ReplacableVar.PERM.eq(clickedExtPerm.getPermission())).send(p);
                                     }
 
                                     PlayerPermissionsGUI ppg = new PlayerPermissionsGUI(p, current.pa, current.rp);

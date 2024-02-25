@@ -12,9 +12,12 @@ Ranks:
   No-Rank-Found: "There is no rank named &c%name%"
   Rank-Set: "%player% 's &frank is now: %rank%"
   Player-No-Timed-Rank: "%player% &cdoesn't have a timed rank."
+  Player-Rank-Updated: "&fYour rank is now &b%rank%"
   Timed-Rank-Set: "%player% 's &ftimed rank is now: %rank%"
   Timed-Rank-Above-Zero: "&cTimed ranks must be set above 0 seconds."
   Player-Remove-Timed-Rank: "%player% &ftimed rank has been &eremoved."
+  Prefix-Set: "&fThe rank's prefix is now: %name%"
+  Name-Set: "&fThe rank's name is now: %name%"
 Permissions:
   Rank-Already-Has-Permission: "The rank already has the %perm% permission."
   Player-Already-Has-Permission: "The player already has the %perm% permission."
@@ -27,4 +30,13 @@ Permissions:
     Doesnt-Have-Permission: "The player doesn't has the %perm% permission."
     Add: "&fPermission %perm% &aadded &fto %player%"
     Remove: "&fPermission %perm% &cremoved &ffrom %player%"
-Version: 1
+    Delete: "&fPlayer %player% &chas been deleted."
+Rankup:
+  Disabled: "&cRackup is disabled on this server."
+  Cant-Rankdown: "&cYou can't rankdown."
+  Cant-Rankup: "&cYou can't rankup to this rank."
+  Insuficient-Funds: "You have &cinsuficient funds &fto rankup!"
+  Error: "&fAn &cerror &foccured: %string%"
+  Ranked-Up: "&fYou ranked up to &b%rank% &ffor &b%string% &fcoins."
+  Already-Has-Rank: "&cYou already have this rank."
+Version: 2

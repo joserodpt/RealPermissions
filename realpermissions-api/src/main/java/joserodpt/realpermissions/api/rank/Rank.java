@@ -106,7 +106,7 @@ public class Rank {
     }
 
     public Material getIcon() {
-        return icon;
+        return this.icon;
     }
 
     public void setIcon(Material icon) {
@@ -119,7 +119,7 @@ public class Rank {
     }
 
     public String getPrefix() {
-        return prefix;
+        return this.prefix;
     }
 
     public void setPrefix(String prefix) {

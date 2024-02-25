@@ -14,6 +14,7 @@ package joserodpt.realpermissions.plugin.gui;
  */
 
 import joserodpt.realpermissions.api.RealPermissionsAPI;
+import joserodpt.realpermissions.api.config.TranslatableLine;
 import joserodpt.realpermissions.api.player.RPPlayer;
 import joserodpt.realpermissions.api.utils.Items;
 import joserodpt.realpermissions.api.utils.Pagination;
@@ -45,10 +46,10 @@ public class PlayerPermissionsGUI {
     private static Map<UUID, PlayerPermissionsGUI> inventories = new HashMap<>();
     private Inventory inv;
 
-    private ItemStack placeholder = Items.createItem(Material.BLACK_STAINED_GLASS_PANE, 1, "&7Permissions");
-    private ItemStack newr = Items.createItem(Material.SIGN, 1, "&b&lNew Permission", Collections.singletonList("&FClick to add a new permission."));
+    private final ItemStack placeholder = Items.createItem(Material.BLACK_STAINED_GLASS_PANE, 1, "&7Permissions");
+    private final ItemStack newr = Items.createItem(Material.SIGN, 1, "&b&lNew Permission", Collections.singletonList("&FClick to add a new permission."));
 
-    private ItemStack close = Items.createItem(Material.OAK_DOOR, 1, "&cClose",
+    private final ItemStack close = Items.createItem(Material.OAK_DOOR, 1, "&cClose",
             Collections.singletonList("&fClick here to close this menu."));
 
     private final UUID uuid;
@@ -182,7 +183,7 @@ public class PlayerPermissionsGUI {
 
                             if (Objects.requireNonNull(e.getClick()) == ClickType.DROP) {
                                 current.pa.removePermission(perm);
-                                Text.send(p, "&fPermission " + perm + " removed.");
+                                TranslatableLine.PERMISSIONS_PLAYER_REMOVE.setV1(TranslatableLine.ReplacableVar.PERM.eq(perm)).setV2(TranslatableLine.ReplacableVar.PLAYER.eq(current.pa.getPlayer().getName())).send(p);
                                 current.load();
                             }
                         }

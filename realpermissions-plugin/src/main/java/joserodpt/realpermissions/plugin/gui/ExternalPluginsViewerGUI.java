@@ -14,7 +14,7 @@ package joserodpt.realpermissions.plugin.gui;
  */
 
 import joserodpt.realpermissions.api.RealPermissionsAPI;
-import joserodpt.realpermissions.api.config.RPLanguageConfig;
+import joserodpt.realpermissions.api.config.TranslatableLine;
 import joserodpt.realpermissions.api.player.RPPlayer;
 import joserodpt.realpermissions.api.pluginhookup.ExternalPlugin;
 import joserodpt.realpermissions.api.pluginhookup.ExternalPluginPermission;
@@ -48,20 +48,20 @@ import java.util.stream.Collectors;
 
 public class ExternalPluginsViewerGUI {
 
-    private ItemStack writeperm = Items.createItem(Material.FILLED_MAP, 1, "&b&lWrite Permission", Collections.singletonList("&FClick to write the permission to add."));
+    private final ItemStack writeperm = Items.createItem(Material.FILLED_MAP, 1, "&b&lWrite Permission", Collections.singletonList("&FClick to write the permission to add."));
 
     private static Map<UUID, ExternalPluginsViewerGUI> inventories = new HashMap<>();
     private Inventory inv;
 
-    private ItemStack search = Items.createItem(Material.COMPASS, 1, "&fClick here to search for a plugin.");
-    private ItemStack searchPermission = Items.createItem(Material.COMPASS, 1, "&fClick here to search for a permission.");
+    private final ItemStack search = Items.createItem(Material.COMPASS, 1, "&fClick here to search for a plugin.");
+    private final ItemStack searchPermission = Items.createItem(Material.COMPASS, 1, "&fClick here to search for a permission.");
 
-    private ItemStack placeholder = Items.createItem(Material.BLACK_STAINED_GLASS_PANE, 1, "");
-    private ItemStack next = Items.createItem(Material.GREEN_STAINED_GLASS, 1, "&aNext",
+    private final ItemStack placeholder = Items.createItem(Material.BLACK_STAINED_GLASS_PANE, 1, "");
+    private final ItemStack next = Items.createItem(Material.GREEN_STAINED_GLASS, 1, "&aNext",
             Collections.singletonList("&fClick here to go to the next page."));
-    private ItemStack back = Items.createItem(Material.YELLOW_STAINED_GLASS, 1, "&6Back",
+    private final ItemStack back = Items.createItem(Material.YELLOW_STAINED_GLASS, 1, "&6Back",
             Collections.singletonList("&fClick here to go back to the next page."));
-    private ItemStack close = Items.createItem(Material.ACACIA_DOOR, 1, "&cGo Back",
+    private final ItemStack close = Items.createItem(Material.ACACIA_DOOR, 1, "&cGo Back",
             Collections.singletonList("&fClick here to close this menu."));
 
     private UUID uuid;
@@ -302,21 +302,21 @@ public class ExternalPluginsViewerGUI {
                                             } else {
                                                 if (current.rank != null) {
                                                     if (current.rank.hasPermission(perm)) {
-                                                        Text.send(p, RPLanguageConfig.file().getString("Permissions.Rank-Already-Has-Permission").replace("%perm%", perm));
+                                                        TranslatableLine.PERMISSIONS_RANK_ALREADY_HAS_PERMISSION.setV1(TranslatableLine.ReplacableVar.PERM.eq(perm)).send(p);
                                                     } else {
                                                         current.rank.addPermission(perm);
                                                         current.rp.getRankManager().refreshPermsAndPlayers();
-                                                        Text.send(p, RPLanguageConfig.file().getString("Permissions.Rank-Perm-Add").replace("%perm%", perm).replace("%rank%", current.rank.getPrefix()));
+                                                        TranslatableLine.PERMISSIONS_RANK_PERM_ADD.setV1(TranslatableLine.ReplacableVar.PERM.eq(perm)).send(p);
                                                     }
                                                 }
 
                                                 if (current.pa != null) {
                                                     if (current.pa.hasPermission(perm)) {
-                                                        Text.send(p, RPLanguageConfig.file().getString("Permissions.Player.Already-Has-Permission").replace("%perm%", perm));
+                                                        TranslatableLine.PERMISSIONS_PLAYER_ALREADY_HAS_PERMISSION.setV1(TranslatableLine.ReplacableVar.PERM.eq(perm)).send(p);
                                                     } else {
                                                         current.pa.addPermission(perm);
                                                         //current.rp.getRankManager().refreshPermsAndPlayers();
-                                                        Text.send(p, RPLanguageConfig.file().getString("Permissions.Player.Add").replace("%perm%", perm).replace("%player%", current.pa.getPlayer().getName()));
+                                                        TranslatableLine.PERMISSIONS_PLAYER_ADD.setV1(TranslatableLine.ReplacableVar.PERM.eq(perm)).send(p);
                                                     }
                                                 }
 
