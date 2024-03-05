@@ -16,6 +16,7 @@ package joserodpt.realpermissions.plugin.gui;
 import joserodpt.realpermissions.api.RealPermissionsAPI;
 import joserodpt.realpermissions.api.config.TranslatableLine;
 import joserodpt.realpermissions.api.player.PlayerObject;
+import joserodpt.realpermissions.api.player.RPPlayer;
 import joserodpt.realpermissions.api.utils.Items;
 import joserodpt.realpermissions.api.utils.Pagination;
 import joserodpt.realpermissions.api.utils.Text;
@@ -26,7 +27,6 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
@@ -39,7 +39,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
 
 public class PlayersGUI {
@@ -215,24 +214,33 @@ public class PlayersGUI {
 
                         if (current.display.containsKey(e.getRawSlot())) {
                             PlayerObject po = current.display.get(e.getRawSlot());
+                            RPPlayer rp = current.rp.getPlayerManager().getPlayer(p);
 
-                            if (Objects.requireNonNull(e.getClick()) == ClickType.DROP) {//delete player
-                                current.rp.getPlayerManager().deletePlayer(po);
-                                TranslatableLine.PERMISSIONS_PLAYER_DELETE.setV1(TranslatableLine.ReplacableVar.PLAYER.eq(po.getName())).send(p);
-
-                                current.load();
-                            } else {
-                                if (e.getClick().equals(ClickType.RIGHT) && po.hasTimedRank()) {
-                                    //eliminar timed rank
-                                    current.rp.getPlayerManager().getPlayer(p).removeTimedRank();
-                                    TranslatableLine.RANKS_PLAYER_REMOVE_TIMED_RANK.setV1(TranslatableLine.ReplacableVar.PLAYER.eq(po.getName())).send(p);
+                            switch (e.getClick()) {
+                                case DROP: //delete player
+                                    current.rp.getPlayerManager().deletePlayer(po);
+                                    TranslatableLine.PERMISSIONS_PLAYER_DELETE.setV1(TranslatableLine.ReplacableVar.PLAYER.eq(po.getName())).send(p);
                                     current.load();
-                                } else {
+                                    break;
+                                case RIGHT:
+                                    if (po.hasTimedRank()) {
+                                        //eliminar timed rank
+                                        rp.removeTimedRank();
+                                        TranslatableLine.RANKS_PLAYER_REMOVE_TIMED_RANK.setV1(TranslatableLine.ReplacableVar.PLAYER.eq(po.getName())).send(p);
+                                        current.load();
+                                    }
+                                    break;
+                                case SHIFT_LEFT:
+                                    p.closeInventory();
+                                    RanksListGUI rv = new RanksListGUI(current.rp.getPlayerManager().getPlayer(uuid), current.rp, rp);
+                                    rv.openInventory(p);
+                                    break;
+                                default:
                                     //edit player
                                     p.closeInventory();
-                                    PlayerPermissionsGUI ppg = new PlayerPermissionsGUI(p, current.rp.getPlayerManager().getPlayer(p), current.rp);
+                                    PlayerPermissionsGUI ppg = new PlayerPermissionsGUI(p, rp, current.rp);
                                     ppg.openInventory(p);
-                                }
+                                    break;
                             }
                         }
                     }

@@ -90,7 +90,7 @@ public class PlayerObject {
                     .limit(10)
                     .collect(Collectors.toList()));
         }
-        lore.addAll(Arrays.asList("","&c&nQ (Drop)&r&f to &cdelete &fthis player.","&a&nLeft-Click&r&f to edit player permissions."));
+        lore.addAll(Arrays.asList("","&c&nQ (Drop)&r&f to &cdelete &fthis player.","&a&nLeft-Click&r&f to edit player permissions.", "&c&nShift-Left&r&f to edit player rank."));
 
         if (this.timedRank) {
             lore.add("&c&nRight-Click&r&f to remove timed rank.");
