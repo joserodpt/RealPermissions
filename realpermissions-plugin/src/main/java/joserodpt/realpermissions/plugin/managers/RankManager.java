@@ -64,7 +64,7 @@ public class RankManager extends RankManagerAPI {
             String chat = rankSection.getString("Chat");
 
             Map<String, Permission> permissions = rankSection.getStringList("Permissions").stream()
-                    .map(permissionName -> new Permission(permissionName, rankName))
+                    .map(permissionName -> new Permission(permissionName, rankName, permissionName.startsWith("-")))
                     .collect(Collectors.toMap(Permission::getPermissionString, p -> p));
 
             List<Rank> inheritances = new ArrayList<>();
@@ -88,7 +88,7 @@ public class RankManager extends RankManagerAPI {
     @Override
     public List<Rank> getRanksList() {
         List<Rank> tmp = new ArrayList<>(this.ranks.values());
-        tmp.sort(Comparator.comparingInt(o -> o.getPermissions().size()));
+        tmp.sort(Comparator.comparingInt(o -> o.getPermissions(false).size()));
         return tmp;
     }
 

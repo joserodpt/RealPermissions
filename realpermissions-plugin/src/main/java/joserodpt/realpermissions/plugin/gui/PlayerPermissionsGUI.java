@@ -15,6 +15,7 @@ package joserodpt.realpermissions.plugin.gui;
 
 import joserodpt.realpermissions.api.RealPermissionsAPI;
 import joserodpt.realpermissions.api.config.TranslatableLine;
+import joserodpt.realpermissions.api.permission.Permission;
 import joserodpt.realpermissions.api.player.RPPlayer;
 import joserodpt.realpermissions.api.utils.Items;
 import joserodpt.realpermissions.api.utils.Pagination;
@@ -33,6 +34,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -53,11 +55,11 @@ public class PlayerPermissionsGUI {
             Collections.singletonList("&fClick here to close this menu."));
 
     private final UUID uuid;
-    private Map<Integer, String> display = new HashMap<>();
+    private Map<Integer, Permission> display = new HashMap<>();
     private RPPlayer pa;
 
     int pageNumber = 0;
-    Pagination<String> p;
+    Pagination<Permission> p;
 
     private RealPermissionsAPI rp;
 
@@ -73,11 +75,11 @@ public class PlayerPermissionsGUI {
     }
 
     public void load() {
-        p = new Pagination<>(15, pa.getPlayerPermissions());
-        fillChest(!pa.getPlayerPermissions().isEmpty() ? p.getPage(pageNumber) : Collections.emptyList());
+        p = new Pagination<>(15, new ArrayList<>(pa.getAllPlayerPermissions()));
+        fillChest(!pa.getAllPlayerPermissions().isEmpty() ? p.getPage(pageNumber) : Collections.emptyList());
     }
 
-    public void fillChest(List<String> items) {
+    public void fillChest(List<Permission> items) {
         this.inv.clear();
         this.display.clear();
 
@@ -95,8 +97,8 @@ public class PlayerPermissionsGUI {
                     break;
                 default:
                     if (!items.isEmpty()) {
-                        String wi = items.get(0);
-                        this.inv.setItem(i, Items.createItem(Material.PAPER, 1, "&f&l" + wi, Arrays.asList("","&fQ (Drop) to &cremove")));
+                        Permission wi = items.get(0);
+                        this.inv.setItem(i, wi.getPlayerPermissionIcon());
                         this.display.put(i, wi);
                         items.remove(0);
                     } else {
@@ -179,11 +181,17 @@ public class PlayerPermissionsGUI {
                         }
 
                         if (current.display.containsKey(e.getRawSlot())) {
-                            String perm = current.display.get(e.getRawSlot());
+                            Permission perm = current.display.get(e.getRawSlot());
 
+                            //flip permission
                             if (Objects.requireNonNull(e.getClick()) == ClickType.DROP) {
                                 current.pa.removePermission(perm);
-                                TranslatableLine.PERMISSIONS_PLAYER_REMOVE.setV1(TranslatableLine.ReplacableVar.PERM.eq(perm)).setV2(TranslatableLine.ReplacableVar.PLAYER.eq(current.pa.getPlayer().getName())).send(p);
+                                TranslatableLine.PERMISSIONS_PLAYER_REMOVE.setV1(TranslatableLine.ReplacableVar.PERM.eq(perm.getPermissionString())).setV2(TranslatableLine.ReplacableVar.PLAYER.eq(current.pa.getPlayer().getName())).send(p);
+                                current.load();
+                            } else {
+                                perm.negatePermission();
+                                current.rp.getPlayerManager().refreshPermissions();
+                                current.pa.saveData(RPPlayer.PlayerData.PERMISSIONS);
                                 current.load();
                             }
                         }
@@ -192,7 +200,7 @@ public class PlayerPermissionsGUI {
             }
 
             private void backPage(PlayerPermissionsGUI asd) {
-                if (!asd.pa.getPlayerPermissions().isEmpty()) {
+                if (!asd.pa.getAllPlayerPermissions().isEmpty()) {
                     if (asd.p.exists(asd.pageNumber - 1)) {
                         --asd.pageNumber;
                         asd.fillChest(asd.p.getPage(asd.pageNumber));
@@ -201,7 +209,7 @@ public class PlayerPermissionsGUI {
             }
 
             private void nextPage(PlayerPermissionsGUI asd) {
-                if (!asd.pa.getPlayerPermissions().isEmpty()) {
+                if (!asd.pa.getAllPlayerPermissions().isEmpty()) {
                     if (asd.p.exists(asd.pageNumber + 1)) {
                         ++asd.pageNumber;
                         asd.fillChest(asd.p.getPage(asd.pageNumber));

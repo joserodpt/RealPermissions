@@ -29,8 +29,12 @@ import org.bukkit.permissions.PermissibleBase;
 import org.bukkit.permissions.PermissionAttachment;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class RPPlayer {
 
@@ -43,7 +47,8 @@ public class RPPlayer {
     private Rank timedRank_previous;
     private Countdown timedRank_countdown;
 
-    private List<String> playerPermissions;
+    private Map<String, Permission> playerPermissionsMap = new HashMap<>();
+
     private boolean superUser;
 
     public PermissionAttachment getPermissionAttachment() {
@@ -54,7 +59,9 @@ public class RPPlayer {
         this.p = p;
         this.uuid = p.getUniqueId();
         this.rank = rank;
-        this.playerPermissions = pperms;
+
+        pperms.forEach(s -> this.playerPermissionsMap.put(s, new Permission(s, s.startsWith("-"))));
+
         this.superUser = superUser;
 
         //set player's new PermissionBase
@@ -100,22 +107,47 @@ public class RPPlayer {
         this.saveData(PlayerData.TIMED_RANK);
     }
 
-    public void setPermission(String permission) {
-        this.getPermissionAttachment().setPermission(permission, true);
+    public void setPermission(Permission p) {
+        this.getPermissionAttachment().setPermission(p.getPermissionString(), !p.isNegated());
     }
 
     public void refreshPlayerPermissions() {
         //remove all player's old permissions
-        this.getRankPermissions().forEach(permission -> this.removePermission(permission.getPermissionString()));
+        this.getAllRankPermissions().forEach(this::removePermission); //TODO fix remover permissao dps n atualiza logo
 
         //set permissions to player
-        this.getRankPermissions().forEach(permission -> this.setPermission(permission.getPermissionString()));
-        this.getPlayerPermissions().forEach(this::setPermission);
+        this.getAllRankPermissions().forEach(this::setPermission);
+
+        //set player permissions to player
+        this.getAllPlayerPermissions().forEach(this::setPermission);
+
         this.setVisual();
 
         if (this.isSuperUser()) {
             this.getPermissionAttachment().setPermission("realpermissions.admin", true);
         }
+    }
+
+    public void setRank(Rank rank) {
+        //remove all player's old rank permissions
+        this.getAllRankPermissions().forEach(this::removePermission);
+
+        this.rank = rank;
+        this.saveData(PlayerData.RANK);
+
+        //set rank permissions to player
+        this.getAllRankPermissions().forEach(this::setPermission);
+
+        //set player permissions to player
+        this.getAllPlayerPermissions().forEach(this::setPermission);
+
+        //set visual
+        this.setVisual();
+
+        //set if it's super user again
+        this.setSuperUser(this.isSuperUser());
+
+        TranslatableLine.RANKS_PLAYER_RANK_UPDATED.setV1(TranslatableLine.ReplacableVar.RANK.eq(this.getRank().getPrefix())).send(this.getPlayer());
     }
 
     public void loadTimedRank(Rank previousRank, int secondsRemaining) {
@@ -163,26 +195,6 @@ public class RPPlayer {
         return this.timedRank_countdown != null;
     }
 
-    public void setRank(Rank rank) {
-        //remove all player's old rank permissions
-        this.getRankPermissions().forEach(permission -> this.removePermission(permission.getPermissionString()));
-
-        this.rank = rank;
-        this.saveData(PlayerData.RANK);
-
-        //set rank permissions to player
-        this.getRankPermissions().forEach(permission -> this.setPermission(permission.getPermissionString()));
-        this.getPlayerPermissions().forEach(this::setPermission);
-
-        //set visual
-        this.setVisual();
-
-        //set if it's super user again
-        this.setSuperUser(this.isSuperUser());
-
-        TranslatableLine.RANKS_PLAYER_RANK_UPDATED.setV1(TranslatableLine.ReplacableVar.RANK.eq(this.getRank().getPrefix())).send(this.getPlayer());
-    }
-
     private void setVisual() {
         if (RPConfig.file().getBoolean("realpermissions.prefix-in-tablist")) {
             Player p = Bukkit.getPlayer(this.getUUID());
@@ -194,27 +206,38 @@ public class RPPlayer {
         return this.rank;
     }
 
-    public List<Permission> getRankPermissions() {
-        return this.getRank().getPermissions();
+    public List<Permission> getAllRankPermissions() {
+        return this.getRank().getAllPermissions(); //filter negated permissions
     }
 
-    public List<String> getPlayerPermissions() {
-        return this.playerPermissions;
+
+    public Map<String, Permission> getAllPlayerPermissionsMap() {
+        return this.playerPermissionsMap;
+    }
+
+    public List<Permission> getAllPlayerPermissions() {
+        return new ArrayList<>(this.getAllPlayerPermissionsMap().values());
     }
 
     public boolean hasPermission(String perm) {
-        return this.getPlayerPermissions().contains(perm);
+        return this.getAllPlayerPermissionsMap().containsKey(perm);
     }
 
     public void addPermission(String perm) {
-        this.getPlayerPermissions().add(perm);
+        this.getAllPlayerPermissionsMap().put(perm, new Permission(perm, false));
         this.getPermissionAttachment().setPermission(perm, true);
         this.saveData(PlayerData.PERMISSIONS);
     }
 
     public void removePermission(String permission) {
-        this.getPlayerPermissions().remove(permission);
+        this.getAllPlayerPermissionsMap().remove(permission);
         this.getPermissionAttachment().unsetPermission(permission);
+        this.saveData(PlayerData.PERMISSIONS);
+    }
+
+    public void removePermission(Permission permission) {
+        this.getAllPlayerPermissionsMap().remove(permission.getPermissionString());
+        this.getPermissionAttachment().unsetPermission(permission.getPermissionString());
         this.saveData(PlayerData.PERMISSIONS);
     }
 
@@ -227,7 +250,7 @@ public class RPPlayer {
                 RPPlayersConfig.file().set(this.getUUID() + ".Rank", this.getRank().getName());
                 break;
             case PERMISSIONS:
-                RPPlayersConfig.file().set(this.getUUID() + ".Permissions", this.getPlayerPermissions());
+                RPPlayersConfig.file().set(this.getUUID() + ".Permissions", this.getAllPlayerPermissions().stream().map(Permission::getPermissionString2Save).collect(Collectors.toList()));
                 break;
             case SU:
                 RPPlayersConfig.file().set(this.getUUID() + ".Super-User", this.isSuperUser());

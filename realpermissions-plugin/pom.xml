@@ -6,7 +6,7 @@
 
     <groupId>joserodpt</groupId>
     <artifactId>realpermissions-plugin</artifactId>
-    <version>0.2.3</version>
+    <version>0.3</version>
     <packaging>jar</packaging>
 
     <name>realpermissions-plugin</name>
@@ -92,7 +92,7 @@
         <dependency>
             <groupId>joserodpt</groupId>
             <artifactId>realpermissions-api</artifactId>
-            <version>0.2.3</version>
+            <version>0.3</version>
             <scope>compile</scope>
         </dependency>
         <dependency>

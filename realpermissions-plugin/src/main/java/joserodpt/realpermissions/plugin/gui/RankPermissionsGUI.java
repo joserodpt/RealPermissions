@@ -67,7 +67,7 @@ public class RankPermissionsGUI {
     }
 
     public void load() {
-        p = new Pagination<>(15, r.getPermissions());
+        p = new Pagination<>(15, r.getAllPermissions());
         fillChest(p.getPage(pageNumber));
     }
 
@@ -90,7 +90,7 @@ public class RankPermissionsGUI {
                 default:
                     if (!items.isEmpty()) {
                         Permission wi = items.get(0);
-                        this.inv.setItem(i, wi.getPermissionIcon(this.r.getName()));
+                        this.inv.setItem(i, wi.getRankPermissionIcon(this.r.getName()));
                         this.display.put(i, wi);
                         items.remove(0);
                     } else {
@@ -211,6 +211,7 @@ public class RankPermissionsGUI {
                         if (current.display.containsKey(e.getRawSlot())) {
                             Permission perm = current.display.get(e.getRawSlot());
 
+                            //flip permission
                             if (Objects.requireNonNull(e.getClick()) == ClickType.DROP) {
                                 if (perm.getAssociatedRankName().equalsIgnoreCase(current.r.getName())) {
                                     current.r.removePermission(perm);
@@ -220,6 +221,11 @@ public class RankPermissionsGUI {
                                 } else {
                                     TranslatableLine.PERMISSIONS_PERMISSION_ASSOCIATED_WITH_OTHER_RANK.setV1(TranslatableLine.ReplacableVar.RANK.eq(perm.getAssociatedRankName())).send(p);
                                 }
+                            } else {
+                                perm.negatePermission();
+                                current.r.saveData(Rank.RankData.PERMISSIONS, true);
+                                current.rp.getRankManager().refreshPermsAndPlayers();
+                                current.load();
                             }
                         }
                     }

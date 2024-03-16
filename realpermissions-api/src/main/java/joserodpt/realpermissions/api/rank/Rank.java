@@ -72,7 +72,7 @@ public class Rank {
             this.getInheritances().forEach(rank -> desc.add(" &f- &b" + rank.getName() + " &f(&b" + rank.getRankPermissions().size() + " &fperms)"));
         }
 
-        desc.addAll(Arrays.asList("","&b" + this.getPermissions().size() + " &ftotal permissions","",
+        desc.addAll(Arrays.asList("","&b" + this.getPermissions(false).size() + " &ftotal permissions","",
                 "&a&nLeft-Click&r&f to view this rank in detail.",
                 "&e&nRight-Click&r&f to set this rank as the default one.",
                 "&c&nQ (Drop)&f to remove this rank"));
@@ -135,20 +135,22 @@ public class Rank {
         return this.permissions;
     }
 
-    public List<Permission> getPermissions() {
+    public List<Permission> getAllPermissions() {
         List<Permission> tmp = this.getRankPermissions();
         tmp.addAll(this.getInheritancePermissions());
         return tmp;
     }
 
+    public List<Permission> getPermissions(boolean negated) {
+        List<Permission> tmp = this.getRankPermissions();
+        tmp.addAll(this.getInheritancePermissions());
+        return tmp.stream().filter(permission -> permission.isNegated() == negated).collect(Collectors.toList());
+    }
+
     public List<Permission> getRankPermissions() {
-        List<Permission> perms = new ArrayList<>();
-        for (Permission value : this.getMapPermissions().values()) {
-            if (isRankPermission(value)) {
-                perms.add(value);
-            }
-        }
-        return perms;
+        return this.getMapPermissions().values().stream()
+                .filter(this::isRankPermission)
+                .collect(Collectors.toList());
     }
 
     public List<Permission> getInheritancePermissions() {
@@ -163,7 +165,7 @@ public class Rank {
 
     public List<String> getRankPermissionStrings() {
        return this.getRankPermissions().stream()
-               .map(Permission::getPermissionString)
+               .map(Permission::getPermissionString2Save)
                .collect(Collectors.toList());
     }
 
@@ -209,7 +211,7 @@ public class Rank {
     }
 
     public void addPermission(String perm) {
-        this.addPermission(new Permission(perm, this.getName()));
+        this.addPermission(new Permission(perm, this.getName(), false));
     }
 
     public void addPermission(Permission p) {

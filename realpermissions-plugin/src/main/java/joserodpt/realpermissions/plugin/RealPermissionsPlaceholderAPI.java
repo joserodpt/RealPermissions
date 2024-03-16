@@ -104,14 +104,14 @@ public class RealPermissionsPlaceholderAPI extends PlaceholderExpansion {
             return p.getRank().getPrefix();
         }
         if (identifier.equalsIgnoreCase("rank_permission_count")) {
-            return p.getRank().getPermissions().size()+"";
+            return p.getRank().getPermissions(false).size()+"";
         }
         if (identifier.equalsIgnoreCase("timed_rank_time_left")) {
             return p.hasTimedRank() ? plugin.getPlayerManager().getPlayer(player.getUniqueId()).getTimedRank_countdown().getSecondsLeft()+""
                     : "none";
         }
         if (identifier.equalsIgnoreCase("player_permission_count")) {
-            return p.getPlayerPermissions().size()+"";
+            return p.getAllPlayerPermissions().size()+"";
         }
 
         return null;

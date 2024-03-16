@@ -20,21 +20,42 @@ import org.bukkit.inventory.ItemStack;
 import java.util.Arrays;
 
 public class Permission {
-    private final String permissionString;
+    private String permissionString;
     private String associatedRankName;
 
-    public Permission(String perm) {
-        //for player permissions
-        this.permissionString = perm;
+    private boolean isNegated;
+
+    public Permission(String permission) {
+        boolean isN = permission.startsWith("-");
+        //for player permissions loading
+        this.permissionString = permission; if (isN) { this.permissionString = permission.substring(1); }
+        this.isNegated = isN;
     }
 
-    public Permission(String permission, String associatedRankName) {
-        this.permissionString = permission;
+    public Permission(String permission, boolean isNegated) {
+        //for player permissions
+        this.permissionString = permission; if (isNegated) { this.permissionString = permission.substring(1); }
+        this.isNegated = isNegated;
+    }
+
+    public Permission(String permission, String associatedRankName, boolean isNegated) {
+        this.permissionString = permission; if (isNegated) { this.permissionString = permission.substring(1); }
         this.associatedRankName = associatedRankName;
+        this.isNegated = isNegated;
     }
 
     public String getPermissionString() {
         return this.permissionString;
+    }
+
+    public String getPermissionString2Save() {
+        return this.isNegated ? "-" + this.permissionString : this.permissionString;
+    }
+
+    public boolean isNegated() { return this.isNegated; }
+
+    public void negatePermission() {
+        this.isNegated = !this.isNegated;
     }
 
     public String getPermissionStringStyled() {
@@ -45,8 +66,12 @@ public class Permission {
         return this.associatedRankName;
     }
 
-    public ItemStack getPermissionIcon(String rank) {
-        return Items.createItem(Material.PAPER, 1, "&f&l" + this.getPermissionString(), Arrays.asList(this.getAssociatedRankName().equalsIgnoreCase(rank) ? "" : "Permission inherited from &b" + this.getAssociatedRankName(), "","&fQ (Drop) to &cremove"));
+    public ItemStack getPlayerPermissionIcon() {
+        return Items.createItem(this.isNegated ? Material.PAPER : Material.FILLED_MAP, 1, (this.isNegated() ? "&c&l" : "&f&l") + this.getPermissionString(), Arrays.asList("&a&nClick&r&f to " + (this.isNegated() ? "&aactivate" : "&cdeactivate") + " &r&fthis permission.","&c&nQ (Drop)&r&f to &cremove"));
+    }
+
+    public ItemStack getRankPermissionIcon(String rank) {
+        return Items.createItem(this.isNegated ? Material.PAPER : Material.FILLED_MAP, 1, (this.isNegated() ? "&c&l" : "&f&l") + this.getPermissionString(), Arrays.asList(this.getAssociatedRankName().equalsIgnoreCase(rank) ? "" : "Permission inherited from &b" + this.getAssociatedRankName(), "&a&nClick&r&f to " + (this.isNegated() ? "&aactivate" : "&cdeactivate") + " &r&fthis permission.","&c&nQ (Drop)&r&f to &cremove"));
     }
 
     public void setAssociatedRankName(String input) {
