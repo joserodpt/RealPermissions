@@ -19,7 +19,7 @@ import joserodpt.realpermissions.api.config.RPPlayersConfig;
 import joserodpt.realpermissions.api.config.RPRanksConfig;
 import joserodpt.realpermissions.api.config.RPRankupsConfig;
 import joserodpt.realpermissions.api.player.RPPlayer;
-import joserodpt.realpermissions.api.pluginhookup.ExternalPluginPermission;
+import joserodpt.realpermissions.api.pluginhook.ExternalPluginPermission;
 import joserodpt.realpermissions.api.rank.Rank;
 import joserodpt.realpermissions.api.utils.PlayerInput;
 import joserodpt.realpermissions.api.utils.Text;
@@ -84,7 +84,7 @@ public final class RealPermissionsPlugin extends JavaPlugin {
 
         //hook into vault
         if (setupEconomy()) {
-            realPermissions.getHookupAPI().injectVaultPermissions(getServer().getPluginManager().getPlugin("Vault").getDescription().getVersion());
+            realPermissions.getHooksAPI().injectVaultPermissions(getServer().getPluginManager().getPlugin("Vault").getDescription().getVersion());
             getLogger().info("Vault found and Hooked into!");
             realPermissions.getRankManager().loadRankups();
             getLogger().info("Loaded " + realPermissions.getRankManager().getRankups().size() + " rankups.");
@@ -116,12 +116,12 @@ public final class RealPermissionsPlugin extends JavaPlugin {
                 Arrays.asList("add", "remove")
         );
         cm.getCompletionHandler().register("#permissions", input ->
-                realPermissions.getHookupAPI().getListPermissionsExternalPlugins().stream()
+                realPermissions.getHooksAPI().getListPermissionsExternalPlugins().stream()
                         .map(ExternalPluginPermission::getPermission)
                         .collect(Collectors.toList())
         );
         cm.getCompletionHandler().register("#plugins", input ->
-                new ArrayList<>(realPermissions.getHookupAPI().getExternalPluginList().keySet())
+                new ArrayList<>(realPermissions.getHooksAPI().getExternalPluginList().keySet())
         );
 
         cm.register(new RealPermissionsCMD(realPermissions));
@@ -144,7 +144,7 @@ public final class RealPermissionsPlugin extends JavaPlugin {
         pm.registerEvents(EPPermissionsViewerGUI.getListener(), this);
 
         //load permissions from known plugins
-        realPermissions.getHookupAPI().loadPermissionsFromKnownPlugins();
+        realPermissions.getHooksAPI().loadPermissionsFromKnownPlugins();
 
         new UpdateChecker(this, 112560).getVersion(version -> {
             if (this.getDescription().getVersion().equalsIgnoreCase(version)) {

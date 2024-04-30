@@ -3,6 +3,7 @@ System:
   No-Permission-Command: "&cYou don't have permission to execute this command!"
   No-Player-Found: "%cThere is no player named like that."
   Super-User-State: "%player% 's &fsuper user state: "
+  Registered-Hooks: "&fThere are &b%string% &fhooked up plugins to &fReal&cPermissions&f:"
 Ranks:
   Set-Default: "%rank%&r&f is now the &bdefault rank&f!"
   Cant-Delete-Default-Rank: "&cYou can't delete the default rank."
@@ -39,4 +40,4 @@ Rankup:
   Error: "&fAn &cerror &foccured: %string%"
   Ranked-Up: "&fYou ranked up to &b%rank% &ffor &b%string% &fcoins."
   Already-Has-Rank: "&cYou already have this rank."
-Version: 2
+Version: 3

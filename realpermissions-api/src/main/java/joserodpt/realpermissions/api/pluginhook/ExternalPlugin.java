@@ -1,4 +1,4 @@
-package joserodpt.realpermissions.api.pluginhookup;
+package joserodpt.realpermissions.api.pluginhook;
 
 /*
  *   _____            _ _____

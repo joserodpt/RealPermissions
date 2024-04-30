@@ -22,7 +22,7 @@ import java.util.logging.Logger;
 public abstract class RealPermissionsAPI  {
 
     private static RealPermissionsAPI instance;
-    private final RealPermissionsHookupAPI hookupAPI = new RealPermissionsHookupAPI(this);
+    private final RealPermissionsHooksAPI hookAPI = new RealPermissionsHooksAPI(this);
 
     /**
      * Gets instance of this API
@@ -47,7 +47,7 @@ public abstract class RealPermissionsAPI  {
 
     public abstract RankManagerAPI getRankManager();
     public abstract PlayerManagerAPI getPlayerManager();
-    public RealPermissionsHookupAPI getHookupAPI() { return hookupAPI; }
+    public RealPermissionsHooksAPI getHooksAPI() { return hookAPI; }
     public abstract JavaPlugin getPlugin();
     public abstract Economy getEcon();
 

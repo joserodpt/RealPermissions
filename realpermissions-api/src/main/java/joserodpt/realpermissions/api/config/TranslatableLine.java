@@ -22,6 +22,7 @@ public enum TranslatableLine {
     SYSTEM_NO_PERMISSION_COMMAND("System.No-Permission-Command"),
     SYSTEM_NO_PLAYER_FOUND("System.No-Player-Found"),
     SYSTEM_SUPER_USER_STATE("System.Super-User-State"),
+    SYSTEM_REGISTERED_HOOKS("System.Registered-Hooks", ReplacableVar.STRING),
 
     // Rank Messages
     RANKS_SET_DEFAULT("Ranks.Set-Default", ReplacableVar.RANK),
@@ -96,7 +97,7 @@ public enum TranslatableLine {
             s = s.replace(v2.getKey(), v2.getVal());
         }
 
-        return s;
+        return Text.color(s);
     }
 
     public void send(CommandSender p) {

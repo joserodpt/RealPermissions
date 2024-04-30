@@ -94,11 +94,11 @@ You can access the RealPermissionsAPI via the RealPermissionsAPI class:
 var rpAPI = RealPermissionsAPI.getInstance();
 ```
 
-For registering a plugin in RealPermissions, you have to use the RealPermissionsHookupAPI:
+For registering a plugin in RealPermissions, you have to use the RealPermissionsHookAPI:
 
 ```java
 var rpAPI = RealPermissionsAPI.getInstance();
-rpAPI.getHookupAPI().addHookup(new ExternalPlugin("Name", "&aDisplayName", "Description", Material.CHEST, Arrays.asList(
+rpAPI.getHookAPI().addHookup(new ExternalPlugin("Name", "&aDisplayName", "Description", Material.CHEST, Arrays.asList(
         new ExternalPluginPermission("permission.one", "description1", Arrays.asList("command1", "command2")),
         new ExternalPluginPermission("permission.two", "description2")
         ), "PLUGIN_VERSION", ExternalPlugin.PluginSource.API));

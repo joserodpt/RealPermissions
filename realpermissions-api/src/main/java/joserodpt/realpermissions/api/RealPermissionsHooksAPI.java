@@ -14,8 +14,8 @@ package joserodpt.realpermissions.api;
  */
 
 import joserodpt.realpermissions.api.config.RPConfig;
-import joserodpt.realpermissions.api.pluginhookup.ExternalPlugin;
-import joserodpt.realpermissions.api.pluginhookup.ExternalPluginPermission;
+import joserodpt.realpermissions.api.pluginhook.ExternalPlugin;
+import joserodpt.realpermissions.api.pluginhook.ExternalPluginPermission;
 import joserodpt.realpermissions.api.utils.Text;
 import org.bukkit.Material;
 import org.bukkit.plugin.Plugin;
@@ -29,15 +29,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class RealPermissionsHookupAPI {
+public class RealPermissionsHooksAPI {
 
     private final RealPermissionsAPI rpa;
 
     private final Map<String, ExternalPlugin> externalPluginList = new HashMap<>();
 
-    public RealPermissionsHookupAPI(RealPermissionsAPI rpa) { this.rpa = rpa; }
+    public RealPermissionsHooksAPI(RealPermissionsAPI rpa) { this.rpa = rpa; }
 
-    public void addHookup(ExternalPlugin ep) {
+    public void addHook(ExternalPlugin ep) {
         if (this.externalPluginList.containsKey(ep.getName()) && ep.getPluginSource() == ExternalPlugin.PluginSource.JAR_YML_SCAN) {
             return;
         }
@@ -46,7 +46,7 @@ public class RealPermissionsHookupAPI {
         rpa.getLogger().info("[API] Loaded " + ep.getPermissionList().size() + " permissions from " + ep.getName() + ", version: " + ep.getVersion());
     }
 
-    public void addPermissionToHookup(String externalPluginID, ExternalPluginPermission epp) {
+    public void addPermissionToHook(String externalPluginID, ExternalPluginPermission epp) {
         if (this.externalPluginList.containsKey(externalPluginID)) {
             this.externalPluginList.get(externalPluginID).getPermissionList().add(epp);
         }
@@ -55,12 +55,12 @@ public class RealPermissionsHookupAPI {
         }
     }
 
-    public void addPermissionToHookup(String externalPluginID, List<ExternalPluginPermission> epp) {
+    public void addPermissionToHook(String externalPluginID, List<ExternalPluginPermission> epp) {
         if (epp.isEmpty()) {
             return;
         }
         if (epp.size() == 1) {
-            addPermissionToHookup(externalPluginID, epp.get(0));
+            addPermissionToHook(externalPluginID, epp.get(0));
         } else {
             if (this.externalPluginList.containsKey(externalPluginID)) {
                 epp.forEach(externalPluginPermission -> this.externalPluginList.get(externalPluginID).getPermissionList().add(externalPluginPermission));
@@ -71,7 +71,7 @@ public class RealPermissionsHookupAPI {
         }
     }
 
-    public void removePermissionFromHookup(String externalPluginID, ExternalPluginPermission epp) {
+    public void removePermissionFromHook(String externalPluginID, ExternalPluginPermission epp) {
         if (this.externalPluginList.containsKey(externalPluginID)) {
             removeEPPString(externalPluginID, epp);
         }
@@ -93,12 +93,12 @@ public class RealPermissionsHookupAPI {
         }
     }
 
-    public void removePermissionFromHookup(String externalPluginID, List<ExternalPluginPermission> epp) {
+    public void removePermissionFromHook(String externalPluginID, List<ExternalPluginPermission> epp) {
         if (epp.isEmpty()) {
             return;
         }
         if (epp.size() == 1) {
-            removePermissionFromHookup(externalPluginID, epp.get(0));
+            removePermissionFromHook(externalPluginID, epp.get(0));
         } else {
             if (this.externalPluginList.containsKey(externalPluginID)) {
                 for (ExternalPluginPermission toRemove : epp) {
@@ -111,7 +111,7 @@ public class RealPermissionsHookupAPI {
         }
     }
 
-    public void removeHookup(ExternalPlugin ep) {
+    public void removeHook(ExternalPlugin ep) {
         this.externalPluginList.remove(ep.getName());
     }
 
@@ -129,7 +129,7 @@ public class RealPermissionsHookupAPI {
     }
 
     public void injectVaultPermissions(String ver) {
-        addHookup(new ExternalPlugin("Vault", "&aVault", "Vault is a Permissions, Chat, & Economy API.", Material.CHEST, Arrays.asList(
+        addHook(new ExternalPlugin("Vault", "&aVault", "Vault is a Permissions, Chat, & Economy API.", Material.CHEST, Arrays.asList(
                 new ExternalPluginPermission("vault.admin", "Allows access to vault info and conversion commands", Arrays.asList("vault-info", "vault-conversion")),
                 new ExternalPluginPermission("vault.update", "Anyone with this permission will be notified when Vault is out-dated")
         ), ver, ExternalPlugin.PluginSource.API));
@@ -177,7 +177,7 @@ public class RealPermissionsHookupAPI {
                     List<ExternalPluginPermission> list = new ArrayList<>();
                     plugin.getDescription().getPermissions().forEach(permission -> list.add(new ExternalPluginPermission(permission.getName(), permission.getDescription())));
                     plugin.getDescription().getPermissions().forEach(permission -> permission.getChildren().keySet().forEach(s -> list.add(new ExternalPluginPermission(s, "Child of: " + permission.getName()))));
-                    addHookup(new ExternalPlugin(name, plugin.getDescription().getDescription(), list, plugin.getDescription().getVersion(), ExternalPlugin.PluginSource.JAR_YML_SCAN));
+                    addHook(new ExternalPlugin(name, plugin.getDescription().getDescription(), list, plugin.getDescription().getVersion(), ExternalPlugin.PluginSource.JAR_YML_SCAN));
                     counter += list.size();
                 }
             }

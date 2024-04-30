@@ -16,8 +16,8 @@ package joserodpt.realpermissions.plugin.gui;
 import joserodpt.realpermissions.api.RealPermissionsAPI;
 import joserodpt.realpermissions.api.config.TranslatableLine;
 import joserodpt.realpermissions.api.player.RPPlayer;
-import joserodpt.realpermissions.api.pluginhookup.ExternalPlugin;
-import joserodpt.realpermissions.api.pluginhookup.ExternalPluginPermission;
+import joserodpt.realpermissions.api.pluginhook.ExternalPlugin;
+import joserodpt.realpermissions.api.pluginhook.ExternalPluginPermission;
 import joserodpt.realpermissions.api.rank.Rank;
 import joserodpt.realpermissions.api.utils.Items;
 import joserodpt.realpermissions.api.utils.Pagination;
@@ -94,7 +94,7 @@ public class ExternalPluginsViewerGUI {
     }
 
     public void load(String search) {
-        this.p = new Pagination<>(28, rp.getHookupAPI().getExternalPluginList().values().stream()
+        this.p = new Pagination<>(28, rp.getHooksAPI().getExternalPluginList().values().stream()
                 .filter(permission -> permission.getName().toLowerCase().contains(search.toLowerCase()))
                 .sorted(Comparator.comparing(ExternalPlugin::getName))
                 .collect(Collectors.toList()));
@@ -198,7 +198,7 @@ public class ExternalPluginsViewerGUI {
                             case 0:
                                 p.closeInventory();
                                 new PlayerInput(p, s -> {
-                                    if (current.rp.getHookupAPI().getExternalPluginList().keySet().stream().anyMatch(ep -> ep.toLowerCase().contains(s.toLowerCase()))) {
+                                    if (current.rp.getHooksAPI().getExternalPluginList().keySet().stream().anyMatch(ep -> ep.toLowerCase().contains(s.toLowerCase()))) {
                                         if (current.rank != null) {
                                             ExternalPluginsViewerGUI rg = new ExternalPluginsViewerGUI(p, current.rp, current.rank, s);
                                             rg.openInventory(p);
@@ -237,7 +237,7 @@ public class ExternalPluginsViewerGUI {
                                 p.closeInventory();
                                 new PlayerInput(p, s -> {
 
-                                    List<ExternalPluginPermission> search = current.rp.getHookupAPI().getListPermissionsExternalPlugins().stream().filter(externalPluginPermission -> externalPluginPermission.getPermission().toLowerCase().contains(s.toLowerCase())).collect(Collectors.toList());
+                                    List<ExternalPluginPermission> search = current.rp.getHooksAPI().getListPermissionsExternalPlugins().stream().filter(externalPluginPermission -> externalPluginPermission.getPermission().toLowerCase().contains(s.toLowerCase())).collect(Collectors.toList());
 
                                     if (!search.isEmpty()) {
                                         if (current.rank != null) {

@@ -21,7 +21,7 @@ import joserodpt.realpermissions.api.config.RPRanksConfig;
 import joserodpt.realpermissions.api.config.RPRankupsConfig;
 import joserodpt.realpermissions.api.config.TranslatableLine;
 import joserodpt.realpermissions.api.player.RPPlayer;
-import joserodpt.realpermissions.api.pluginhookup.ExternalPlugin;
+import joserodpt.realpermissions.api.pluginhook.ExternalPlugin;
 import joserodpt.realpermissions.api.rank.Rank;
 import joserodpt.realpermissions.api.utils.Text;
 import joserodpt.realpermissions.plugin.gui.EPPermissionsViewerGUI;
@@ -141,6 +141,7 @@ public class RealPermissionsCMD extends CommandBase {
 
         rp.getPlayerManager().getPlayer(p).setSuperUser(!rp.getPlayerManager().getPlayer(p).isSuperUser());
 
+        //deixar estar quietinho
         Text.send(commandSender, TranslatableLine.SYSTEM_SUPER_USER_STATE.setV1(TranslatableLine.ReplacableVar.PLAYER.eq(p.getName())).get() + (rp.getPlayerManager().getPlayer(p).isSuperUser() ? "&aON" : "&cOFF"));
     }
 
@@ -400,15 +401,15 @@ public class RealPermissionsCMD extends CommandBase {
         }
     }
 
-    @SubCommand("hookups")
+    @SubCommand("hooks")
     @Alias("hks")
     @Permission("realpermissions.admin")
-    @WrongUsage("/rp hookups")
-    public void hookups(final CommandSender commandSender) {
-        Text.send(commandSender, "&fThere are &b" + rp.getHookupAPI().getExternalPluginList().size() + " &fhooked up plugins to &fReal&cPermissions&f:");
+    @WrongUsage("/rp hooks")
+    public void hooks(final CommandSender commandSender) {
+        TranslatableLine.SYSTEM_REGISTERED_HOOKS.setV1(TranslatableLine.ReplacableVar.STRING.eq(rp.getHooksAPI().getExternalPluginList().size()+"")).send(commandSender);
 
-        for (String pluginName : rp.getHookupAPI().getExternalPluginListSorted()) {
-            ExternalPlugin ep = rp.getHookupAPI().getExternalPluginList().get(pluginName);
+        for (String pluginName : rp.getHooksAPI().getExternalPluginListSorted()) {
+            ExternalPlugin ep = rp.getHooksAPI().getExternalPluginList().get(pluginName);
             commandSender.sendMessage(Text.color("&7 > &f" + ep.getDisplayName() + " &r&f[" + pluginName + ", version: " + ep.getVersion() + "] - &b" + ep.getPermissionList().size() + " &fpermissions registered."));
         }
     }
@@ -418,14 +419,14 @@ public class RealPermissionsCMD extends CommandBase {
     @Completion("#plugins")
     @Permission("realpermissions.admin")
     @WrongUsage("/rp hook <plugin>")
-    public void hookups(final CommandSender commandSender, final String pluginName) {
+    public void hook(final CommandSender commandSender, final String pluginName) {
         if (commandSender instanceof Player) {
             if (pluginName == null || pluginName.isEmpty()) {
                 return;
             }
 
-            if (rp.getHookupAPI().getExternalPluginList().containsKey(pluginName)) {
-                EPPermissionsViewerGUI epvg = new EPPermissionsViewerGUI((Player) commandSender, rp, rp.getHookupAPI().getExternalPluginList().get(pluginName));
+            if (rp.getHooksAPI().getExternalPluginList().containsKey(pluginName)) {
+                EPPermissionsViewerGUI epvg = new EPPermissionsViewerGUI((Player) commandSender, rp, rp.getHooksAPI().getExternalPluginList().get(pluginName));
                 epvg.openInventory((Player) commandSender);
             }
         } else {
