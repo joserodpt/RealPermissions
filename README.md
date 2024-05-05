@@ -98,7 +98,7 @@ For registering a plugin in RealPermissions, you have to use the RealPermissions
 
 ```java
 var rpAPI = RealPermissionsAPI.getInstance();
-rpAPI.getHookAPI().addHookup(new ExternalPlugin("Name", "&aDisplayName", "Description", Material.CHEST, Arrays.asList(
+rpAPI.getHooksAPI().addHook(new ExternalPlugin("Name", "&aDisplayName", "Description", Material.CHEST, Arrays.asList(
         new ExternalPluginPermission("permission.one", "description1", Arrays.asList("command1", "command2")),
         new ExternalPluginPermission("permission.two", "description2")
         ), "PLUGIN_VERSION", ExternalPlugin.PluginSource.API));
