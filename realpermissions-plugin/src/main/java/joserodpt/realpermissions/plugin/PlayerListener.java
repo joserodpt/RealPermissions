@@ -47,7 +47,9 @@ public class PlayerListener implements Listener {
     public void onPlayerChat(AsyncPlayerChatEvent e) {
         if (RPConfig.file().getBoolean("RealPermissions.Chat-Formatting")) {
             Rank r = rp.getPlayerManager().getPlayer(e.getPlayer()).getRank();
-            e.setFormat(Text.formatChat(e.getPlayer(), e.getMessage(), r));
+            if (r != null) {
+                e.setFormat(Text.formatChat(e.getPlayer(), e.getMessage(), r));
+            }
         }
     }
 }
