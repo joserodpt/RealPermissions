@@ -134,6 +134,7 @@ public class PlayerManager extends PlayerManagerAPI {
 
         Map<String, Long> rankCounts = playerMap.values()
                 .stream()
+                .filter(rpPlayer -> rpPlayer.getRank() != null)
                 .collect(Collectors.groupingBy(
                         value -> value.getRank().getPrefix(),
                         Collectors.counting()
