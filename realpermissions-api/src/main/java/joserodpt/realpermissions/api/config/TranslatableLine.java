@@ -40,7 +40,6 @@ public enum TranslatableLine {
     RANKS_PREFIX_SET("Ranks.Prefix-Set", ReplacableVar.NAME),
     RANKS_NAME_SET("Ranks.Name-Set", ReplacableVar.NAME),
 
-
     PERMISSIONS_RANK_ALREADY_HAS_PERMISSION("Permissions.Rank-Already-Has-Permission", ReplacableVar.PERM),
     PERMISSIONS_PLAYER_ALREADY_HAS_PERMISSION("Permissions.Player-Already-Has-Permission", ReplacableVar.PERM),
     PERMISSIONS_RANK_DOESNT_HAVE_PERMISSION("Permissions.Rank-Doesnt-Have-Permission", ReplacableVar.PERM),
