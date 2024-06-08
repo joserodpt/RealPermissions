@@ -30,6 +30,7 @@ import org.bukkit.permissions.PermissionAttachment;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -207,7 +208,7 @@ public class RPPlayer {
     }
 
     public List<Permission> getAllRankPermissions() {
-        return this.getRank().getAllPermissions(); //filter negated permissions
+        return this.getRank() == null ? Collections.emptyList() : this.getRank().getAllPermissions(); //filter negated permissions
     }
 
 
