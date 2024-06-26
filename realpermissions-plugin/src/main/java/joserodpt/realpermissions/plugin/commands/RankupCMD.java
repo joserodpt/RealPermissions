@@ -36,6 +36,7 @@ public class RankupCMD extends CommandBase {
 
     @Default
     @Permission("realpermissions.rankup")
+    @SuppressWarnings("unused")
     public void defaultCommand(final CommandSender commandSender) {
         if (!rp.getRankManager().isRankupEnabled()) {
             TranslatableLine.RANKUP_DISABLED.send(commandSender);
