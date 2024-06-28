@@ -197,7 +197,7 @@ public class RPPlayer {
     }
 
     private void setVisual() {
-        if (RPConfig.file().getBoolean("realpermissions.prefix-in-tablist")) {
+        if (RPConfig.file().getBoolean("RealPermissions.Prefix-In-Tablist")) {
             Player p = Bukkit.getPlayer(this.getUUID());
             p.setPlayerListName(Text.color(this.getRank().getPrefix() + " &r" + p.getDisplayName()));
         }
