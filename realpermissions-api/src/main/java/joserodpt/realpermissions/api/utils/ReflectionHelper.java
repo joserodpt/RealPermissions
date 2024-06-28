@@ -7,8 +7,10 @@ import java.lang.reflect.Field;
 
 public class ReflectionHelper
 {
+    private static final String CRAFTBUKKIT_PACKAGE = Bukkit.getServer().getClass().getPackage().getName();
+
     public static Class<?> getCraftBukkitClass(final String str) {
-        return getClass("org.bukkit.craftbukkit." + getServerVersion() + "." + str);
+        return getClass(CRAFTBUKKIT_PACKAGE + "." + str);
     }
     
     public static Class<?> getClass(final String className) {
@@ -29,9 +31,5 @@ public class ReflectionHelper
             f.set(instance, var);
         } catch (Exception ignored) {
         }
-    }
-
-    public static String getServerVersion() {
-        return Bukkit.getServer().getClass().getPackage().getName().substring(23);
     }
 }
