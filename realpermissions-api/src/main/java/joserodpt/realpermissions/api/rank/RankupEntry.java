@@ -27,7 +27,7 @@ public class RankupEntry {
     private Double cost;
 
     public RankupEntry() {
-        this.r = RealPermissionsAPI.getInstance().getRankManager().getDefaultRank();
+        this.r = RealPermissionsAPI.getInstance().getRankManagerAPI().getDefaultRank();
         this.cost = 1000000D;
     }
 

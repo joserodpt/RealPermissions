@@ -229,7 +229,7 @@ public class RankupPathGUI {
                                 }
                             } else {
                                 p.closeInventory();
-                                current.rp.getRankManager().processRankup(current.player, current.rk, po);
+                                current.rp.getRankManagerAPI().processRankup(current.player, current.rk, po);
                             }
                         }
                     }

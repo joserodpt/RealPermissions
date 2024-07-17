@@ -17,6 +17,7 @@ import joserodpt.realpermissions.api.RealPermissionsAPI;
 import joserodpt.realpermissions.api.player.RPPlayer;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.OfflinePlayer;
+import org.jetbrains.annotations.NotNull;
 
 public class RealPermissionsPlaceholderAPI extends PlaceholderExpansion {
 
@@ -63,6 +64,7 @@ public class RealPermissionsPlaceholderAPI extends PlaceholderExpansion {
      * @return The name of the author as a String.
      */
     @Override
+    @NotNull
     public String getAuthor() {
         return this.plugin.getPlugin().getDescription().getAuthors().toString();
     }
@@ -77,6 +79,7 @@ public class RealPermissionsPlaceholderAPI extends PlaceholderExpansion {
      * @return The identifier in {@code %<identifier>_<value>%} as String.
      */
     @Override
+    @NotNull
     public String getIdentifier() {
         return "realpermissions";
     }
@@ -90,13 +93,14 @@ public class RealPermissionsPlaceholderAPI extends PlaceholderExpansion {
      * @return The version as a String.
      */
     @Override
+    @NotNull
     public String getVersion() {
         return this.plugin.getPlugin().getDescription().getVersion();
     }
 
     @Override
     public String onRequest(final OfflinePlayer player, final String identifier) {
-        final RPPlayer p = plugin.getPlayerManager().getPlayer(player.getUniqueId());
+        final RPPlayer p = plugin.getPlayerManagerAPI().getPlayer(player.getUniqueId());
         if (identifier.equalsIgnoreCase("rank_name")) {
             return p.getRank().getName();
         }
@@ -107,7 +111,7 @@ public class RealPermissionsPlaceholderAPI extends PlaceholderExpansion {
             return p.getRank().getPermissions(false).size()+"";
         }
         if (identifier.equalsIgnoreCase("timed_rank_time_left")) {
-            return p.hasTimedRank() ? plugin.getPlayerManager().getPlayer(player.getUniqueId()).getTimedRank_countdown().getSecondsLeft()+""
+            return p.hasTimedRank() ? plugin.getPlayerManagerAPI().getPlayer(player.getUniqueId()).getGetTimedRankCountdown().getSecondsLeft()+""
                     : "none";
         }
         if (identifier.equalsIgnoreCase("player_permission_count")) {

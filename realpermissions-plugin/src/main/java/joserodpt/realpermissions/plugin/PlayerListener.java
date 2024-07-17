@@ -32,7 +32,7 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
-        rp.getPlayerManager().playerJoin(e.getPlayer());
+        rp.getPlayerManagerAPI().playerJoin(e.getPlayer());
         if (e.getPlayer().isOp() && rp.hasNewUpdate()) {
             Text.send(e.getPlayer(), "&6&LWARNING! &r&fThere is a new update available for &fReal&cPermissions&f! https://www.spigotmc.org/resources/112560/");
         }
@@ -40,13 +40,13 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onPlayerLeave(PlayerQuitEvent e) {
-        rp.getPlayerManager().playerLeave(e.getPlayer());
+        rp.getPlayerManagerAPI().playerLeave(e.getPlayer());
     }
 
     @EventHandler
     public void onPlayerChat(AsyncPlayerChatEvent e) {
         if (RPConfig.file().getBoolean("RealPermissions.Chat-Formatting")) {
-            Rank r = rp.getPlayerManager().getPlayer(e.getPlayer()).getRank();
+            Rank r = rp.getPlayerManagerAPI().getPlayer(e.getPlayer()).getRank();
             if (r != null) {
                 e.setFormat(Text.formatChat(e.getPlayer(), e.getMessage(), r));
             }

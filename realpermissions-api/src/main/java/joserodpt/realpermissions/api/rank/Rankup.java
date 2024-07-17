@@ -51,7 +51,7 @@ public class Rankup {
         this.icon = Material.PAPER;
         this.desc = Collections.singletonList("Edit the Description and Display name in the config file");
         this.rankupEntries = new ArrayList<>();
-        this.rankupEntries.add(new RankupEntry(RealPermissionsAPI.getInstance().getRankManager().getDefaultRank(), 0D));
+        this.rankupEntries.add(new RankupEntry(RealPermissionsAPI.getInstance().getRankManagerAPI().getDefaultRank(), 0D));
         this.saveData(RankupData.ALL, true);
     }
 

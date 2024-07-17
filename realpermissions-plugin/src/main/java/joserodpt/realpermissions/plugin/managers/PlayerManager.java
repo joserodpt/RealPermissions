@@ -17,7 +17,7 @@ import joserodpt.realpermissions.api.RealPermissionsAPI;
 import joserodpt.realpermissions.api.config.RPPlayersConfig;
 import joserodpt.realpermissions.api.PlayerManagerAPI;
 import joserodpt.realpermissions.api.permission.Permission;
-import joserodpt.realpermissions.api.player.PlayerObject;
+import joserodpt.realpermissions.api.player.PlayerDataObject;
 import joserodpt.realpermissions.api.player.RPPlayer;
 import joserodpt.realpermissions.api.rank.Rank;
 import org.bukkit.Bukkit;
@@ -32,8 +32,6 @@ public class PlayerManager extends PlayerManagerAPI {
     public PlayerManager(RealPermissionsAPI rp) {
         this.rp = rp;
     }
-
-    public HashMap<UUID, RPPlayer> playerAttatchment = new HashMap<>();
 
     @Override
     public HashMap<UUID, RPPlayer> getPlayerMap() {
@@ -63,12 +61,12 @@ public class PlayerManager extends PlayerManagerAPI {
         if (RPPlayersConfig.file().isSection(p.getUniqueId().toString())) {
             //load player rank
             String rankName = RPPlayersConfig.file().getString(p.getUniqueId() + ".Rank");
-            player_rank = rp.getRankManager().getRank(rankName);
+            player_rank = rp.getRankManagerAPI().getRank(rankName);
 
             if (player_rank == null) {
                 rp.getLogger().severe("There is something wrong with " + p.getName() + "'s rank.");
                 rp.getLogger().severe("It appears that the rank he has: " + rankName + " doesn't exist anymore.");
-                player_rank = rp.getRankManager().getDefaultRank();
+                player_rank = rp.getRankManagerAPI().getDefaultRank();
                 RPPlayersConfig.file().set(p.getUniqueId() + ".Rank", player_rank.getName());
                 RPPlayersConfig.save();
                 rp.getLogger().severe("The player's rank is now the default rank.");
@@ -79,12 +77,12 @@ public class PlayerManager extends PlayerManagerAPI {
 
             //check if player has timed rank
             if (RPPlayersConfig.file().isSection(p.getUniqueId() + ".Timed-Rank")) {
-                previousRank = rp.getRankManager().getRank(RPPlayersConfig.file().getString(p.getUniqueId() + ".Timed-Rank.Previous-Rank"));
+                previousRank = rp.getRankManagerAPI().getRank(RPPlayersConfig.file().getString(p.getUniqueId() + ".Timed-Rank.Previous-Rank"));
 
                 if (previousRank == null) {
                     rp.getLogger().severe("There is something wrong with " + p.getName() + "'s previous timed rank.");
                     rp.getLogger().severe("It appears that the rank he has: " + rankName + " doesn't exist anymore.");
-                    player_rank = rp.getRankManager().getDefaultRank();
+                    player_rank = rp.getRankManagerAPI().getDefaultRank();
                     rp.getLogger().severe("The player's timed rank is now the default rank.");
                 }
 
@@ -103,7 +101,7 @@ public class PlayerManager extends PlayerManagerAPI {
             }
         } else {
             //save new player with default rank
-            player_rank = rp.getRankManager().getDefaultRank();
+            player_rank = rp.getRankManagerAPI().getDefaultRank();
 
             RPPlayersConfig.file().set(p.getUniqueId() + ".Rank", player_rank.getName());
             RPPlayersConfig.file().set(p.getUniqueId() + ".Name", p.getName());
@@ -114,7 +112,7 @@ public class PlayerManager extends PlayerManagerAPI {
 
         this.getPlayerMap().remove(p.getUniqueId());
 
-        RPPlayer pa = new RPPlayer(p, player_rank, permissions, RPPlayersConfig.file().getBoolean(p.getUniqueId() + ".Super-User"),rp);
+        RPPlayer pa = new RPPlayer(p, rp);
         this.getPlayerMap().put(p.getUniqueId(), pa);
 
         if (timedRank) {
@@ -169,35 +167,51 @@ public class PlayerManager extends PlayerManagerAPI {
     }
 
     @Override
-    public List<PlayerObject> getSavedPlayers() {
-        List<PlayerObject> ret = new ArrayList<>();
-        // Loop through the data
-        for (String uuid : RPPlayersConfig.file().getRoutesAsStrings(false)) {
-            String path = uuid + ".";
-            String name = RPPlayersConfig.file().getString(path + "Name");
-            String rank = RPPlayersConfig.file().getString(path + "Rank");
-            boolean isSuperUser = RPPlayersConfig.file().getBoolean(path + "Super-User");
-
-            Rank prank = rp.getRankManager().getRank(rank);
-            if (prank == null) {
-                rp.getLogger().severe("There is something wrong with " + name + "'s saved rank.");
-                rp.getLogger().severe("It appears that the rank he has: " + rank + " doesn't exist anymore.");
-                rp.getLogger().severe("The player's saved rank data will be ignored. Please rectify this issue.");
-            }
-
-            ret.add(new PlayerObject(UUID.fromString(uuid), name, prank, RPPlayersConfig.file().getStringList(path + "Permissions").stream()
-                    .map(Permission::new)
-                    .collect(Collectors.toList()) , isSuperUser, RPPlayersConfig.file().isSection(path + "Timed-Rank"),
-                    rp.getRankManager().getRank(RPPlayersConfig.file().getString(path + "Timed-Rank.Previous-Rank")), RPPlayersConfig.file().getInt(path + "Timed-Rank.Remaining")));
-        }
-
-        return ret;
+    public List<PlayerDataObject> getPlayerObjects() {
+        // Loop through the saved data
+        return RPPlayersConfig.file().getRoutesAsStrings(false).stream()
+                .map(UUID::fromString)
+                .map(this::getPlayerObject)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public void deletePlayer(PlayerObject po) {
+    public void deletePlayer(PlayerDataObject po) {
         this.getPlayerMap().remove(po.getUUID());
         RPPlayersConfig.file().remove(po.getUUID().toString());
         RPPlayersConfig.save();
+    }
+
+    @Override
+    public PlayerDataObject getPlayerObject(UUID uuid) {
+        String path = uuid + ".";
+        String name = RPPlayersConfig.file().getString(path + "Name");
+        String rank = RPPlayersConfig.file().getString(path + "Rank");
+        boolean isSuperUser = RPPlayersConfig.file().getBoolean(path + "Super-User");
+
+        Rank prank = rp.getRankManagerAPI().getRank(rank);
+        if (prank == null) {
+            rp.getLogger().severe("There is something wrong with " + name + "'s saved rank.");
+            rp.getLogger().severe("It appears that the rank he has: " + rank + " doesn't exist anymore.");
+            rp.getLogger().severe("The player's saved rank data will be ignored. Please rectify this issue.");
+        }
+
+        return new PlayerDataObject(uuid, name, prank, RPPlayersConfig.file().getStringList(path + "Permissions").stream()
+                .map(Permission::new)
+                .collect(Collectors.toList()) , isSuperUser, RPPlayersConfig.file().isSection(path + "Timed-Rank"),
+                rp.getRankManagerAPI().getRank(RPPlayersConfig.file().getString(path + "Timed-Rank.Previous-Rank")), RPPlayersConfig.file().getInt(path + "Timed-Rank.Remaining"));
+    }
+
+    @Override
+    public PlayerDataObject getPlayerObject(Player p) {
+        return getPlayerObject(p.getUniqueId());
+    }
+
+    @Override
+    public void updateReference(UUID uuid, PlayerDataObject playerDataObject) {
+        if (!playerAttatchment.containsKey(uuid)) {
+            return;
+        }
+        playerAttatchment.get(uuid).setPlayerObject(playerDataObject);
     }
 }

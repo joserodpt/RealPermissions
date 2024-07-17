@@ -38,7 +38,7 @@ public class RankupCMD extends CommandBase {
     @Permission("realpermissions.rankup")
     @SuppressWarnings("unused")
     public void defaultCommand(final CommandSender commandSender) {
-        if (!rp.getRankManager().isRankupEnabled()) {
+        if (!rp.getRankManagerAPI().isRankupEnabled()) {
             TranslatableLine.RANKUP_DISABLED.send(commandSender);
             return;
         }
@@ -46,7 +46,7 @@ public class RankupCMD extends CommandBase {
         if (commandSender instanceof Player) {
             Player p = (Player) commandSender;
 
-            RankupGUI rg = new RankupGUI(rp.getPlayerManager().getPlayer(p), rp, false);
+            RankupGUI rg = new RankupGUI(rp.getPlayerManagerAPI().getPlayer(p), rp, false);
             rg.openInventory(p);
         } else {
             Text.send(commandSender,"[RealPermissions] Only players can run this command.");

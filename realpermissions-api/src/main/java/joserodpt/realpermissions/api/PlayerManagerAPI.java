@@ -13,9 +13,8 @@ package joserodpt.realpermissions.api;
  * @link https://github.com/joserodpt/RealPermissions
  */
 
-import joserodpt.realpermissions.api.player.PlayerObject;
+import joserodpt.realpermissions.api.player.PlayerDataObject;
 import joserodpt.realpermissions.api.player.RPPlayer;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
@@ -23,6 +22,8 @@ import java.util.List;
 import java.util.UUID;
 
 public abstract class PlayerManagerAPI {
+    public HashMap<UUID, RPPlayer> playerAttatchment = new HashMap<>();
+
     public abstract HashMap<UUID, RPPlayer> getPlayerMap();
 
     public abstract RPPlayer getPlayer(Player p);
@@ -41,7 +42,13 @@ public abstract class PlayerManagerAPI {
 
     public abstract void refreshPermissions();
 
-    public abstract List<PlayerObject> getSavedPlayers();
+    public abstract List<PlayerDataObject> getPlayerObjects();
 
-    public abstract void deletePlayer(PlayerObject po);
+    public abstract void deletePlayer(PlayerDataObject po);
+
+    public abstract PlayerDataObject getPlayerObject(UUID uuid);
+
+    public abstract PlayerDataObject getPlayerObject(Player p);
+
+    public abstract void updateReference(UUID uuid, PlayerDataObject playerDataObject);
 }

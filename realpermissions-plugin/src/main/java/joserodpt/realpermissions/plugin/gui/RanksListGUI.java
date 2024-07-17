@@ -15,6 +15,7 @@ package joserodpt.realpermissions.plugin.gui;
 
 import joserodpt.realpermissions.api.RealPermissionsAPI;
 import joserodpt.realpermissions.api.config.TranslatableLine;
+import joserodpt.realpermissions.api.player.PlayerDataObject;
 import joserodpt.realpermissions.api.player.RPPlayer;
 import joserodpt.realpermissions.api.rank.Rank;
 import joserodpt.realpermissions.api.rank.Rankup;
@@ -67,10 +68,10 @@ public class RanksListGUI {
         this.register();
     }
 
-    private RPPlayer paSelected = null;
+    private PlayerDataObject po = null;
 
-    public RanksListGUI(RPPlayer pl, RealPermissionsAPI rp, RPPlayer pa) {
-        this.paSelected = pa;
+    public RanksListGUI(RPPlayer pl, PlayerDataObject po, RealPermissionsAPI rp) {
+        this.po = po;
         this.rp = rp;
         this.inv = Bukkit.getServer().createInventory(null, 54, Text.color("&f&lReal&c&lPermissions &8| &eRanks"));
         this.uuid = pl.getUUID();
@@ -98,7 +99,7 @@ public class RanksListGUI {
     }
 
     public void load() {
-        this.p = new Pagination<>(28, rp.getRankManager().getRanksList());
+        this.p = new Pagination<>(28, rp.getRankManagerAPI().getRanksList());
         fillChest(p.getPage(this.pageNumber));
     }
 
@@ -140,7 +141,7 @@ public class RanksListGUI {
             this.inv.setItem(35, next);
         }
 
-        if (paSelected == null && rk == null && rpe == null) {
+        if (po == null && rk == null && rpe == null) {
             this.inv.setItem(4, Items.createItem(Material.EMERALD, 1, "&aAdd Rank"));
         }
 
@@ -196,10 +197,10 @@ public class RanksListGUI {
                         switch (e.getRawSlot())
                         {
                             case 4:
-                                if (current.paSelected == null && current.rk == null && current.rpe == null) {
+                                if (current.po == null && current.rk == null && current.rpe == null) {
                                     p.closeInventory();
                                     new PlayerInput(p, input -> {
-                                        current.rp.getRankManager().addNewRank(input);
+                                        current.rp.getRankManagerAPI().addNewRank(input);
 
                                         RanksListGUI rv = new RanksListGUI(p, current.rp);
                                         rv.openInventory(p);
@@ -211,11 +212,11 @@ public class RanksListGUI {
                                 break;
                             case 49:
                                 p.closeInventory();
-                                if (current.paSelected == null) {
+                                if (current.po == null) {
                                     RealPermissionsGUI rp = new RealPermissionsGUI(p, current.rp);
                                     rp.openInventory(p);
                                 } else {
-                                    PlayerPermissionsGUI rv = new PlayerPermissionsGUI(p, current.paSelected, current.rp);
+                                    PlayerPermissionsGUI rv = new PlayerPermissionsGUI(p, current.po, current.rp);
                                     rv.openInventory(p);
                                 }
                                 break;
@@ -246,21 +247,21 @@ public class RanksListGUI {
                                 return;
                             }
 
-                            if (current.paSelected == null) {
+                            if (current.po == null) {
                                 //open rank to delete or edit
                                 switch (e.getClick()) {
                                     case DROP:
-                                        if (clickedRank.equals(current.rp.getRankManager().getDefaultRank())) {
+                                        if (clickedRank.equals(current.rp.getRankManagerAPI().getDefaultRank())) {
                                             p.closeInventory();
                                             TranslatableLine.RANKS_CANT_DELETE_DEFAULT_RANK.send(p);
                                         } else {
-                                            current.rp.getRankManager().deleteRank(clickedRank);
+                                            current.rp.getRankManagerAPI().deleteRank(clickedRank);
                                             TranslatableLine.RANKS_DELETED.setV1(TranslatableLine.ReplacableVar.RANK.eq(clickedRank.getPrefix())).send(p);
                                             current.load();
                                         }
                                         break;
                                     case RIGHT:
-                                        current.rp.getRankManager().setDefaultRank(clickedRank);
+                                        current.rp.getRankManagerAPI().setDefaultRank(clickedRank);
                                         TranslatableLine.RANKS_SET_DEFAULT.setV1(TranslatableLine.ReplacableVar.RANK.eq(clickedRank.getPrefix())).send(p);
                                         break;
                                     default:
@@ -272,10 +273,10 @@ public class RanksListGUI {
                             } else {
                                 p.closeInventory();
                                 //assign rank to that player attatchment
-                                current.paSelected.setRank(clickedRank);
-                                TranslatableLine.RANKS_RANK_SET.setV1(TranslatableLine.ReplacableVar.PLAYER.eq(p.getName())).setV2(TranslatableLine.ReplacableVar.RANK.eq(clickedRank.getPrefix())).send(p);
+                                current.po.setRank(clickedRank);
+                                TranslatableLine.RANKS_RANK_SET.setV1(TranslatableLine.ReplacableVar.PLAYER.eq(current.po.getName())).setV2(TranslatableLine.ReplacableVar.RANK.eq(clickedRank.getPrefix())).send(p);
                                 p.closeInventory();
-                                PlayerPermissionsGUI rv = new PlayerPermissionsGUI(p, current.paSelected, current.rp);
+                                PlayerPermissionsGUI rv = new PlayerPermissionsGUI(p, current.po, current.rp);
                                 rv.openInventory(p);
                             }
                         }

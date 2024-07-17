@@ -26,10 +26,7 @@ public class Permission {
     private boolean isNegated;
 
     public Permission(String permission) {
-        boolean isN = permission.startsWith("-");
-        //for player permissions loading
-        this.permissionString = permission; if (isN) { this.permissionString = permission.substring(1); }
-        this.isNegated = isN;
+        this(permission, permission.startsWith("-"));
     }
 
     public Permission(String permission, boolean isNegated) {

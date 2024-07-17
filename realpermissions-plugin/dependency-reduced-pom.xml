@@ -4,7 +4,7 @@
   <groupId>joserodpt</groupId>
   <artifactId>realpermissions-plugin</artifactId>
   <name>realpermissions-plugin</name>
-  <version>0.3</version>
+  <version>0.4</version>
   <build>
     <resources>
       <resource>

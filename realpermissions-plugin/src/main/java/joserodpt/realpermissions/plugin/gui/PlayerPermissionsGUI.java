@@ -16,7 +16,7 @@ package joserodpt.realpermissions.plugin.gui;
 import joserodpt.realpermissions.api.RealPermissionsAPI;
 import joserodpt.realpermissions.api.config.TranslatableLine;
 import joserodpt.realpermissions.api.permission.Permission;
-import joserodpt.realpermissions.api.player.RPPlayer;
+import joserodpt.realpermissions.api.player.PlayerDataObject;
 import joserodpt.realpermissions.api.utils.Items;
 import joserodpt.realpermissions.api.utils.Pagination;
 import joserodpt.realpermissions.api.utils.Text;
@@ -56,18 +56,18 @@ public class PlayerPermissionsGUI {
 
     private final UUID uuid;
     private Map<Integer, Permission> display = new HashMap<>();
-    private RPPlayer pa;
+    private PlayerDataObject po;
 
     int pageNumber = 0;
     Pagination<Permission> p;
 
     private RealPermissionsAPI rp;
 
-    public PlayerPermissionsGUI(Player p, RPPlayer pa, RealPermissionsAPI rp) {
-        this.pa = pa;
+    public PlayerPermissionsGUI(Player p, PlayerDataObject po, RealPermissionsAPI rp) {
+        this.po = po;
         this.rp = rp;
         this.uuid = p.getUniqueId();
-        this.inv = Bukkit.getServer().createInventory(null, 54, Text.color("&f&lReal&c&lPermissions &8| &9" + Bukkit.getOfflinePlayer(pa.getUUID()).getName()));
+        this.inv = Bukkit.getServer().createInventory(null, 54, Text.color("&f&lReal&c&lPermissions &8| &9" + Bukkit.getOfflinePlayer(po.getUUID()).getName()));
 
         load();
 
@@ -75,8 +75,8 @@ public class PlayerPermissionsGUI {
     }
 
     public void load() {
-        p = new Pagination<>(15, new ArrayList<>(pa.getAllPlayerPermissions()));
-        fillChest(!pa.getAllPlayerPermissions().isEmpty() ? p.getPage(pageNumber) : Collections.emptyList());
+        p = new Pagination<>(15, new ArrayList<>(po.getPlayerPermissions().values()));
+        fillChest(!po.getPlayerPermissions().isEmpty() ? p.getPage(pageNumber) : Collections.emptyList());
     }
 
     public void fillChest(List<Permission> items) {
@@ -109,7 +109,7 @@ public class PlayerPermissionsGUI {
         }
 
         //16, 25, 34
-        this.inv.setItem(16, Items.createItem(pa.getRank().getIcon(), 1, "&eChange Player's Rank", Collections.singletonList("Click here to change this player's rank.")));
+        this.inv.setItem(16, Items.createItem(po.getRank().getIcon(), 1, "&eChange Player's Rank", Collections.singletonList("Click here to change this player's rank.")));
 
         this.inv.setItem(37, Items.createItem(Material.YELLOW_STAINED_GLASS, 1, "&6Back",
                 Arrays.asList("&fCurrent Page: &b" + (pageNumber + 1) + "&7/&b" + p.totalPages(), "&fClick here to go back to the next page.")));
@@ -157,7 +157,7 @@ public class PlayerPermissionsGUI {
                         switch (e.getRawSlot()) {
                             case 16:
                                 p.closeInventory();
-                                RanksListGUI rv = new RanksListGUI(current.rp.getPlayerManager().getPlayer(uuid), current.rp, current.pa);
+                                RanksListGUI rv = new RanksListGUI(current.rp.getPlayerManagerAPI().getPlayer(uuid), current.po, current.rp);
                                 rv.openInventory(p);
                                 break;
                             case 43:
@@ -175,7 +175,7 @@ public class PlayerPermissionsGUI {
                                 break;
                             case 39:
                                 p.closeInventory();
-                                ExternalPluginsViewerGUI epvg = new ExternalPluginsViewerGUI(p, current.rp, current.pa, "");
+                                ExternalPluginsViewerGUI epvg = new ExternalPluginsViewerGUI(p, current.rp, current.po, "");
                                 epvg.openInventory(p);
                                 break;
                         }
@@ -185,13 +185,13 @@ public class PlayerPermissionsGUI {
 
                             //flip permission
                             if (Objects.requireNonNull(e.getClick()) == ClickType.DROP) {
-                                current.pa.removePermission(perm);
-                                TranslatableLine.PERMISSIONS_PLAYER_REMOVE.setV1(TranslatableLine.ReplacableVar.PERM.eq(perm.getPermissionString())).setV2(TranslatableLine.ReplacableVar.PLAYER.eq(current.pa.getPlayer().getName())).send(p);
+                                current.po.removePermission(perm);
+                                TranslatableLine.PERMISSIONS_PLAYER_REMOVE.setV1(TranslatableLine.ReplacableVar.PERM.eq(perm.getPermissionString())).setV2(TranslatableLine.ReplacableVar.PLAYER.eq(current.po.getName())).send(p);
                                 current.load();
                             } else {
                                 perm.negatePermission();
-                                current.rp.getPlayerManager().refreshPermissions();
-                                current.pa.saveData(RPPlayer.PlayerData.PERMISSIONS);
+                                current.rp.getPlayerManagerAPI().refreshPermissions();
+                                current.po.saveData(PlayerDataObject.PlayerData.PERMISSIONS);
                                 current.load();
                             }
                         }
@@ -200,7 +200,7 @@ public class PlayerPermissionsGUI {
             }
 
             private void backPage(PlayerPermissionsGUI asd) {
-                if (!asd.pa.getAllPlayerPermissions().isEmpty()) {
+                if (!asd.po.getPlayerPermissions().isEmpty()) {
                     if (asd.p.exists(asd.pageNumber - 1)) {
                         --asd.pageNumber;
                         asd.fillChest(asd.p.getPage(asd.pageNumber));
@@ -209,7 +209,7 @@ public class PlayerPermissionsGUI {
             }
 
             private void nextPage(PlayerPermissionsGUI asd) {
-                if (!asd.pa.getAllPlayerPermissions().isEmpty()) {
+                if (!asd.po.getPlayerPermissions().isEmpty()) {
                     if (asd.p.exists(asd.pageNumber + 1)) {
                         ++asd.pageNumber;
                         asd.fillChest(asd.p.getPage(asd.pageNumber));

@@ -45,9 +45,10 @@ public abstract class RealPermissionsAPI  {
         RealPermissionsAPI.instance = instance;
     }
 
-    public abstract RankManagerAPI getRankManager();
-    public abstract PlayerManagerAPI getPlayerManager();
+    public abstract RankManagerAPI getRankManagerAPI();
+    public abstract PlayerManagerAPI getPlayerManagerAPI();
     public RealPermissionsHooksAPI getHooksAPI() { return hookAPI; }
+
     public abstract JavaPlugin getPlugin();
     public abstract Economy getEcon();
 

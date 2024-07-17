@@ -51,18 +51,18 @@ public class RealPermissionsGUI {
         List<String> players = new ArrayList<>();
         players.add("&b" + Bukkit.getOnlinePlayers().size() + " &fplayers with the following distribution:"); players.add("");
 
-        players.addAll(rp.getPlayerManager().listRanksWithPlayerCounts());
+        players.addAll(rp.getPlayerManagerAPI().listRanksWithPlayerCounts());
         this.inv.setItem(10, Items.createItem(Material.PLAYER_HEAD, 1, "&f&lPlayers", players));
 
         List<String> ranks = new ArrayList<>();
-        ranks.add("&b" + rp.getRankManager().getRanksList().size() + " &franks registered:"); ranks.add("");
-        ranks.addAll(rp.getRankManager().getRanksList().stream().map(rank -> "&f- " + rank.getPrefix()).collect(Collectors.toList()));
+        ranks.add("&b" + rp.getRankManagerAPI().getRanksList().size() + " &franks registered:"); ranks.add("");
+        ranks.addAll(rp.getRankManagerAPI().getRanksList().stream().map(rank -> "&f- " + rank.getPrefix()).collect(Collectors.toList()));
 
         this.inv.setItem(12, Items.createItem(Material.BOOK, 1, "&b&lRanks", ranks));
 
         List<String> rankup = new ArrayList<>();
-        rankup.add("&b" + rp.getRankManager().getRankupsList().size() + " &frankups registered:"); rankup.add("");
-        rankup.addAll(rp.getRankManager().getRankupsList().stream().map(rank -> "&f- " + rank.getDisplayName()).collect(Collectors.toList()));
+        rankup.add("&b" + rp.getRankManagerAPI().getRankupsList().size() + " &frankups registered:"); rankup.add("");
+        rankup.addAll(rp.getRankManagerAPI().getRankupsList().stream().map(rank -> "&f- " + rank.getDisplayName()).collect(Collectors.toList()));
         this.inv.setItem(14, Items.createItem(Material.EXPERIENCE_BOTTLE, 1, "&a&lRankup", rankup));
 
         this.inv.setItem(16, Items.createItem(Material.COMPARATOR, 1, "&e&lSettings"));
@@ -124,7 +124,7 @@ public class RealPermissionsGUI {
                                 break;
                             case 14:
                                 p.closeInventory();
-                                RankupGUI rg = new RankupGUI(current.rp.getPlayerManager().getPlayer(p), current.rp, true);
+                                RankupGUI rg = new RankupGUI(current.rp.getPlayerManagerAPI().getPlayer(p), current.rp, true);
                                 rg.openInventory(p);
                                 break;
                             case 16:

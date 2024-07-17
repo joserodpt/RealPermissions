@@ -37,10 +37,10 @@ public class Rank {
         this.icon = Material.NETHER_STAR;
         this.name = name;
         this.prefix = prefix;
-        this.chat = RealPermissionsAPI.getInstance().getRankManager().getDefaultRank().getChat();
+        this.chat = RealPermissionsAPI.getInstance().getRankManagerAPI().getDefaultRank().getChat();
         this.permissions = new HashMap<>();
         this.inheritances = new ArrayList<>();
-        this.inheritances.add(RealPermissionsAPI.getInstance().getRankManager().getDefaultRank());
+        this.inheritances.add(RealPermissionsAPI.getInstance().getRankManagerAPI().getDefaultRank());
 
         //load permissions from inheritances
         loadFromInheritances();

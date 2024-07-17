@@ -15,7 +15,7 @@ package joserodpt.realpermissions.plugin.gui;
 
 import joserodpt.realpermissions.api.RealPermissionsAPI;
 import joserodpt.realpermissions.api.config.TranslatableLine;
-import joserodpt.realpermissions.api.player.RPPlayer;
+import joserodpt.realpermissions.api.player.PlayerDataObject;
 import joserodpt.realpermissions.api.pluginhook.ExternalPlugin;
 import joserodpt.realpermissions.api.pluginhook.ExternalPluginPermission;
 import joserodpt.realpermissions.api.rank.Rank;
@@ -64,7 +64,7 @@ public class EPPermissionsViewerGUI {
     private RealPermissionsAPI rp;
 
     private Rank rank = null;
-    private RPPlayer pa = null;
+    private PlayerDataObject po = null;
     private ExternalPlugin ep;
     private boolean enableSearch = true;
     private boolean forceExit = false;
@@ -85,9 +85,9 @@ public class EPPermissionsViewerGUI {
         this.rank = r;
     }
 
-    public EPPermissionsViewerGUI(Player p, RealPermissionsAPI rp, ExternalPlugin ep, RPPlayer pa, String search) {
+    public EPPermissionsViewerGUI(Player p, RealPermissionsAPI rp, ExternalPlugin ep, PlayerDataObject po, String search) {
         this(p, rp, ep, search);
-        this.pa = pa;
+        this.po = po;
     }
 
     public EPPermissionsViewerGUI(Player p, RealPermissionsAPI rp, Rank rank, List<ExternalPluginPermission> search) {
@@ -104,8 +104,8 @@ public class EPPermissionsViewerGUI {
         this.register();
     }
 
-    public EPPermissionsViewerGUI(Player p, RealPermissionsAPI rp, RPPlayer pa, List<ExternalPluginPermission> search) {
-        this.pa = pa;
+    public EPPermissionsViewerGUI(Player p, RealPermissionsAPI rp, PlayerDataObject po, List<ExternalPluginPermission> search) {
+        this.po = po;
         this.rp = rp;
         this.inv = Bukkit.getServer().createInventory(null, 54, Text.color("&f&lReal&c&lPermissions &8| Search:"));
         this.uuid = p.getUniqueId();
@@ -244,8 +244,8 @@ public class EPPermissionsViewerGUI {
                                             EPPermissionsViewerGUI rg = new EPPermissionsViewerGUI(p, current.rp, current.ep, current.rank, s);
                                             rg.openInventory(p);
                                         }
-                                        if (current.pa != null) {
-                                            EPPermissionsViewerGUI ppg = new EPPermissionsViewerGUI(p, current.rp, current.ep, current.pa, s);
+                                        if (current.po != null) {
+                                            EPPermissionsViewerGUI ppg = new EPPermissionsViewerGUI(p, current.rp, current.ep, current.po, s);
                                             ppg.openInventory(p);
                                         }
                                     } else {
@@ -255,8 +255,8 @@ public class EPPermissionsViewerGUI {
                                             ExternalPluginsViewerGUI rg = new ExternalPluginsViewerGUI(p, current.rp, current.rank, "");
                                             rg.openInventory(p);
                                         }
-                                        if (current.pa != null) {
-                                            ExternalPluginsViewerGUI ppg = new ExternalPluginsViewerGUI(p, current.rp, current.pa, "");
+                                        if (current.po != null) {
+                                            ExternalPluginsViewerGUI ppg = new ExternalPluginsViewerGUI(p, current.rp, current.po, "");
                                             ppg.openInventory(p);
                                         }
                                     }
@@ -267,8 +267,8 @@ public class EPPermissionsViewerGUI {
                                         ExternalPluginsViewerGUI rg = new ExternalPluginsViewerGUI(p, current.rp, current.rank, "");
                                         rg.openInventory(p);
                                     }
-                                    if (current.pa != null) {
-                                        ExternalPluginsViewerGUI ppg = new ExternalPluginsViewerGUI(p, current.rp, current.pa, "");
+                                    if (current.po != null) {
+                                        ExternalPluginsViewerGUI ppg = new ExternalPluginsViewerGUI(p, current.rp, current.po, "");
                                         ppg.openInventory(p);
                                     }
                                 });
@@ -284,8 +284,8 @@ public class EPPermissionsViewerGUI {
                                     ExternalPluginsViewerGUI rg = new ExternalPluginsViewerGUI(p, current.rp, current.rank, "");
                                     rg.openInventory(p);
                                 }
-                                if (current.pa != null) {
-                                    ExternalPluginsViewerGUI ppg = new ExternalPluginsViewerGUI(p, current.rp, current.pa, "");
+                                if (current.po != null) {
+                                    ExternalPluginsViewerGUI ppg = new ExternalPluginsViewerGUI(p, current.rp, current.po, "");
                                     ppg.openInventory(p);
                                 }
 
@@ -322,15 +322,15 @@ public class EPPermissionsViewerGUI {
                                     RankPermissionsGUI rg = new RankPermissionsGUI(p, current.rank, current.rp);
                                     rg.openInventory(p);
                                 }
-                                if (current.pa != null) {
-                                    if (!current.pa.hasPermission(clickedExtPerm.getPermission())) {
-                                        current.pa.addPermission(clickedExtPerm.getPermission());
+                                if (current.po != null) {
+                                    if (!current.po.hasPermission(clickedExtPerm.getPermission())) {
+                                        current.po.addPermission(clickedExtPerm.getPermission());
                                         TranslatableLine.PERMISSIONS_PLAYER_ADD.setV1(TranslatableLine.ReplacableVar.PERM.eq(clickedExtPerm.getPermission())).setV2(TranslatableLine.ReplacableVar.PLAYER.eq(p.getName())).send(p);
                                     } else {
                                         TranslatableLine.PERMISSIONS_PLAYER_ALREADY_HAS_PERMISSION_UNDER_PLAYER.setV1(TranslatableLine.ReplacableVar.PERM.eq(clickedExtPerm.getPermission())).send(p);
                                     }
 
-                                    PlayerPermissionsGUI ppg = new PlayerPermissionsGUI(p, current.pa, current.rp);
+                                    PlayerPermissionsGUI ppg = new PlayerPermissionsGUI(p, current.po, current.rp);
                                     ppg.openInventory(p);
                                 }
                             }, 1);

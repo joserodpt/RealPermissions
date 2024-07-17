@@ -6,7 +6,7 @@
 
     <groupId>joserodpt</groupId>
     <artifactId>realpermissions-plugin</artifactId>
-    <version>0.3</version>
+    <version>0.4</version>
     <packaging>jar</packaging>
 
     <name>realpermissions-plugin</name>
@@ -87,12 +87,12 @@
         <dependency>
             <groupId>net.wesjd</groupId>
             <artifactId>anvilgui</artifactId>
-            <version>1.9.2-SNAPSHOT</version>
+            <version>1.10.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>joserodpt</groupId>
             <artifactId>realpermissions-api</artifactId>
-            <version>0.3</version>
+            <version>0.4</version>
             <scope>compile</scope>
         </dependency>
         <dependency>

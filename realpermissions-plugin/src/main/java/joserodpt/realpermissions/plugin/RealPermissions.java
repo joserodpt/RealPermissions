@@ -38,12 +38,12 @@ public final class RealPermissions extends RealPermissionsAPI {
     }
 
     @Override
-    public RankManagerAPI getRankManager() {
+    public RankManagerAPI getRankManagerAPI() {
         return this.rankManager;
     }
 
     @Override
-    public PlayerManagerAPI getPlayerManager() {
+    public PlayerManagerAPI getPlayerManagerAPI() {
         return this.playerManager;
     }
 

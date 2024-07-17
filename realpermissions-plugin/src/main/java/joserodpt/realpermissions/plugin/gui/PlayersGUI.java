@@ -15,7 +15,7 @@ package joserodpt.realpermissions.plugin.gui;
 
 import joserodpt.realpermissions.api.RealPermissionsAPI;
 import joserodpt.realpermissions.api.config.TranslatableLine;
-import joserodpt.realpermissions.api.player.PlayerObject;
+import joserodpt.realpermissions.api.player.PlayerDataObject;
 import joserodpt.realpermissions.api.player.RPPlayer;
 import joserodpt.realpermissions.api.utils.Items;
 import joserodpt.realpermissions.api.utils.Pagination;
@@ -57,9 +57,9 @@ public class PlayersGUI {
             Collections.singletonList("&fClick here to close this menu."));
 
     private UUID uuid;
-    private Map<Integer, PlayerObject> display = new HashMap<>();
+    private Map<Integer, PlayerDataObject> display = new HashMap<>();
     int pageNumber = 0;
-    Pagination<PlayerObject> p;
+    Pagination<PlayerDataObject> p;
     private RealPermissionsAPI rp;
     private PlayersGUISorter ps = PlayersGUISorter.ON;
 
@@ -74,17 +74,17 @@ public class PlayersGUI {
     }
 
     public void load() {
-        List<PlayerObject> po = rp.getPlayerManager().getSavedPlayers();
+        List<PlayerDataObject> po = rp.getPlayerManagerAPI().getPlayerObjects();
 
         switch (ps) {
             case ON:
-                po.sort(Comparator.comparing(PlayerObject::isOnline).reversed());
+                po.sort(Comparator.comparing(PlayerDataObject::isOnline).reversed());
                 break;
             case SU:
-                po.sort(Comparator.comparing(PlayerObject::isSuperUser).reversed());
+                po.sort(Comparator.comparing(PlayerDataObject::isSuperUser).reversed());
                 break;
             case MOST_PERMS:
-                po.sort(Comparator.comparingInt(o -> o.getPermissions().size()));
+                po.sort(Comparator.comparingInt(o -> o.getPlayerPermissions().size()));
                 break;
         }
 
@@ -92,7 +92,7 @@ public class PlayersGUI {
         fillChest(p.getPage(this.pageNumber));
     }
 
-    public void fillChest(List<PlayerObject> items) {
+    public void fillChest(List<PlayerDataObject> items) {
         this.inv.clear();
         this.display.clear();
 
@@ -122,7 +122,7 @@ public class PlayersGUI {
         for (ItemStack i : this.inv.getContents()) {
             if (i == null) {
                 if (!items.isEmpty()) {
-                    PlayerObject e = items.get(0);
+                    PlayerDataObject e = items.get(0);
                     this.inv.setItem(slot, e.getIcon());
                     this.display.put(slot, e);
                     items.remove(0);
@@ -213,12 +213,12 @@ public class PlayersGUI {
                         }
 
                         if (current.display.containsKey(e.getRawSlot())) {
-                            PlayerObject po = current.display.get(e.getRawSlot());
-                            RPPlayer rp = current.rp.getPlayerManager().getPlayer(p);
+                            PlayerDataObject po = current.display.get(e.getRawSlot());
+                            RPPlayer rp = current.rp.getPlayerManagerAPI().getPlayer(p);
 
                             switch (e.getClick()) {
                                 case DROP: //delete player
-                                    current.rp.getPlayerManager().deletePlayer(po);
+                                    current.rp.getPlayerManagerAPI().deletePlayer(po);
                                     TranslatableLine.PERMISSIONS_PLAYER_DELETE.setV1(TranslatableLine.ReplacableVar.PLAYER.eq(po.getName())).send(p);
                                     current.load();
                                     break;
@@ -232,13 +232,13 @@ public class PlayersGUI {
                                     break;
                                 case SHIFT_LEFT:
                                     p.closeInventory();
-                                    RanksListGUI rv = new RanksListGUI(current.rp.getPlayerManager().getPlayer(uuid), current.rp, rp);
+                                    RanksListGUI rv = new RanksListGUI(current.rp.getPlayerManagerAPI().getPlayer(uuid), po, current.rp);
                                     rv.openInventory(p);
                                     break;
                                 default:
                                     //edit player
                                     p.closeInventory();
-                                    PlayerPermissionsGUI ppg = new PlayerPermissionsGUI(p, rp, current.rp);
+                                    PlayerPermissionsGUI ppg = new PlayerPermissionsGUI(p, po, current.rp);
                                     ppg.openInventory(p);
                                     break;
                             }

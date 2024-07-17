@@ -18,7 +18,7 @@ import joserodpt.realpermissions.api.config.RPLanguageConfig;
 import joserodpt.realpermissions.api.config.RPPlayersConfig;
 import joserodpt.realpermissions.api.config.RPRanksConfig;
 import joserodpt.realpermissions.api.config.RPRankupsConfig;
-import joserodpt.realpermissions.api.player.RPPlayer;
+import joserodpt.realpermissions.api.player.PlayerDataObject;
 import joserodpt.realpermissions.api.pluginhook.ExternalPluginPermission;
 import joserodpt.realpermissions.api.rank.Rank;
 import joserodpt.realpermissions.api.utils.PlayerInput;
@@ -72,22 +72,22 @@ public final class RealPermissionsPlugin extends JavaPlugin {
         RPPlayersConfig.setup(this);
 
         //load ranks
-        realPermissions.getRankManager().loadRanks();
+        realPermissions.getRankManagerAPI().loadRanks();
 
-        if (realPermissions.getRankManager().getDefaultRank() == null) {
+        if (realPermissions.getRankManagerAPI().getDefaultRank() == null) {
             getLogger().severe("Default Rank for new Players doesn't exist. RealPermissions will stop.");
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
 
-        getLogger().info("Loaded " + realPermissions.getRankManager().getRanksList().size() + " ranks.");
+        getLogger().info("Loaded " + realPermissions.getRankManagerAPI().getRanksList().size() + " ranks.");
 
         //hook into vault
         if (setupEconomy()) {
             realPermissions.getHooksAPI().injectVaultPermissions(getServer().getPluginManager().getPlugin("Vault").getDescription().getVersion());
             getLogger().info("Vault found and Hooked into!");
-            realPermissions.getRankManager().loadRankups();
-            getLogger().info("Loaded " + realPermissions.getRankManager().getRankups().size() + " rankups.");
+            realPermissions.getRankManagerAPI().loadRankups();
+            getLogger().info("Loaded " + realPermissions.getRankManagerAPI().getRankups().size() + " rankups.");
         } else {
             getLogger().warning("Vault not found. Rankup will be disabled.");
         }
@@ -107,7 +107,7 @@ public final class RealPermissionsPlugin extends JavaPlugin {
 
         cm.hideTabComplete(true);
         cm.getCompletionHandler().register("#ranks", input ->
-                realPermissions.getRankManager().getRanksList()
+                realPermissions.getRankManagerAPI().getRanksList()
                         .stream()
                         .map(Rank::getName)
                         .collect(Collectors.toList())
@@ -188,7 +188,7 @@ public final class RealPermissionsPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        realPermissions.getPlayerManager().getPlayerMap().values().forEach(playerAttatchment -> playerAttatchment.saveData(RPPlayer.PlayerData.TIMED_RANK));
+        realPermissions.getPlayerManagerAPI().getPlayerMap().values().forEach(playerAttatchment -> playerAttatchment.saveData(PlayerDataObject.PlayerData.TIMED_RANK));
     }
 
     public boolean hasNewUpdate() {

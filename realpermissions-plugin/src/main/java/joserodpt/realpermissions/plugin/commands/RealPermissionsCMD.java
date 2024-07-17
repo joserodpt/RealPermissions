@@ -71,8 +71,8 @@ public class RealPermissionsCMD extends CommandBase {
         RPLanguageConfig.reload();
         RPRanksConfig.reload();
         RPRankupsConfig.reload();
-        rp.getRankManager().loadRanks();
-        rp.getRankManager().loadRankups();
+        rp.getRankManagerAPI().loadRanks();
+        rp.getRankManagerAPI().loadRankups();
         RPPlayersConfig.reload();
         TranslatableLine.SYSTEM_RELOADED.send(commandSender);
     }
@@ -84,7 +84,7 @@ public class RealPermissionsCMD extends CommandBase {
     @SuppressWarnings("unused")
     public void rankcmd(final CommandSender commandSender, final String rank) {
         if (commandSender instanceof Player) {
-            Rank r = rp.getRankManager().getRank(rank);
+            Rank r = rp.getRankManagerAPI().getRank(rank);
             if (r == null) {
                 TranslatableLine.RANKS_NO_RANK_FOUND.setV1(TranslatableLine.ReplacableVar.NAME.eq(rank)).send(commandSender);
                 return;
@@ -124,7 +124,7 @@ public class RealPermissionsCMD extends CommandBase {
             RanksListGUI rv = new RanksListGUI(p, rp);
             rv.openInventory(p);
         } else {
-            rp.getRankManager().getRanksList().forEach(rank -> Text.send(commandSender, " " + rank.getName() + " &f[" + rank.getPrefix() + "&f]"));
+            rp.getRankManagerAPI().getRanksList().forEach(rank -> Text.send(commandSender, " " + rank.getName() + " &f[" + rank.getPrefix() + "&f]"));
         }
     }
 
@@ -145,10 +145,10 @@ public class RealPermissionsCMD extends CommandBase {
             return;
         }
 
-        rp.getPlayerManager().getPlayer(p).setSuperUser(!rp.getPlayerManager().getPlayer(p).isSuperUser());
+        rp.getPlayerManagerAPI().getPlayer(p).setSuperUser(!rp.getPlayerManagerAPI().getPlayer(p).isSuperUser());
 
         //deixar estar quietinho
-        Text.send(commandSender, TranslatableLine.SYSTEM_SUPER_USER_STATE.setV1(TranslatableLine.ReplacableVar.PLAYER.eq(p.getName())).get() + (rp.getPlayerManager().getPlayer(p).isSuperUser() ? "&aON" : "&cOFF"));
+        Text.send(commandSender, TranslatableLine.SYSTEM_SUPER_USER_STATE.setV1(TranslatableLine.ReplacableVar.PLAYER.eq(p.getName())).get() + (rp.getPlayerManagerAPI().getPlayer(p).isSuperUser() ? "&aON" : "&cOFF"));
     }
 
     @SubCommand("setrank")
@@ -159,7 +159,7 @@ public class RealPermissionsCMD extends CommandBase {
     @SuppressWarnings("unused")
     public void setrankcmd(final CommandSender commandSender, final Player p, final String rank) {
         if (commandSender instanceof Player) {
-            if (rp.getPlayerManager().isNotSuperUser((Player) commandSender)) {
+            if (rp.getPlayerManagerAPI().isNotSuperUser((Player) commandSender)) {
                 TranslatableLine.SYSTEM_NO_PERMISSION_COMMAND.send(commandSender);
                 return;
             }
@@ -170,12 +170,12 @@ public class RealPermissionsCMD extends CommandBase {
             return;
         }
 
-        Rank r = rp.getRankManager().getRank(rank);
+        Rank r = rp.getRankManagerAPI().getRank(rank);
         if (r == null) {
             TranslatableLine.RANKS_NO_RANK_FOUND.setV1(TranslatableLine.ReplacableVar.NAME.eq(rank)).send(p);
         }
 
-        rp.getPlayerManager().getPlayer(p).setRank(r);
+        rp.getPlayerManagerAPI().getPlayer(p).setRank(r);
         TranslatableLine.RANKS_RANK_SET.setV1(TranslatableLine.ReplacableVar.PLAYER.eq(p.getName())).setV2(TranslatableLine.ReplacableVar.RANK.eq(r.getPrefix())).send(commandSender);
     }
 
@@ -187,7 +187,7 @@ public class RealPermissionsCMD extends CommandBase {
     @SuppressWarnings("unused")
     public void settimedrankcmd(final CommandSender commandSender, final Player p, final String rank, final Integer seconds) {
         if (commandSender instanceof Player) {
-            if (rp.getPlayerManager().isNotSuperUser((Player) commandSender)) {
+            if (rp.getPlayerManagerAPI().isNotSuperUser((Player) commandSender)) {
                 TranslatableLine.SYSTEM_NO_PERMISSION_COMMAND.send(commandSender);
                 return;
             }
@@ -198,7 +198,7 @@ public class RealPermissionsCMD extends CommandBase {
             return;
         }
 
-        Rank r = rp.getRankManager().getRank(rank);
+        Rank r = rp.getRankManagerAPI().getRank(rank);
         if (r == null) {
             TranslatableLine.RANKS_NO_RANK_FOUND.setV1(TranslatableLine.ReplacableVar.NAME.eq(rank)).send(p);
         }
@@ -208,7 +208,7 @@ public class RealPermissionsCMD extends CommandBase {
             return;
         }
 
-        rp.getPlayerManager().getPlayer(p).setTimedRank(r, seconds);
+        rp.getPlayerManagerAPI().getPlayer(p).setTimedRank(r, seconds);
         TranslatableLine.RANKS_TIMED_RANK_SET.setV1(TranslatableLine.ReplacableVar.PLAYER.eq(p.getName())).setV2(TranslatableLine.ReplacableVar.RANK.eq(r.getPrefix())).send(commandSender);
     }
 
@@ -220,7 +220,7 @@ public class RealPermissionsCMD extends CommandBase {
     @SuppressWarnings("unused")
     public void cleartimedcmd(final CommandSender commandSender, final Player p) {
         if (commandSender instanceof Player) {
-            if (rp.getPlayerManager().isNotSuperUser((Player) commandSender)) {
+            if (rp.getPlayerManagerAPI().isNotSuperUser((Player) commandSender)) {
                 TranslatableLine.SYSTEM_NO_PERMISSION_COMMAND.send(commandSender);
                 return;
             }
@@ -231,8 +231,8 @@ public class RealPermissionsCMD extends CommandBase {
             return;
         }
 
-        if (rp.getPlayerManager().getPlayer(p).hasTimedRank()) {
-            rp.getPlayerManager().getPlayer(p).removeTimedRank();
+        if (rp.getPlayerManagerAPI().getPlayer(p).hasTimedRank()) {
+            rp.getPlayerManagerAPI().getPlayer(p).removeTimedRank();
             TranslatableLine.RANKS_PLAYER_REMOVE_TIMED_RANK.setV1(TranslatableLine.ReplacableVar.PLAYER.eq(p.getName())).send(commandSender);
         } else {
             TranslatableLine.RANKS_PLAYER_NO_TIMED_RANK.setV1(TranslatableLine.ReplacableVar.PLAYER.eq(p.getName())).send(commandSender);
@@ -246,7 +246,7 @@ public class RealPermissionsCMD extends CommandBase {
     @WrongUsage("/rp ren <rank> <new name>")
     @SuppressWarnings("unused")
     public void renamecmd(final CommandSender commandSender, final String rank, final String name) {
-        Rank r = rp.getRankManager().getRank(rank);
+        Rank r = rp.getRankManagerAPI().getRank(rank);
         if (r == null) {
             TranslatableLine.RANKS_NO_RANK_FOUND.setV1(TranslatableLine.ReplacableVar.NAME.eq(rank)).send(commandSender);
             return;
@@ -257,7 +257,7 @@ public class RealPermissionsCMD extends CommandBase {
             return;
         }
 
-        rp.getRankManager().renameRank(r, name);
+        rp.getRankManagerAPI().renameRank(r, name);
         TranslatableLine.RANKS_NEW_NAME.setV1(TranslatableLine.ReplacableVar.NAME.eq(name)).send(commandSender);
     }
 
@@ -269,22 +269,22 @@ public class RealPermissionsCMD extends CommandBase {
     @SuppressWarnings("unused")
     public void delrankcmd(final CommandSender commandSender, final String rank) {
         if (commandSender instanceof Player) {
-            if (rp.getPlayerManager().isNotSuperUser((Player) commandSender)) {
+            if (rp.getPlayerManagerAPI().isNotSuperUser((Player) commandSender)) {
                 TranslatableLine.SYSTEM_NO_PERMISSION_COMMAND.send(commandSender);
                 return;
             }
         }
 
-        Rank r = rp.getRankManager().getRank(rank);
+        Rank r = rp.getRankManagerAPI().getRank(rank);
         if (r == null) {
             TranslatableLine.RANKS_NO_RANK_FOUND.setV1(TranslatableLine.ReplacableVar.NAME.eq(rank)).send(commandSender);
             return;
         }
 
-        if (rp.getRankManager().getDefaultRank() == r) {
+        if (rp.getRankManagerAPI().getDefaultRank() == r) {
             TranslatableLine.RANKS_CANT_DELETE_DEFAULT_RANK.send(commandSender);
         } else {
-            rp.getRankManager().deleteRank(r);
+            rp.getRankManagerAPI().deleteRank(r);
             TranslatableLine.RANKS_DELETED.setV1(TranslatableLine.ReplacableVar.RANK.eq(r.getPrefix())).send(commandSender);
         }
     }
@@ -297,7 +297,7 @@ public class RealPermissionsCMD extends CommandBase {
     @SuppressWarnings("unused")
     public void permcmd(final CommandSender commandSender, final String operation, final String rank, final String perm) {
         if (commandSender instanceof Player) {
-            if (rp.getPlayerManager().isNotSuperUser((Player) commandSender)) {
+            if (rp.getPlayerManagerAPI().isNotSuperUser((Player) commandSender)) {
                 TranslatableLine.SYSTEM_NO_PERMISSION_COMMAND.send(commandSender);
                 return;
             }
@@ -315,7 +315,7 @@ public class RealPermissionsCMD extends CommandBase {
                 return;
         }
 
-        Rank r = rp.getRankManager().getRank(rank);
+        Rank r = rp.getRankManagerAPI().getRank(rank);
         if (r == null) {
             TranslatableLine.RANKS_NO_RANK_FOUND.setV1(TranslatableLine.ReplacableVar.NAME.eq(rank)).send(commandSender);
             return;
@@ -326,7 +326,7 @@ public class RealPermissionsCMD extends CommandBase {
                 TranslatableLine.PERMISSIONS_RANK_ALREADY_HAS_PERMISSION.setV1(TranslatableLine.ReplacableVar.PERM.eq(perm)).send(commandSender);
             } else {
                 r.addPermission(perm);
-                rp.getRankManager().refreshPermsAndPlayers();
+                rp.getRankManagerAPI().refreshPermsAndPlayers();
                 TranslatableLine.PERMISSIONS_RANK_PERM_ADD.setV1(TranslatableLine.ReplacableVar.PERM.eq(perm)).setV2(TranslatableLine.ReplacableVar.RANK.eq(r.getPrefix())).send(commandSender);
             }
         } else {
@@ -338,7 +338,7 @@ public class RealPermissionsCMD extends CommandBase {
                     TranslatableLine.PERMISSIONS_PERMISSION_ASSOCIATED_WITH_OTHER_RANK.setV1(TranslatableLine.ReplacableVar.RANK.eq(p.getAssociatedRankName())).send(commandSender);
                 } else {
                     r.removePermission(perm);
-                    rp.getRankManager().refreshPermsAndPlayers();
+                    rp.getRankManagerAPI().refreshPermsAndPlayers();
                     TranslatableLine.PERMISSIONS_RANK_PERM_REMOVE.setV1(TranslatableLine.ReplacableVar.PERM.eq(perm)).setV2(TranslatableLine.ReplacableVar.RANK.eq(r.getPrefix())).send(commandSender);
                 }
             }
@@ -353,7 +353,7 @@ public class RealPermissionsCMD extends CommandBase {
     @SuppressWarnings("unused")
     public void permcmd(final CommandSender commandSender, final String operation, final Player p, final String perm) {
         if (commandSender instanceof Player) {
-            if (rp.getPlayerManager().isNotSuperUser((Player) commandSender)) {
+            if (rp.getPlayerManagerAPI().isNotSuperUser((Player) commandSender)) {
                 TranslatableLine.SYSTEM_NO_PERMISSION_COMMAND.send(commandSender);
                 return;
             }
@@ -376,7 +376,7 @@ public class RealPermissionsCMD extends CommandBase {
             return;
         }
 
-        RPPlayer pa = rp.getPlayerManager().getPlayer(p);
+        RPPlayer pa = rp.getPlayerManagerAPI().getPlayer(p);
 
         if (add) {
             if (pa.hasPermission(perm)) {
@@ -408,7 +408,7 @@ public class RealPermissionsCMD extends CommandBase {
                 return;
             }
 
-            PlayerPermissionsGUI ppg = new PlayerPermissionsGUI(p, rp.getPlayerManager().getPlayer(p), rp);
+            PlayerPermissionsGUI ppg = new PlayerPermissionsGUI(p, rp.getPlayerManagerAPI().getPlayerObject(p), rp);
             ppg.openInventory(p);
         } else {
             Text.send(commandSender, noConsole);

@@ -64,7 +64,7 @@ public class RankupGUI {
         this.admin = admin;
         this.rp = rp;
         this.player = player;
-        if (rp.getRankManager().isRankupEnabled()) {
+        if (rp.getRankManagerAPI().isRankupEnabled()) {
             this.inv = Bukkit.getServer().createInventory(null, 54, Text.color("&f&lReal&c&lPermissions &8| &cRankup"));
             this.uuid = player.getUUID();
 
@@ -73,7 +73,7 @@ public class RankupGUI {
     }
 
     public void load() {
-        this.p = new Pagination<>(28, rp.getRankManager().getRankupsListForPlayer(player));
+        this.p = new Pagination<>(28, rp.getRankManagerAPI().getRankupsListForPlayer(player));
         fillChest(p.getPage(this.pageNumber));
     }
 
@@ -123,7 +123,7 @@ public class RankupGUI {
     }
 
     public void openInventory(Player target) {
-        if (!rp.getRankManager().isRankupEnabled()) {
+        if (!rp.getRankManagerAPI().isRankupEnabled()) {
             TranslatableLine.RANKUP_DISABLED.send(player.getPlayer());
             return;
         }
@@ -164,7 +164,7 @@ public class RankupGUI {
                         switch (e.getRawSlot())
                         {
                             case 4:
-                                current.rp.getRankManager().addNewRankup();
+                                current.rp.getRankManagerAPI().addNewRankup();
                                 current.load();
                                 break;
                             case 49:
@@ -204,7 +204,7 @@ public class RankupGUI {
                                 switch (e.getClick()) {
                                     case DROP:
                                         //delete rankup
-                                        current.rp.getRankManager().removeRankup(r.getName());
+                                        current.rp.getRankManagerAPI().removeRankup(r.getName());
                                         current.load();
                                         break;
                                     case RIGHT:

@@ -31,39 +31,24 @@ import org.bukkit.permissions.PermissionAttachment;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 public class RPPlayer {
 
-    public enum PlayerData { RANK, PERMISSIONS, SU, TIMED_RANK }
-
-    private final UUID uuid;
     private final Player p;
+    private PlayerDataObject pdo;
     private PermissionAttachment pa;
-    private Rank rank;
-    private Rank timedRank_previous;
-    private Countdown timedRank_countdown;
-
-    private Map<String, Permission> playerPermissionsMap = new HashMap<>();
-
-    private boolean superUser;
+    private Countdown getTimedRankCountdown;
 
     public PermissionAttachment getPermissionAttachment() {
         return this.pa;
     }
 
-    public RPPlayer(Player p, Rank rank, List<String> pperms, boolean superUser, RealPermissionsAPI rp) {
+    public RPPlayer(Player p, RealPermissionsAPI rp) {
         this.p = p;
-        this.uuid = p.getUniqueId();
-        this.rank = rank;
-
-        pperms.forEach(s -> this.playerPermissionsMap.put(s, new Permission(s, s.startsWith("-"))));
-
-        this.superUser = superUser;
+        this.pdo = RealPermissionsAPI.getInstance().getPlayerManagerAPI().getPlayerObject(p.getUniqueId());
 
         //set player's new PermissionBase
         replaceBase(p);
@@ -98,14 +83,18 @@ public class RPPlayer {
         return p;
     }
 
+    public PlayerDataObject getPlayerDataObject() {
+        return this.pdo;
+    }
+
     public UUID getUUID() {
-        return uuid;
+        return p.getUniqueId();
     }
 
     public void logout() {
         this.getPermissionAttachment().remove();
         this.pa = null;
-        this.saveData(PlayerData.TIMED_RANK);
+        this.saveData(PlayerDataObject.PlayerData.TIMED_RANK);
     }
 
     public void setPermission(Permission p) {
@@ -133,8 +122,8 @@ public class RPPlayer {
         //remove all player's old rank permissions
         this.getAllRankPermissions().forEach(this::removePermission);
 
-        this.rank = rank;
-        this.saveData(PlayerData.RANK);
+        getPlayerDataObject().setRank(rank);
+        getPlayerDataObject().saveData(PlayerDataObject.PlayerData.RANK);
 
         //set rank permissions to player
         this.getAllRankPermissions().forEach(this::setPermission);
@@ -152,18 +141,18 @@ public class RPPlayer {
     }
 
     public void loadTimedRank(Rank previousRank, int secondsRemaining) {
-        this.timedRank_previous = previousRank;
+        getPlayerDataObject().setPreviousRankBeforeTimedRank(previousRank);
         this.setTimedRank(this.getRank(), secondsRemaining);
     }
 
     public void setTimedRank(Rank r, int seconds) {
         //save timed rank settings to player data
-        if (this.getTimedRank_previous() == null) {
-            this.timedRank_previous = this.getRank();
+        if (this.getPreviousRankBeforeTimedRank() == null) {
+            getPlayerDataObject().setPreviousRankBeforeTimedRank(this.getRank());
         }
 
         //start countdown
-        this.timedRank_countdown = new Countdown(RealPermissionsAPI.getInstance().getPlugin(), seconds, () -> {
+        this.getTimedRankCountdown = new Countdown(RealPermissionsAPI.getInstance().getPlugin(), seconds, () -> {
             if (this.getRank() != r) {
                 this.setRank(r);
             }
@@ -173,27 +162,27 @@ public class RPPlayer {
             }
         });
 
-        this.saveData(PlayerData.TIMED_RANK);
+        this.saveData(PlayerDataObject.PlayerData.TIMED_RANK);
 
-        this.timedRank_countdown.scheduleTimer();
+        this.getTimedRankCountdown.scheduleTimer();
     }
 
     public void removeTimedRank() {
-        if (this.timedRank_countdown.getSecondsLeft() > 0) {
-            this.timedRank_countdown.killTask();
-            this.timedRank_countdown = null;
+        if (this.getTimedRankCountdown.getSecondsLeft() > 0) {
+            this.getTimedRankCountdown.killTask();
+            this.getTimedRankCountdown = null;
         }
 
         //remove data from player's config
         RPPlayersConfig.file().remove(this.getUUID() + ".Timed-Rank");
         RPPlayersConfig.save();
 
-        this.setRank(this.getTimedRank_previous());
-        this.timedRank_previous = null;
+        this.setRank(this.getPreviousRankBeforeTimedRank());
+        getPlayerDataObject().setPreviousRankBeforeTimedRank(null);
     }
 
     public boolean hasTimedRank() {
-        return this.timedRank_countdown != null;
+        return this.getTimedRankCountdown != null;
     }
 
     private void setVisual() {
@@ -204,86 +193,69 @@ public class RPPlayer {
     }
 
     public Rank getRank() {
-        return this.rank;
+        return getPlayerDataObject().getRank();
     }
 
     public List<Permission> getAllRankPermissions() {
         return this.getRank() == null ? Collections.emptyList() : this.getRank().getAllPermissions(); //filter negated permissions
     }
 
-
-    public Map<String, Permission> getAllPlayerPermissionsMap() {
-        return this.playerPermissionsMap;
-    }
-
     public List<Permission> getAllPlayerPermissions() {
-        return new ArrayList<>(this.getAllPlayerPermissionsMap().values());
+        return new ArrayList<>(this.getPlayerDataObject().getPlayerPermissions().values());
     }
 
     public boolean hasPermission(String perm) {
-        return this.getAllPlayerPermissionsMap().containsKey(perm);
+        return this.getPlayerDataObject().getPlayerPermissions().containsKey(perm);
     }
 
     public void addPermission(String perm) {
-        this.getAllPlayerPermissionsMap().put(perm, new Permission(perm, false));
+        this.getPlayerDataObject().getPlayerPermissions().put(perm, new Permission(perm, false));
         this.getPermissionAttachment().setPermission(perm, true);
-        this.saveData(PlayerData.PERMISSIONS);
+        this.getPlayerDataObject().saveData(PlayerDataObject.PlayerData.PERMISSIONS);
     }
 
     public void removePermission(String permission) {
-        this.getAllPlayerPermissionsMap().remove(permission);
+        this.getPlayerDataObject().getPlayerPermissions().remove(permission);
         this.getPermissionAttachment().unsetPermission(permission);
-        this.saveData(PlayerData.PERMISSIONS);
+        this.getPlayerDataObject().saveData(PlayerDataObject.PlayerData.PERMISSIONS);
     }
 
     public void removePermission(Permission permission) {
-        this.getAllPlayerPermissionsMap().remove(permission.getPermissionString());
-        this.getPermissionAttachment().unsetPermission(permission.getPermissionString());
-        this.saveData(PlayerData.PERMISSIONS);
+        removePermission(permission.getPermissionString());
     }
 
-    public void saveData(PlayerData pd) {
-        if (pd == PlayerData.TIMED_RANK && this.getTimedRank_previous() == null) {
-            return;
+    public void saveData(PlayerDataObject.PlayerData pd) {
+        if (Objects.requireNonNull(pd) == PlayerDataObject.PlayerData.TIMED_RANK && this.getGetTimedRankCountdown() != null) {
+            RPPlayersConfig.file().set(this.getUUID() + ".Timed-Rank.Remaining", this.getGetTimedRankCountdown().getSecondsLeft());
+            RPPlayersConfig.save();
+        } else {
+            getPlayerDataObject().saveData(pd);
         }
-        switch (pd) {
-            case RANK:
-                RPPlayersConfig.file().set(this.getUUID() + ".Rank", this.getRank().getName());
-                break;
-            case PERMISSIONS:
-                RPPlayersConfig.file().set(this.getUUID() + ".Permissions", this.getAllPlayerPermissions().stream().map(Permission::getPermissionString2Save).collect(Collectors.toList()));
-                break;
-            case SU:
-                RPPlayersConfig.file().set(this.getUUID() + ".Super-User", this.isSuperUser());
-                break;
-            case TIMED_RANK:
-                RPPlayersConfig.file().set(this.getUUID()+ ".Timed-Rank.Previous-Rank", this.getTimedRank_previous().getName());
-                RPPlayersConfig.file().set(this.getUUID() + ".Timed-Rank.Remaining", this.getTimedRank_countdown().getSecondsLeft());
-                RPPlayersConfig.file().set(this.getUUID() + ".Timed-Rank.Last-Save", System.currentTimeMillis() / 1000L);
-                break;
-        }
-        RPPlayersConfig.save();
     }
 
-    public Rank getTimedRank_previous() {
-        return this.timedRank_previous;
+    public Rank getPreviousRankBeforeTimedRank() {
+        return getPlayerDataObject().getPreviousRankBeforeTimedRank();
     }
 
-    public Countdown getTimedRank_countdown() {
-        return this.timedRank_countdown;
+    public Countdown getGetTimedRankCountdown() {
+        return this.getTimedRankCountdown;
     }
 
     public boolean isSuperUser() {
-        return this.superUser;
+        return getPlayerDataObject().isSuperUser();
     }
 
     public void setSuperUser(boolean superUser) {
-        this.superUser = superUser;
-        this.saveData(PlayerData.SU);
+        getPlayerDataObject().setSuperUser(superUser);
         if (superUser) {
             this.getPermissionAttachment().setPermission("realpermissions.admin", true);
         } else {
             this.getPermissionAttachment().unsetPermission("realpermissions.admin");
         }
+    }
+
+    public void setPlayerObject(PlayerDataObject playerDataObject) {
+        this.pdo = playerDataObject;
+        this.refreshPlayerPermissions();
     }
 }

@@ -179,7 +179,7 @@ public class MaterialPickerGUI {
                             return;
                         }
 
-                        RPPlayer rp = current.rp.getPlayerManager().getPlayer((Player) clicker);
+                        RPPlayer rp = current.rp.getPlayerManagerAPI().getPlayer((Player) clicker);
                         e.setCancelled(true);
 
                         switch (e.getRawSlot())

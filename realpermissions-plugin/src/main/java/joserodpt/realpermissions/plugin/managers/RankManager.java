@@ -82,7 +82,7 @@ public class RankManager extends RankManagerAPI {
         }
 
         //load default rank
-        this.defaultRank = this.rp.getRankManager().getRank(RPRanksConfig.file().getString("Default-Rank"));
+        this.defaultRank = this.rp.getRankManagerAPI().getRank(RPRanksConfig.file().getString("Default-Rank"));
     }
 
     @Override
@@ -105,7 +105,7 @@ public class RankManager extends RankManagerAPI {
     @Override
     public void refreshPermsAndPlayers() {
         this.getRanksList().forEach(Rank::loadPermissionsFromInheritances);
-        rp.getPlayerManager().refreshPermissions();
+        rp.getPlayerManagerAPI().refreshPermissions();
     }
 
     @Override
@@ -116,7 +116,7 @@ public class RankManager extends RankManagerAPI {
     @Override
     public void deleteRank(Rank a) {
         //set players that have the rank to the default rank
-        for (RPPlayer value : rp.getPlayerManager().getPlayerMap().values()) {
+        for (RPPlayer value : rp.getPlayerManagerAPI().getPlayerMap().values()) {
             if (value.getRank().equals(a)) {
                 value.setRank(this.getDefaultRank());
             }
@@ -136,7 +136,7 @@ public class RankManager extends RankManagerAPI {
     @Override
     public void renameRank(Rank r, String input) {
         //get list of players in old rank
-        List<Player> pls = rp.getPlayerManager().getPlayersWithRank(r.getName());
+        List<Player> pls = rp.getPlayerManagerAPI().getPlayersWithRank(r.getName());
 
         //remove old rank
         this.deleteRank(r);
@@ -153,13 +153,13 @@ public class RankManager extends RankManagerAPI {
         Rank newR = this.addRank(r.getIcon(), input, r.getPrefix(), r.getChat(), r.getMapPermissions(), r.getInheritances());
 
         //add players to this new rank
-        pls.forEach(player -> rp.getPlayerManager().getPlayer(player).setRank(newR));
+        pls.forEach(player -> rp.getPlayerManagerAPI().getPlayer(player).setRank(newR));
 
         newR.saveData(Rank.RankData.ALL, true);
 
         //check if the rank being renamed is default rank, if it is, we set it to the default
-        if (rp.getRankManager().getDefaultRank() == r) {
-            rp.getRankManager().setDefaultRank(newR);
+        if (rp.getRankManagerAPI().getDefaultRank() == r) {
+            rp.getRankManagerAPI().setDefaultRank(newR);
         }
 
         //check if previous rank was in any other rank's inheritances, if it was we swap it
@@ -208,7 +208,7 @@ public class RankManager extends RankManagerAPI {
                             continue;
                         }
 
-                        Rank r = rp.getRankManager().getRank(dataSplit[0]); //get rank name
+                        Rank r = rp.getRankManagerAPI().getRank(dataSplit[0]); //get rank name
                         if (r == null) {
                             rp.getLogger().severe("Rankup data for " + rankup + " is invalid. Skipping. There is no rank named " + dataSplit[0]);
                             continue;
@@ -258,7 +258,7 @@ public class RankManager extends RankManagerAPI {
 
     @Override
     public void processRankup(RPPlayer player, Rankup rk, RankupEntry po) {
-        if (!rp.getRankManager().isRankupEnabled()) {
+        if (!rp.getRankManagerAPI().isRankupEnabled()) {
             TranslatableLine.RANKUP_DISABLED.send(player.getPlayer());
             return;
         }

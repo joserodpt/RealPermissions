@@ -177,10 +177,10 @@ public class RankPermissionsGUI {
                             case 34:
                                 p.closeInventory();
                                 new PlayerInput(p, input -> {
-                                    current.rp.getRankManager().renameRank(current.r, input);
+                                    current.rp.getRankManagerAPI().renameRank(current.r, input);
                                     TranslatableLine.RANKS_NAME_SET.setV1(TranslatableLine.ReplacableVar.NAME.eq(input)).send(p);
 
-                                    RankPermissionsGUI wv = new RankPermissionsGUI(p, current.rp.getRankManager().getRank(input), current.rp);
+                                    RankPermissionsGUI wv = new RankPermissionsGUI(p, current.rp.getRankManagerAPI().getRank(input), current.rp);
                                     wv.openInventory(p);
                                 }, input -> {
                                     RankPermissionsGUI wv = new RankPermissionsGUI(p, current.r, current.rp);
@@ -215,7 +215,7 @@ public class RankPermissionsGUI {
                             if (Objects.requireNonNull(e.getClick()) == ClickType.DROP) {
                                 if (perm.getAssociatedRankName().equalsIgnoreCase(current.r.getName())) {
                                     current.r.removePermission(perm);
-                                    current.rp.getRankManager().refreshPermsAndPlayers();
+                                    current.rp.getRankManagerAPI().refreshPermsAndPlayers();
                                     TranslatableLine.PERMISSIONS_RANK_PERM_REMOVE.setV1(TranslatableLine.ReplacableVar.PERM.eq(perm.getPermissionString())).setV2(TranslatableLine.ReplacableVar.RANK.eq(current.r.getPrefix())).send(p);
                                     current.load();
                                 } else {
@@ -224,7 +224,7 @@ public class RankPermissionsGUI {
                             } else {
                                 perm.negatePermission();
                                 current.r.saveData(Rank.RankData.PERMISSIONS, true);
-                                current.rp.getRankManager().refreshPermsAndPlayers();
+                                current.rp.getRankManagerAPI().refreshPermsAndPlayers();
                                 current.load();
                             }
                         }
