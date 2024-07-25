@@ -67,7 +67,7 @@ public class RankPermissionsGUI {
     }
 
     public void load() {
-        p = new Pagination<>(15, r.getAllPermissions());
+        p = new Pagination<>(15, r.getAllRankPermissions());
         fillChest(p.getPage(pageNumber));
     }
 

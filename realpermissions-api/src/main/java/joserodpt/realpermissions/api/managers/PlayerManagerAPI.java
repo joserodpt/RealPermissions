@@ -1,4 +1,4 @@
-package joserodpt.realpermissions.api;
+package joserodpt.realpermissions.api.managers;
 
 /*
  *   _____            _ _____
@@ -13,12 +13,12 @@ package joserodpt.realpermissions.api;
  * @link https://github.com/joserodpt/RealPermissions
  */
 
-import joserodpt.realpermissions.api.player.PlayerDataObject;
+import joserodpt.realpermissions.api.database.PlayerDataObject;
 import joserodpt.realpermissions.api.player.RPPlayer;
 import org.bukkit.entity.Player;
 
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.UUID;
 
 public abstract class PlayerManagerAPI {
@@ -34,21 +34,21 @@ public abstract class PlayerManagerAPI {
 
     public abstract void playerLeave(Player player);
 
-    public abstract List<String> listRanksWithPlayerCounts();
+    public abstract Collection<String> listRanksWithPlayerCounts();
 
-    public abstract List<Player> getPlayersWithRank(String name);
+    public abstract Collection<Player> getPlayersWithRank(String name);
 
     public abstract boolean isNotSuperUser(Player commandSender);
 
     public abstract void refreshPermissions();
 
-    public abstract List<PlayerDataObject> getPlayerObjects();
+    public abstract Collection<PlayerDataObject> getPlayerDataRows();
 
     public abstract void deletePlayer(PlayerDataObject po);
 
-    public abstract PlayerDataObject getPlayerObject(UUID uuid);
+    public abstract PlayerDataObject getPlayerDataRow(UUID uuid);
 
-    public abstract PlayerDataObject getPlayerObject(Player p);
+    public abstract PlayerDataObject getPlayerDataRow(Player p);
 
-    public abstract void updateReference(UUID uuid, PlayerDataObject playerDataObject);
+    public abstract void updateReference(UUID uuid, PlayerDataObject pdr);
 }

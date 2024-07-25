@@ -18,7 +18,7 @@ import joserodpt.realpermissions.api.RealPermissionsAPI;
 import joserodpt.realpermissions.api.config.RPConfig;
 import joserodpt.realpermissions.api.config.RPRanksConfig;
 import joserodpt.realpermissions.api.config.RPRankupsConfig;
-import joserodpt.realpermissions.api.RankManagerAPI;
+import joserodpt.realpermissions.api.managers.RankManagerAPI;
 import joserodpt.realpermissions.api.config.TranslatableLine;
 import joserodpt.realpermissions.api.permission.Permission;
 import joserodpt.realpermissions.api.player.RPPlayer;
@@ -32,6 +32,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -94,6 +95,10 @@ public class RankManager extends RankManagerAPI {
 
     @Override
     public Rank getRank(String string) {
+        if (string == null) {
+            return null;
+        }
+
         return ranks.get(string);
     }
 
@@ -136,7 +141,7 @@ public class RankManager extends RankManagerAPI {
     @Override
     public void renameRank(Rank r, String input) {
         //get list of players in old rank
-        List<Player> pls = rp.getPlayerManagerAPI().getPlayersWithRank(r.getName());
+        Collection<Player> pls = rp.getPlayerManagerAPI().getPlayersWithRank(r.getName());
 
         //remove old rank
         this.deleteRank(r);

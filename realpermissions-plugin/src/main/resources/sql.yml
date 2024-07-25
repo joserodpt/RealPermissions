@@ -1,0 +1,6 @@
+driver: "SQLITE"
+host: "localhost"
+database: "RealPermissions"
+username: ""
+password: ""
+port: 3306

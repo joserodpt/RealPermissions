@@ -19,8 +19,10 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 public class Text {
@@ -107,4 +109,11 @@ public class Text {
         }
         return res;
     };
+
+    public static String formatTimestamp(long l) {
+		if (l == 0) return "Never";
+
+		SimpleDateFormat sdf = new SimpleDateFormat(RPConfig.file().getString("RealPermissions.Date-Format"));
+		return sdf.format(new Date(l));
+    }
 }

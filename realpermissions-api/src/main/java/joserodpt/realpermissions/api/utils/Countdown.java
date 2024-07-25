@@ -18,18 +18,18 @@ public class Countdown implements Runnable {
     // Main class for bukkit scheduling
     private final JavaPlugin plugin;
     // Seconds and shiz
-    private final int seconds;
+    private final long seconds;
     // Actions to perform while counting down, before and after
     private final Consumer<Countdown> everySecond;
     private final Runnable beforeTimer;
     private final Runnable afterTimer;
     // Our scheduled task's assigned id, needed for canceling
     private Integer assignedTaskId;
-    private int secondsLeft;
+    private long secondsLeft;
 
     // Construct a timer, you could create multiple so for example if
     // you do not want these "actions"
-    public Countdown(JavaPlugin plugin, int seconds, Runnable beforeTimer, Runnable afterTimer, Consumer<Countdown> everySecond) {
+    public Countdown(JavaPlugin plugin, long seconds, Runnable beforeTimer, Runnable afterTimer, Consumer<Countdown> everySecond) {
         // Initializing fields
         this.plugin = plugin;
 
@@ -72,10 +72,11 @@ public class Countdown implements Runnable {
      *
      * @return Total seconds timer should run
      */
-    public int getTotalSeconds() {
+    public long getTotalSeconds() {
         return this.seconds;
     }
-    public int getPassedSeconds() {
+
+    public long getPassedSeconds() {
         return this.getTotalSeconds() - this.secondsLeft;
     }
 
@@ -84,7 +85,7 @@ public class Countdown implements Runnable {
      *
      * @return Seconds left timer should run
      */
-    public int getSecondsLeft() {
+    public long getSecondsLeft() {
         return this.secondsLeft;
     }
 

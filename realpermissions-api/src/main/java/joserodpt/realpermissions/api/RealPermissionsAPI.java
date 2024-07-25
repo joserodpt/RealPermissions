@@ -14,6 +14,9 @@ package joserodpt.realpermissions.api;
  */
 
 import com.google.common.base.Preconditions;
+import joserodpt.realpermissions.api.managers.DatabaseManagerAPI;
+import joserodpt.realpermissions.api.managers.PlayerManagerAPI;
+import joserodpt.realpermissions.api.managers.RankManagerAPI;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -47,6 +50,8 @@ public abstract class RealPermissionsAPI  {
 
     public abstract RankManagerAPI getRankManagerAPI();
     public abstract PlayerManagerAPI getPlayerManagerAPI();
+    public abstract DatabaseManagerAPI getDatabaseManagerAPI();
+
     public RealPermissionsHooksAPI getHooksAPI() { return hookAPI; }
 
     public abstract JavaPlugin getPlugin();
@@ -59,4 +64,5 @@ public abstract class RealPermissionsAPI  {
     }
 
     public abstract boolean hasNewUpdate();
+
 }

@@ -21,13 +21,13 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 import java.io.IOException;
 
-public class RPPlayersConfig implements Listener {
-	private static final String name = "players.yml";
+public class RPSQLConfig implements Listener {
+	private static final String name = "sql.yml";
 	private static YamlDocument document;
 
 	public static void setup(final JavaPlugin rm) {
 		try {
-			document = YamlDocument.create(new File(rm.getDataFolder(), name));
+			document = YamlDocument.create(new File(rm.getDataFolder(), name), rm.getResource(name));
 		} catch (final IOException e) {
 			RealPermissionsAPI.getInstance().getLogger().severe( "Couldn't setup " + name + "!");
 			RealPermissionsAPI.getInstance().getLogger().severe(e.getMessage());

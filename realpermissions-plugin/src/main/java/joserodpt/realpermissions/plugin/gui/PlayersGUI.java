@@ -15,7 +15,7 @@ package joserodpt.realpermissions.plugin.gui;
 
 import joserodpt.realpermissions.api.RealPermissionsAPI;
 import joserodpt.realpermissions.api.config.TranslatableLine;
-import joserodpt.realpermissions.api.player.PlayerDataObject;
+import joserodpt.realpermissions.api.database.PlayerDataObject;
 import joserodpt.realpermissions.api.player.RPPlayer;
 import joserodpt.realpermissions.api.utils.Items;
 import joserodpt.realpermissions.api.utils.Pagination;
@@ -33,6 +33,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -74,7 +75,7 @@ public class PlayersGUI {
     }
 
     public void load() {
-        List<PlayerDataObject> po = rp.getPlayerManagerAPI().getPlayerObjects();
+        List<PlayerDataObject> po = new ArrayList<>(rp.getPlayerManagerAPI().getPlayerDataRows());
 
         switch (ps) {
             case ON:

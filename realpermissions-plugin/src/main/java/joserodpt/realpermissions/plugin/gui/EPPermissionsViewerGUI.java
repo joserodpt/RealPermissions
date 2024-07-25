@@ -15,7 +15,7 @@ package joserodpt.realpermissions.plugin.gui;
 
 import joserodpt.realpermissions.api.RealPermissionsAPI;
 import joserodpt.realpermissions.api.config.TranslatableLine;
-import joserodpt.realpermissions.api.player.PlayerDataObject;
+import joserodpt.realpermissions.api.database.PlayerDataObject;
 import joserodpt.realpermissions.api.pluginhook.ExternalPlugin;
 import joserodpt.realpermissions.api.pluginhook.ExternalPluginPermission;
 import joserodpt.realpermissions.api.rank.Rank;
@@ -324,7 +324,7 @@ public class EPPermissionsViewerGUI {
                                 }
                                 if (current.po != null) {
                                     if (!current.po.hasPermission(clickedExtPerm.getPermission())) {
-                                        current.po.addPermission(clickedExtPerm.getPermission());
+                                        current.po.addPermission(clickedExtPerm.getPermission(), false);
                                         TranslatableLine.PERMISSIONS_PLAYER_ADD.setV1(TranslatableLine.ReplacableVar.PERM.eq(clickedExtPerm.getPermission())).setV2(TranslatableLine.ReplacableVar.PLAYER.eq(p.getName())).send(p);
                                     } else {
                                         TranslatableLine.PERMISSIONS_PLAYER_ALREADY_HAS_PERMISSION_UNDER_PLAYER.setV1(TranslatableLine.ReplacableVar.PERM.eq(clickedExtPerm.getPermission())).send(p);

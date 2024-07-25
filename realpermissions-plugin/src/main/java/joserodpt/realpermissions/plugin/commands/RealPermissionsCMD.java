@@ -16,9 +16,9 @@ package joserodpt.realpermissions.plugin.commands;
 import joserodpt.realpermissions.api.RealPermissionsAPI;
 import joserodpt.realpermissions.api.config.RPConfig;
 import joserodpt.realpermissions.api.config.RPLanguageConfig;
-import joserodpt.realpermissions.api.config.RPPlayersConfig;
 import joserodpt.realpermissions.api.config.RPRanksConfig;
 import joserodpt.realpermissions.api.config.RPRankupsConfig;
+import joserodpt.realpermissions.api.config.RPSQLConfig;
 import joserodpt.realpermissions.api.config.TranslatableLine;
 import joserodpt.realpermissions.api.player.RPPlayer;
 import joserodpt.realpermissions.api.pluginhook.ExternalPlugin;
@@ -71,9 +71,9 @@ public class RealPermissionsCMD extends CommandBase {
         RPLanguageConfig.reload();
         RPRanksConfig.reload();
         RPRankupsConfig.reload();
+        RPSQLConfig.reload();
         rp.getRankManagerAPI().loadRanks();
         rp.getRankManagerAPI().loadRankups();
-        RPPlayersConfig.reload();
         TranslatableLine.SYSTEM_RELOADED.send(commandSender);
     }
 
@@ -379,17 +379,17 @@ public class RealPermissionsCMD extends CommandBase {
         RPPlayer pa = rp.getPlayerManagerAPI().getPlayer(p);
 
         if (add) {
-            if (pa.hasPermission(perm)) {
+            if (pa.getPlayerDataRow().hasPermission(perm)) {
                 TranslatableLine.PERMISSIONS_PLAYER_ALREADY_HAS_PERMISSION.setV1(TranslatableLine.ReplacableVar.PERM.eq(perm)).send(commandSender);
             } else {
-                pa.addPermission(perm);
+                pa.getPlayerDataRow().addPermission(perm, false);
                 TranslatableLine.PERMISSIONS_PLAYER_ADD.setV1(TranslatableLine.ReplacableVar.PERM.eq(perm)).setV2(TranslatableLine.ReplacableVar.PLAYER.eq(p.getName())).send(commandSender);
             }
         } else {
-            if (!pa.hasPermission(perm)) {
+            if (!pa.getPlayerDataRow().hasPermission(perm)) {
                 TranslatableLine.PERMISSIONS_PLAYER_DOESNT_HAVE_PERMISSION.setV1(TranslatableLine.ReplacableVar.PERM.eq(perm)).send(commandSender);
             } else {
-                pa.removePermission(perm);
+                pa.getPlayerDataRow().removePermission(perm, false);
                 TranslatableLine.PERMISSIONS_PLAYER_REMOVE.setV1(TranslatableLine.ReplacableVar.PERM.eq(perm)).setV2(TranslatableLine.ReplacableVar.PLAYER.eq(p.getName())).send(commandSender);
             }
         }
@@ -408,7 +408,7 @@ public class RealPermissionsCMD extends CommandBase {
                 return;
             }
 
-            PlayerPermissionsGUI ppg = new PlayerPermissionsGUI(p, rp.getPlayerManagerAPI().getPlayerObject(p), rp);
+            PlayerPermissionsGUI ppg = new PlayerPermissionsGUI(p, rp.getPlayerManagerAPI().getPlayerDataRow(p), rp);
             ppg.openInventory(p);
         } else {
             Text.send(commandSender, noConsole);

@@ -15,10 +15,10 @@ package joserodpt.realpermissions.plugin;
 
 import joserodpt.realpermissions.api.config.RPConfig;
 import joserodpt.realpermissions.api.config.RPLanguageConfig;
-import joserodpt.realpermissions.api.config.RPPlayersConfig;
+import joserodpt.realpermissions.api.config.RPLegacyPlayersConfig;
 import joserodpt.realpermissions.api.config.RPRanksConfig;
 import joserodpt.realpermissions.api.config.RPRankupsConfig;
-import joserodpt.realpermissions.api.player.PlayerDataObject;
+import joserodpt.realpermissions.api.config.RPSQLConfig;
 import joserodpt.realpermissions.api.pluginhook.ExternalPluginPermission;
 import joserodpt.realpermissions.api.rank.Rank;
 import joserodpt.realpermissions.api.utils.PlayerInput;
@@ -36,6 +36,7 @@ import joserodpt.realpermissions.plugin.gui.RankupGUI;
 import joserodpt.realpermissions.plugin.gui.RankupPathGUI;
 import joserodpt.realpermissions.plugin.gui.RealPermissionsGUI;
 import joserodpt.realpermissions.plugin.gui.SettingsGUI;
+import joserodpt.realpermissions.plugin.managers.DatabaseManager;
 import me.mattstudios.mf.base.CommandManager;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
@@ -58,18 +59,19 @@ public final class RealPermissionsPlugin extends JavaPlugin {
 
         final long start = System.currentTimeMillis();
 
+        new Metrics(this, 19519);
+
         RPConfig.setup(this);
         realPermissions = new RealPermissions(this);
         RealPermissions.setInstance(realPermissions);
-
-        new Metrics(this, 19519);
 
         saveDefaultConfig();
         RPConfig.setup(this);
         RPLanguageConfig.setup(this);
         RPRanksConfig.setup(this);
         RPRankupsConfig.setup(this);
-        RPPlayersConfig.setup(this);
+        RPLegacyPlayersConfig.setup(this);
+        RPSQLConfig.setup(this);
 
         //load ranks
         realPermissions.getRankManagerAPI().loadRanks();
@@ -81,6 +83,19 @@ public final class RealPermissionsPlugin extends JavaPlugin {
         }
 
         getLogger().info("Loaded " + realPermissions.getRankManagerAPI().getRanksList().size() + " ranks.");
+
+        getLogger().info("Loading database.");
+        try {
+            realPermissions.setDatabaseManager(new DatabaseManager(realPermissions));
+            getLogger().info("Database loaded!");
+        } catch (Exception e) {
+            getLogger().severe("Error while connecting to the database. RealPermissions will stop.");
+            getLogger().severe("Error: " + e.getMessage());
+            return;
+        }
+
+        //check database integrity
+        realPermissions.getDatabaseManagerAPI().checkData();
 
         //hook into vault
         if (setupEconomy()) {
@@ -188,7 +203,7 @@ public final class RealPermissionsPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        realPermissions.getPlayerManagerAPI().getPlayerMap().values().forEach(playerAttatchment -> playerAttatchment.saveData(PlayerDataObject.PlayerData.TIMED_RANK));
+        realPermissions.getPlayerManagerAPI().getPlayerMap().values().forEach(rpPlayer -> rpPlayer.saveData(false));
     }
 
     public boolean hasNewUpdate() {

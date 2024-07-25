@@ -15,8 +15,8 @@ package joserodpt.realpermissions.plugin.gui;
 
 import joserodpt.realpermissions.api.RealPermissionsAPI;
 import joserodpt.realpermissions.api.config.TranslatableLine;
+import joserodpt.realpermissions.api.database.PlayerDataObject;
 import joserodpt.realpermissions.api.permission.Permission;
-import joserodpt.realpermissions.api.player.PlayerDataObject;
 import joserodpt.realpermissions.api.utils.Items;
 import joserodpt.realpermissions.api.utils.Pagination;
 import joserodpt.realpermissions.api.utils.Text;
@@ -75,7 +75,7 @@ public class PlayerPermissionsGUI {
     }
 
     public void load() {
-        p = new Pagination<>(15, new ArrayList<>(po.getPlayerPermissions().values()));
+        p = new Pagination<>(15, new ArrayList<>(po.getPlayerPermissions()));
         fillChest(!po.getPlayerPermissions().isEmpty() ? p.getPage(pageNumber) : Collections.emptyList());
     }
 
@@ -185,13 +185,13 @@ public class PlayerPermissionsGUI {
 
                             //flip permission
                             if (Objects.requireNonNull(e.getClick()) == ClickType.DROP) {
-                                current.po.removePermission(perm);
+                                current.po.removePermission(perm, false);
                                 TranslatableLine.PERMISSIONS_PLAYER_REMOVE.setV1(TranslatableLine.ReplacableVar.PERM.eq(perm.getPermissionString())).setV2(TranslatableLine.ReplacableVar.PLAYER.eq(current.po.getName())).send(p);
                                 current.load();
                             } else {
                                 perm.negatePermission();
                                 current.rp.getPlayerManagerAPI().refreshPermissions();
-                                current.po.saveData(PlayerDataObject.PlayerData.PERMISSIONS);
+                                RealPermissionsAPI.getInstance().getDatabaseManagerAPI().savePlayerData(current.po, true);
                                 current.load();
                             }
                         }

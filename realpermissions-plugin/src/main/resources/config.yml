@@ -1,7 +1,8 @@
-Version: 2
+Version: 3
 RealPermissions:
   Prefix: "&fReal&cPermissions &7>"
   Chat-Formatting: true
   Prefix-In-Tablist: true
   Enable-Rankup: true
   Warn-Modifications-To-Plugins-Via-API: true
+  Date-Format: "dd/MM/yyyy HH:mm:ss"

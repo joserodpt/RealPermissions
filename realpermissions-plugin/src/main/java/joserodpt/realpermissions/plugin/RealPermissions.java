@@ -14,8 +14,9 @@ package joserodpt.realpermissions.plugin;
  */
 
 import joserodpt.realpermissions.api.RealPermissionsAPI;
-import joserodpt.realpermissions.api.PlayerManagerAPI;
-import joserodpt.realpermissions.api.RankManagerAPI;
+import joserodpt.realpermissions.api.managers.PlayerManagerAPI;
+import joserodpt.realpermissions.api.managers.RankManagerAPI;
+import joserodpt.realpermissions.plugin.managers.DatabaseManager;
 import joserodpt.realpermissions.plugin.managers.PlayerManager;
 import joserodpt.realpermissions.plugin.managers.RankManager;
 import net.milkbowl.vault.economy.Economy;
@@ -29,6 +30,8 @@ public final class RealPermissions extends RealPermissionsAPI {
     private final RankManager rankManager;
     private final PlayerManager playerManager;
     private final RealPermissionsPlugin plugin;
+    private DatabaseManager databaseManager;
+
     public RealPermissions(RealPermissionsPlugin plugin) {
         this.plugin = plugin;
         this.logger = plugin.getLogger();
@@ -65,5 +68,13 @@ public final class RealPermissions extends RealPermissionsAPI {
     @Override
     public boolean hasNewUpdate() {
         return this.plugin.hasNewUpdate();
+    }
+
+    public void setDatabaseManager(DatabaseManager databaseManager) {
+        this.databaseManager = databaseManager;
+    }
+
+    public DatabaseManager getDatabaseManagerAPI() {
+        return this.databaseManager;
     }
 }

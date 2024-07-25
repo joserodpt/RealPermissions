@@ -13,6 +13,7 @@ package joserodpt.realpermissions.api.permission;
  * @link https://github.com/joserodpt/RealPermissions
  */
 
+import joserodpt.realpermissions.api.database.PlayerPermissionRow;
 import joserodpt.realpermissions.api.utils.Items;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -39,6 +40,10 @@ public class Permission {
         this.permissionString = permission; if (isNegated) { this.permissionString = permission.substring(1); }
         this.associatedRankName = associatedRankName;
         this.isNegated = isNegated;
+    }
+
+    public Permission(PlayerPermissionRow playerPermissionRow) {
+        this(playerPermissionRow.getPermission(), playerPermissionRow.isNegated());
     }
 
     public String getPermissionString() {

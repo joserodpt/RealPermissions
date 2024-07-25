@@ -15,7 +15,7 @@ package joserodpt.realpermissions.plugin.gui;
 
 import joserodpt.realpermissions.api.RealPermissionsAPI;
 import joserodpt.realpermissions.api.config.TranslatableLine;
-import joserodpt.realpermissions.api.player.PlayerDataObject;
+import joserodpt.realpermissions.api.database.PlayerDataObject;
 import joserodpt.realpermissions.api.player.RPPlayer;
 import joserodpt.realpermissions.api.rank.Rank;
 import joserodpt.realpermissions.api.rank.Rankup;
@@ -273,7 +273,7 @@ public class RanksListGUI {
                             } else {
                                 p.closeInventory();
                                 //assign rank to that player attatchment
-                                current.po.setRank(clickedRank);
+                                current.po.setRank(clickedRank.getName());
                                 TranslatableLine.RANKS_RANK_SET.setV1(TranslatableLine.ReplacableVar.PLAYER.eq(current.po.getName())).setV2(TranslatableLine.ReplacableVar.RANK.eq(clickedRank.getPrefix())).send(p);
                                 p.closeInventory();
                                 PlayerPermissionsGUI rv = new PlayerPermissionsGUI(p, current.po, current.rp);

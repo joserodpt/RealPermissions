@@ -1,4 +1,4 @@
-package joserodpt.realpermissions.api;
+package joserodpt.realpermissions.api.managers;
 
 /*
  *   _____            _ _____

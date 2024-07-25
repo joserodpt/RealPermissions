@@ -135,7 +135,7 @@ public class Rank {
         return this.permissions;
     }
 
-    public List<Permission> getAllPermissions() {
+    public List<Permission> getAllRankPermissions() {
         List<Permission> tmp = this.getRankPermissions();
         tmp.addAll(this.getInheritancePermissions());
         return tmp;
