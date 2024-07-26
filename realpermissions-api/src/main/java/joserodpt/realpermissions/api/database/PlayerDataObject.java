@@ -155,8 +155,11 @@ public class PlayerDataObject {
         return lastLogout;
     }
 
-    public void setLastLogout(long l) {
+    public void setLastLogout(long l, long i) {
         this.lastLogout = l;
+        if (i > 0) {
+            this.timedrank_timeleft = i;
+        }
         RealPermissionsAPI.getInstance().getDatabaseManagerAPI().savePlayerData(this, true);
     }
 
@@ -174,7 +177,7 @@ public class PlayerDataObject {
             lore.addAll(Arrays.asList(" &f> This rank is Timed.", " &f> Previous Rank: &b" + this.getTimedRankPreviousRank() + " &f- &fTime: &b" + Text.formatSeconds(this.getTimedRankTimeLeft())));
         }
 
-        if (!this.getPlayerRowPermissions().isEmpty()) {
+        if (!this.getPlayerPermissions().isEmpty()) {
             lore.addAll(Arrays.asList("", "&e" + this.getPlayerRowPermissions().size() + " Permissions:"));
             lore.addAll(this.getPlayerPermissions().stream()
                     .map(Permission::getPermissionStringStyled)
@@ -210,7 +213,7 @@ public class PlayerDataObject {
 
 
     public List<Permission> getPlayerPermissions() {
-        return RealPermissionsAPI.getInstance().getDatabaseManagerAPI().getPlayerPermissions(this.getUUID()).stream().map(Permission::new).collect(Collectors.toList());
+        return RealPermissionsAPI.getInstance().getDatabaseManagerAPI().getPlayerPermissions(this.getUUID()).stream().filter(playerPermissionRow -> !playerPermissionRow.isNegated()).map(Permission::new).collect(Collectors.toList());
     }
 
     public List<PlayerPermissionRow> getPlayerRowPermissions() {
@@ -235,7 +238,7 @@ public class PlayerDataObject {
 
     public void removePermission(String permission, boolean async) {
         List<PlayerPermissionRow> perms = new ArrayList<>(this.getPlayerRowPermissions());
-        perms.stream().filter(ppr -> ppr.getPermission().equals(permission)).findFirst().ifPresent(this.getPlayerRowPermissions()::remove);
+        perms.stream().filter(ppr -> ppr.getPermission().equals(permission)).findFirst().ifPresent(perms::remove);
         //this.getPermissionAttachment().unsetPermission(permission);
         RealPermissionsAPI.getInstance().getDatabaseManagerAPI().savePlayerPermissions(this.getUUID(), perms, async);
 
@@ -244,7 +247,7 @@ public class PlayerDataObject {
         }
     }
 
-    public void removePermission(Permission permission, boolean async) {
-        removePermission(permission.getPermissionString(), async);
+    public void removePermission(PlayerPermissionRow permission, boolean async) {
+        removePermission(permission.getPermission(), async);
     }
 }

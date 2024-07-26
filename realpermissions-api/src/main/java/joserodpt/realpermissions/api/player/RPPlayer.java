@@ -30,12 +30,12 @@ import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class RPPlayer {
 
@@ -96,28 +96,11 @@ public class RPPlayer {
     public void logout() {
         this.getPermissionAttachment().remove();
         this.pa = null;
-        this.pdr.setLastLogout(System.currentTimeMillis());
+        this.pdr.setLastLogout(System.currentTimeMillis(), this.getTimedRankCountdown != null ? this.getTimedRankCountdown.getSecondsLeft() : -1);
     }
 
     public void setPermission(Permission p) {
-        this.getPermissionAttachment().setPermission(p.getPermissionString(), !p.isNegated());
-    }
-
-    public void refreshPlayerPermissions() {
-        //remove all player's old permissions
-        this.removePlayersPermissions();
-
-        //set permissions to player
-        this.getAllRankPermissions().forEach(this::setPermission);
-
-        //set player permissions to player
-        this.getAllPlayerPermissions().forEach(this::setPermission);
-
-        this.setVisual();
-
-        if (this.isSuperUser()) {
-            this.getPermissionAttachment().setPermission("realpermissions.admin", true);
-        }
+        this.getPermissionAttachment().setPermission(p.getPermissionString(), true);
     }
 
     private void removePlayersPermissions() {
@@ -129,24 +112,28 @@ public class RPPlayer {
     }
 
     public void setRank(Rank rank) {
-        //remove all player's old rank permissions
-        this.removePlayersPermissions();
-
         getPlayerDataRow().setRank(rank.getName());
 
-        //set rank permissions to player
-        this.getAllRankPermissions().forEach(this::setPermission);
-
-        //set player permissions to player
-        this.getAllPlayerPermissions().forEach(this::setPermission);
-
-        //set visual
-        this.setVisual();
-
-        //set if it's super user again
-        this.setSuperUser(this.isSuperUser());
+        refreshPlayerPermissions();
 
         TranslatableLine.RANKS_PLAYER_RANK_UPDATED.setV1(TranslatableLine.ReplacableVar.RANK.eq(this.getRank().getPrefix())).send(this.getPlayer());
+    }
+
+    public void refreshPlayerPermissions() {
+        //remove all player's old permissions
+        this.removePlayersPermissions();
+
+        //set permissions to player
+        this.getAllRankPermissions().forEach(this::setPermission);
+
+        //set player permissions + rank to player
+        this.getPlayerDataRow().getPlayerPermissions().forEach(this::setPermission);
+
+        this.setVisual();
+
+        if (this.isSuperUser()) {
+            this.getPermissionAttachment().setPermission("realpermissions.admin", true);
+        }
     }
 
     public void loadTimedRank(Rank previousRank, long secondsRemaining) {
@@ -187,8 +174,6 @@ public class RPPlayer {
             this.getTimedRankCountdown = null;
         }
 
-        this.setTimedRank(null, 0);
-
         this.setRank(this.getPreviousRankBeforeTimedRank());
         getPlayerDataRow().setTimedRank(null, 0);
     }
@@ -209,14 +194,7 @@ public class RPPlayer {
     }
 
     public List<Permission> getAllRankPermissions() {
-        return this.getRank() == null ? Collections.emptyList() : this.getRank().getAllRankPermissions(); //filter negated permissions
-    }
-
-    public List<Permission> getAllPlayerPermissions() {
-        List<Permission> perms = new ArrayList<>();
-        this.getPlayerDataRow().getPlayerRowPermissions().forEach(ppr -> perms.add(new Permission(ppr)));
-        perms.addAll(this.getRank().getAllRankPermissions());
-        return perms;
+        return this.getRank() == null ? Collections.emptyList() : this.getRank().getAllRankPermissions().stream().filter(permission -> !permission.isNegated()).collect(Collectors.toList()); //filter negated permissions
     }
 
     public void saveData() {

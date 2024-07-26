@@ -61,8 +61,12 @@ public class RealPermissionsGUI {
         this.inv.setItem(12, Items.createItem(Material.BOOK, 1, "&b&lRanks", ranks));
 
         List<String> rankup = new ArrayList<>();
-        rankup.add("&b" + rp.getRankManagerAPI().getRankupsList().size() + " &frankups registered:"); rankup.add("");
-        rankup.addAll(rp.getRankManagerAPI().getRankupsList().stream().map(rank -> "&f- " + rank.getDisplayName()).collect(Collectors.toList()));
+        if (rp.getRankManagerAPI().isRankupEnabled()) {
+            rankup.add("&b" + rp.getRankManagerAPI().getRankupsList().size() + " &frankups registered:"); rankup.add("");
+            rankup.addAll(rp.getRankManagerAPI().getRankupsList().stream().map(rank -> "&f- " + rank.getDisplayName()).collect(Collectors.toList()));
+        } else {
+            rankup.add("&eRankup is disabled.");
+        }
         this.inv.setItem(14, Items.createItem(Material.EXPERIENCE_BOTTLE, 1, "&a&lRankup", rankup));
 
         this.inv.setItem(16, Items.createItem(Material.COMPARATOR, 1, "&e&lSettings"));
@@ -124,8 +128,12 @@ public class RealPermissionsGUI {
                                 break;
                             case 14:
                                 p.closeInventory();
-                                RankupGUI rg = new RankupGUI(current.rp.getPlayerManagerAPI().getPlayer(p), current.rp, true);
-                                rg.openInventory(p);
+                                if (current.rp.getRankManagerAPI().isRankupEnabled()) {
+                                    RankupGUI rg = new RankupGUI(current.rp.getPlayerManagerAPI().getPlayer(p), current.rp, true);
+                                    rg.openInventory(p);
+                                } else {
+                                    Text.send(p, "&cRankup is disabled.");
+                                }
                                 break;
                             case 16:
                                 p.closeInventory();

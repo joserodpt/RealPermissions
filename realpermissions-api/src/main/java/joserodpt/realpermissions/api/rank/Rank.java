@@ -214,19 +214,30 @@ public class Rank {
         this.addPermission(new Permission(perm, this.getName(), false));
     }
 
+    public void removePermission(Permission permission) {
+        this.removePermission(permission.getPermissionString());
+    }
+
     public void addPermission(Permission p) {
         this.getMapPermissions().put(p.getPermissionString(), p);
         this.saveData(RankData.PERMISSIONS, true);
+        RealPermissionsAPI.getInstance().getRankManagerAPI().updateRank(this);
+        this.updatePlayers();
     }
 
     public void removePermission(String permission) {
         this.getMapPermissions().remove(permission);
         this.saveData(RankData.PERMISSIONS, true);
+        RealPermissionsAPI.getInstance().getRankManagerAPI().updateRank(this);
+        this.updatePlayers();
     }
 
-    public void removePermission(Permission permission) {
-        this.getMapPermissions().remove(permission.getPermissionString());
-        this.saveData(RankData.PERMISSIONS, true);
+    private void updatePlayers() {
+        RealPermissionsAPI.getInstance().getPlayerManagerAPI().getPlayerMap().values().forEach(player -> {
+            if (player.getRank().getName().equalsIgnoreCase(this.getName())) {
+                player.refreshPlayerPermissions();
+            }
+        });
     }
 
     public void deleteConfig() {

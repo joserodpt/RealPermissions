@@ -16,8 +16,13 @@ package joserodpt.realpermissions.api.database;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 import joserodpt.realpermissions.api.permission.Permission;
+import joserodpt.realpermissions.api.utils.Items;
+import joserodpt.realpermissions.api.utils.Text;
+import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
 import java.util.UUID;
 
 @DatabaseTable(tableName = "rp_player_permissions")
@@ -73,11 +78,19 @@ public class PlayerPermissionRow {
         return isNegated;
     }
 
+    public void negate() {
+        isNegated = !isNegated;
+    }
+
     @Override
     public String toString() {
         return "PlayerPermissionRow{" +
                 "player_uuid=" + player_uuid +
                 ", permission='" + permission + '\'' +
                 '}';
+    }
+
+    public ItemStack getPlayerPermissionIcon() {
+        return Items.createItem(this.isNegated ? Material.PAPER : Material.FILLED_MAP, 1, (this.isNegated() ? "&c&l" : "&f&l") + this.getPermission(), Arrays.asList("","&fAdded on: &b" + Text.formatTimestamp(this.getAddedDate()),"&a&nClick&r&f to " + (this.isNegated() ? "&aallow" : "&cnegate") + " &r&fthis permission.","&c&nQ (Drop)&r&f to &cremove"));
     }
 }

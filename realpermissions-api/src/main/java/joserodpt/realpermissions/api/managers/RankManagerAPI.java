@@ -61,4 +61,6 @@ public abstract class RankManagerAPI {
     public abstract void addNewRankup();
 
     public abstract void addNewRank(String input);
+
+    public abstract void updateRank(Rank rank);
 }

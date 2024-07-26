@@ -21,7 +21,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.Arrays;
 
 public class Permission {
-    private String permissionString;
+    private final String permissionString;
     private String associatedRankName;
 
     private boolean isNegated;
@@ -32,12 +32,18 @@ public class Permission {
 
     public Permission(String permission, boolean isNegated) {
         //for player permissions
-        this.permissionString = permission; if (isNegated) { this.permissionString = permission.substring(1); }
+        if (permission.startsWith("-")) {
+            permission = permission.substring(1);
+        }
+        this.permissionString = permission;
         this.isNegated = isNegated;
     }
 
     public Permission(String permission, String associatedRankName, boolean isNegated) {
-        this.permissionString = permission; if (isNegated) { this.permissionString = permission.substring(1); }
+        if (permission.startsWith("-")) {
+            permission = permission.substring(1);
+        }
+        this.permissionString = permission;
         this.associatedRankName = associatedRankName;
         this.isNegated = isNegated;
     }
@@ -66,10 +72,6 @@ public class Permission {
 
     public String getAssociatedRankName() {
         return this.associatedRankName;
-    }
-
-    public ItemStack getPlayerPermissionIcon() {
-        return Items.createItem(this.isNegated ? Material.PAPER : Material.FILLED_MAP, 1, (this.isNegated() ? "&c&l" : "&f&l") + this.getPermissionString(), Arrays.asList("&a&nClick&r&f to " + (this.isNegated() ? "&aactivate" : "&cdeactivate") + " &r&fthis permission.","&c&nQ (Drop)&r&f to &cremove"));
     }
 
     public ItemStack getRankPermissionIcon(String rank) {

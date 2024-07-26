@@ -115,7 +115,7 @@ public class RealPermissionsPlaceholderAPI extends PlaceholderExpansion {
                     : "none";
         }
         if (identifier.equalsIgnoreCase("player_permission_count")) {
-            return p.getAllPlayerPermissions().size()+"";
+            return p.getPlayerDataRow().getPlayerPermissions().size()+"";
         }
 
         return null;

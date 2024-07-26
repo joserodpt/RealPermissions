@@ -72,11 +72,12 @@ public class SettingsGUI {
         switch (def) {
             case REALP:
                 this.inv.setItem(13, Items.createItem(Material.WRITABLE_BOOK, 1, "&ePlugin Prefix", Arrays.asList("&fCurrent: &r" + RPConfig.file().getString("RealPermissions.Prefix"), "", "&fClick here to change the plugin's prefix.")));
+                this.inv.setItem(14, Items.createItem(Material.TRIPWIRE_HOOK, 1, "&eAPI Logs " + (RPConfig.file().getBoolean("RealPermissions.Warn-Modifications-To-Plugins-Via-API") ? "&a&lON" : "&c&lOFF"), Collections.singletonList("&fClick here to toggle api logs.")));
                 break;
             case CHAT_TABLIST:
-                this.inv.setItem(22, Items.createItem(Material.NAME_TAG, 1, "&eChat Formatting " + (RPConfig.file().getBoolean("RealPermissions.Chat-Formatting") ? "&a&lON" : "&c&lOFF"), Arrays.asList("", "&fClick here to turn on/off chat formatting.")));
-                this.inv.setItem(23, Items.createItem(Material.FILLED_MAP, 1, "&eTab Formatting " + (RPConfig.file().getBoolean("RealPermissions.Prefix-In-Tablist") ? "&a&lON" : "&c&lOFF"), Arrays.asList("", "&fClick here to turn on/off prefixes in tablist.")));
-                this.inv.setItem(24, Items.createItem(Material.EXPERIENCE_BOTTLE, 1, "&eRankup " + (RPConfig.file().getBoolean("RealPermissions.Enable-Rankup") ? "&a&lON" : "&c&lOFF"), Arrays.asList("", "&fClick here to turn on/off rankup.")));
+                this.inv.setItem(22, Items.createItem(Material.NAME_TAG, 1, "&eChat Formatting " + (RPConfig.file().getBoolean("RealPermissions.Chat-Formatting") ? "&a&lON" : "&c&lOFF"), Collections.singletonList("&fClick here to turn on/off chat formatting.")));
+                this.inv.setItem(23, Items.createItem(Material.FILLED_MAP, 1, "&eTab Formatting " + (RPConfig.file().getBoolean("RealPermissions.Prefix-In-Tablist") ? "&a&lON" : "&c&lOFF"), Collections.singletonList("&fClick here to turn on/off prefixes in tablist.")));
+                this.inv.setItem(24, Items.createItem(Material.EXPERIENCE_BOTTLE, 1, "&eRankup " + (RPConfig.file().getBoolean("RealPermissions.Enable-Rankup") ? "&a&lON" : "&c&lOFF"), Collections.singletonList("&fClick here to turn on/off rankup.")));
 
                 break;
         }
@@ -145,8 +146,9 @@ public class SettingsGUI {
                                     SettingsGUI wv = new SettingsGUI(p, current.rp);
                                     wv.openInventory(p);
                                 });
-
                                 break;
+                            case 14:
+                                toggle("Warn-Modifications-To-Plugins-Via-API", current);
                             case 22:
                                 toggle("Chat-Formatting", current);
                                 break;

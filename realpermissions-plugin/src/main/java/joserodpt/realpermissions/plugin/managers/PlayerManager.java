@@ -61,6 +61,9 @@ public class PlayerManager extends PlayerManagerAPI {
             rp.getLogger().warning("The player's rank is now the default rank.");
         }
 
+        Rank prevRankApply = null;
+        long secondsRemaining = 0;
+
         if (pdo.hasTimedRank()) {
             Rank previousRank = rp.getRankManagerAPI().getRank(pdo.getTimedRankPreviousRank());
 
@@ -71,23 +74,27 @@ public class PlayerManager extends PlayerManagerAPI {
                 rp.getLogger().severe("The player's timed rank has been removed.");
             }
 
-            long secondsRemaining = pdo.getTimedRankTimeLeft();
+            secondsRemaining = pdo.getTimedRankTimeLeft();
 
             long milis = System.currentTimeMillis() / 1000L; //segundos atuais
-            long difTempoSegundos = milis - pdo.getLastLogout();
+            long difTempoSegundos = milis - pdo.getLastLogout() / 1000L; //diferença de tempo em segundos
 
             secondsRemaining -= (int) difTempoSegundos;
 
-            if (secondsRemaining < 0) {
+            if (secondsRemaining <= 0) {
                 secondsRemaining = 0;
-            }
 
-            pdo.setTimedRankTimeLeft(secondsRemaining);
+                prevRankApply = previousRank;
+                pdo.setTimedRank(null, 0);
+            }
         }
 
         RPPlayer po = new RPPlayer(p, rp);
+        if (prevRankApply != null) {
+            po.setRank(prevRankApply);
+        }
         if (pdo.hasTimedRank()) {
-            po.loadTimedRank(rp.getRankManagerAPI().getRank(pdo.getTimedRankPreviousRank()), pdo.getTimedRankTimeLeft());
+            po.loadTimedRank(rp.getRankManagerAPI().getRank(pdo.getTimedRankPreviousRank()), secondsRemaining);
         }
 
         this.getPlayerMap().put(p.getUniqueId(), new RPPlayer(p, rp));

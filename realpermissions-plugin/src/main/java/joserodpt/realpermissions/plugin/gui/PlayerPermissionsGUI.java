@@ -16,7 +16,7 @@ package joserodpt.realpermissions.plugin.gui;
 import joserodpt.realpermissions.api.RealPermissionsAPI;
 import joserodpt.realpermissions.api.config.TranslatableLine;
 import joserodpt.realpermissions.api.database.PlayerDataObject;
-import joserodpt.realpermissions.api.permission.Permission;
+import joserodpt.realpermissions.api.database.PlayerPermissionRow;
 import joserodpt.realpermissions.api.utils.Items;
 import joserodpt.realpermissions.api.utils.Pagination;
 import joserodpt.realpermissions.api.utils.Text;
@@ -55,11 +55,11 @@ public class PlayerPermissionsGUI {
             Collections.singletonList("&fClick here to close this menu."));
 
     private final UUID uuid;
-    private Map<Integer, Permission> display = new HashMap<>();
+    private Map<Integer, PlayerPermissionRow> display = new HashMap<>();
     private PlayerDataObject po;
 
     int pageNumber = 0;
-    Pagination<Permission> p;
+    Pagination<PlayerPermissionRow> p;
 
     private RealPermissionsAPI rp;
 
@@ -70,22 +70,20 @@ public class PlayerPermissionsGUI {
         this.inv = Bukkit.getServer().createInventory(null, 54, Text.color("&f&lReal&c&lPermissions &8| &9" + Bukkit.getOfflinePlayer(po.getUUID()).getName()));
 
         load();
-
-        this.register();
     }
 
     public void load() {
-        p = new Pagination<>(15, new ArrayList<>(po.getPlayerPermissions()));
-        fillChest(!po.getPlayerPermissions().isEmpty() ? p.getPage(pageNumber) : Collections.emptyList());
+        List<PlayerPermissionRow> asd = po.getPlayerRowPermissions();
+        p = new Pagination<>(15, asd);
+        fillChest(!asd.isEmpty() ? p.getPage(pageNumber) : Collections.emptyList());
     }
 
-    public void fillChest(List<Permission> items) {
+    public void fillChest(List<PlayerPermissionRow> items) {
         this.inv.clear();
         this.display.clear();
 
         for (int i = 10; i < 33; ++i) {
-            switch (i)
-            {
+            switch (i) {
                 case 18:
                 case 24:
                 case 25:
@@ -97,7 +95,7 @@ public class PlayerPermissionsGUI {
                     break;
                 default:
                     if (!items.isEmpty()) {
-                        Permission wi = items.get(0);
+                        PlayerPermissionRow wi = items.get(0);
                         this.inv.setItem(i, wi.getPlayerPermissionIcon());
                         this.display.put(i, wi);
                         items.remove(0);
@@ -133,6 +131,8 @@ public class PlayerPermissionsGUI {
                 target.openInventory(inv);
             }
         }
+
+        Bukkit.getScheduler().runTaskLater(rp.getPlugin(), this::register, 1L);
     }
 
     public static Listener getListener() {
@@ -181,17 +181,18 @@ public class PlayerPermissionsGUI {
                         }
 
                         if (current.display.containsKey(e.getRawSlot())) {
-                            Permission perm = current.display.get(e.getRawSlot());
+                            PlayerPermissionRow perm = current.display.get(e.getRawSlot());
 
                             //flip permission
                             if (Objects.requireNonNull(e.getClick()) == ClickType.DROP) {
                                 current.po.removePermission(perm, false);
-                                TranslatableLine.PERMISSIONS_PLAYER_REMOVE.setV1(TranslatableLine.ReplacableVar.PERM.eq(perm.getPermissionString())).setV2(TranslatableLine.ReplacableVar.PLAYER.eq(current.po.getName())).send(p);
+                                TranslatableLine.PERMISSIONS_PLAYER_REMOVE.setV1(TranslatableLine.ReplacableVar.PERM.eq(perm.getPermission())).setV2(TranslatableLine.ReplacableVar.PLAYER.eq(current.po.getName())).send(p);
                                 current.load();
                             } else {
-                                perm.negatePermission();
+                                List<PlayerPermissionRow> perms = new ArrayList<>(current.po.getPlayerRowPermissions());
+                                perms.stream().filter(permission -> permission.getPermission().equalsIgnoreCase(perm.getPermission())).findFirst().ifPresent(PlayerPermissionRow::negate);
+                                RealPermissionsAPI.getInstance().getDatabaseManagerAPI().savePlayerPermissions(current.po.getUUID(), perms, false);
                                 current.rp.getPlayerManagerAPI().refreshPermissions();
-                                RealPermissionsAPI.getInstance().getDatabaseManagerAPI().savePlayerData(current.po, true);
                                 current.load();
                             }
                         }
@@ -200,20 +201,16 @@ public class PlayerPermissionsGUI {
             }
 
             private void backPage(PlayerPermissionsGUI asd) {
-                if (!asd.po.getPlayerPermissions().isEmpty()) {
-                    if (asd.p.exists(asd.pageNumber - 1)) {
-                        --asd.pageNumber;
-                        asd.fillChest(asd.p.getPage(asd.pageNumber));
-                    }
+                if (asd.p.exists(asd.pageNumber - 1)) {
+                    --asd.pageNumber;
+                    asd.fillChest(asd.p.getPage(asd.pageNumber));
                 }
             }
 
             private void nextPage(PlayerPermissionsGUI asd) {
-                if (!asd.po.getPlayerPermissions().isEmpty()) {
-                    if (asd.p.exists(asd.pageNumber + 1)) {
-                        ++asd.pageNumber;
-                        asd.fillChest(asd.p.getPage(asd.pageNumber));
-                    }
+                if (asd.p.exists(asd.pageNumber + 1)) {
+                    ++asd.pageNumber;
+                    asd.fillChest(asd.p.getPage(asd.pageNumber));
                 }
             }
 

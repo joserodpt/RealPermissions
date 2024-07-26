@@ -51,7 +51,7 @@ public class RankManager extends RankManagerAPI {
 
     @Override
     public Boolean isRankupEnabled() {
-        return RPConfig.file().getBoolean("RealPermissions.Enable-Rankup") || rp.getEcon() != null;
+        return RPConfig.file().getBoolean("RealPermissions.Enable-Rankup") && rp.getEcon() != null;
     }
 
     @Override
@@ -316,5 +316,10 @@ public class RankManager extends RankManagerAPI {
     public void addNewRank(String input) {
         String clear = Text.strip(input);
         this.getRankMap().put(clear, new Rank(clear, input));
+    }
+
+    @Override
+    public void updateRank(Rank rank) {
+        this.getRankMap().put(rank.getName(), rank);
     }
 }
