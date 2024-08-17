@@ -55,8 +55,10 @@ public class RealPermissionsCMD extends CommandBase {
         if (commandSender instanceof Player) {
             Player p = (Player) commandSender;
 
-            RealPermissionsGUI rg = new RealPermissionsGUI(p, rp);
-            rg.openInventory(p);
+            if (p.hasPermission("realpermissions.admin") || p.isOp()) {
+                RealPermissionsGUI rg = new RealPermissionsGUI(p, rp);
+                rg.openInventory(p);
+            }
         } else {
             Text.sendList(commandSender, Arrays.asList("         &fReal&cPermissions", "         &7Release &a" + rp.getVersion()));
         }
