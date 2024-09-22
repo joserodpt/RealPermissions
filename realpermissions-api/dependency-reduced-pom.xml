@@ -4,7 +4,7 @@
   <groupId>joserodpt</groupId>
   <artifactId>realpermissions-api</artifactId>
   <name>realpermissions-api</name>
-  <version>0.4</version>
+  <version>0.4.2</version>
   <build>
     <resources>
       <resource>

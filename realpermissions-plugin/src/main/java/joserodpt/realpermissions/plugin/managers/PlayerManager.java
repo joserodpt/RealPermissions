@@ -50,6 +50,10 @@ public class PlayerManager extends PlayerManagerAPI {
     public void playerJoin(Player p) {
         //check if player exists in DB
         PlayerDataObject pdo = RealPermissionsAPI.getInstance().getDatabaseManagerAPI().getPlayerData(p);
+        //if (pdo == null) {
+        //    pdo = new PlayerDataObject(p);
+        //    rp.getDatabaseManagerAPI().savePlayerData(pdo, false);
+        //}
         Rank rank = rp.getRankManagerAPI().getRank(pdo.getRankName());
         if (rank == null) {
             rp.getLogger().warning("There is something wrong with " + p.getName() + "'s rank.");

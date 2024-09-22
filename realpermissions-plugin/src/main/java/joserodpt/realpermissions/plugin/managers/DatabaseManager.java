@@ -150,13 +150,13 @@ public class DatabaseManager extends DatabaseManagerAPI {
         //check if data exists, if not, create it
         return playerDataCache.computeIfAbsent(p.getUniqueId(), key -> {
             try {
-                return playerDataDao.queryForId(key);
-            } catch (SQLException exception) {
+                return playerDataDao.queryForEq("uuid", p.getUniqueId()).get(0);
+            } catch (Exception exception) {
                 //create new data
                 try {
                     PlayerDataObject playerDataObject = new PlayerDataObject(p);
                     playerDataDao.create(playerDataObject);
-                    return playerDataCache.put(p.getUniqueId(), playerDataObject);
+                    return playerDataObject;
                 } catch (SQLException e) {
                     rpa.getLogger().severe("Error while creating new player data for new player:" + e.getMessage());
                     e.printStackTrace();
@@ -183,7 +183,7 @@ public class DatabaseManager extends DatabaseManagerAPI {
 
     @Override
     public void checkData() {
-        if (!RPLegacyPlayersConfig.file().getBoolean("Converted", false)) {
+        if (!RPLegacyPlayersConfig.file().getRoutesAsStrings(false).isEmpty() && !RPLegacyPlayersConfig.file().getBoolean("Converted", false)) {
             rpa.getLogger().warning("Converting data to the new database system...");
 
             // Convert data here

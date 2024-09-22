@@ -273,7 +273,7 @@ public class RanksListGUI {
                             } else {
                                 p.closeInventory();
                                 //assign rank to that player attatchment
-                                current.po.setRank(clickedRank.getName());
+                                current.rp.getPlayerManagerAPI().getPlayer(p).setRank(clickedRank);
                                 TranslatableLine.RANKS_RANK_SET.setV1(TranslatableLine.ReplacableVar.PLAYER.eq(current.po.getName())).setV2(TranslatableLine.ReplacableVar.RANK.eq(clickedRank.getPrefix())).send(p);
                                 p.closeInventory();
                                 PlayerPermissionsGUI rv = new PlayerPermissionsGUI(p, current.po, current.rp);

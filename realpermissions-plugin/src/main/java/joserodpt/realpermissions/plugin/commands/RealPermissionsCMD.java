@@ -44,6 +44,7 @@ public class RealPermissionsCMD extends CommandBase {
     private final String noConsole = "[RealPermissions] Only players can run this command.";
 
     private final RealPermissionsAPI rp;
+
     public RealPermissionsCMD(RealPermissionsAPI rp) {
         this.rp = rp;
     }
@@ -155,7 +156,7 @@ public class RealPermissionsCMD extends CommandBase {
 
     @SubCommand("setrank")
     @Alias("sr")
-    @Completion({"#players","#ranks"})
+    @Completion({"#players", "#ranks"})
     @WrongUsage("/rp setrank <player> <rank>")
     @Permission("realpermissions.admin")
     @SuppressWarnings("unused")
@@ -175,15 +176,16 @@ public class RealPermissionsCMD extends CommandBase {
         Rank r = rp.getRankManagerAPI().getRank(rank);
         if (r == null) {
             TranslatableLine.RANKS_NO_RANK_FOUND.setV1(TranslatableLine.ReplacableVar.NAME.eq(rank)).send(p);
-        }
+        } else {
+            rp.getPlayerManagerAPI().getPlayer(p).setRank(r);
+            TranslatableLine.RANKS_RANK_SET.setV1(TranslatableLine.ReplacableVar.PLAYER.eq(p.getName())).setV2(TranslatableLine.ReplacableVar.RANK.eq(r.getPrefix())).send(commandSender);
 
-        rp.getPlayerManagerAPI().getPlayer(p).setRank(r);
-        TranslatableLine.RANKS_RANK_SET.setV1(TranslatableLine.ReplacableVar.PLAYER.eq(p.getName())).setV2(TranslatableLine.ReplacableVar.RANK.eq(r.getPrefix())).send(commandSender);
+        }
     }
 
     @SubCommand("settimedrank")
     @Alias("str")
-    @Completion({"#players","#ranks"})
+    @Completion({"#players", "#ranks"})
     @WrongUsage("/rp str <player> <rank> <seconds>")
     @Permission("realpermissions.admin")
     @SuppressWarnings("unused")
@@ -293,7 +295,7 @@ public class RealPermissionsCMD extends CommandBase {
 
     @SubCommand("permission")
     @Alias("perm")
-    @Completion({"#permOperations","#ranks", "#permissions"})
+    @Completion({"#permOperations", "#ranks", "#permissions"})
     @WrongUsage("/rp perm <add/remove> <rank> <permission>")
     @Permission("realpermissions.admin")
     @SuppressWarnings("unused")
@@ -349,7 +351,7 @@ public class RealPermissionsCMD extends CommandBase {
 
     @SubCommand("playerperm")
     @Alias("pperm")
-    @Completion({"#permOperations","#players", "#permissions"})
+    @Completion({"#permOperations", "#players", "#permissions"})
     @WrongUsage("/rp pperm <add/remove> <player> <permission>")
     @Permission("realpermissions.admin")
     @SuppressWarnings("unused")
@@ -423,7 +425,7 @@ public class RealPermissionsCMD extends CommandBase {
     @WrongUsage("/rp hooks")
     @SuppressWarnings("unused")
     public void hooks(final CommandSender commandSender) {
-        TranslatableLine.SYSTEM_REGISTERED_HOOKS.setV1(TranslatableLine.ReplacableVar.STRING.eq(rp.getHooksAPI().getExternalPluginList().size()+"")).send(commandSender);
+        TranslatableLine.SYSTEM_REGISTERED_HOOKS.setV1(TranslatableLine.ReplacableVar.STRING.eq(rp.getHooksAPI().getExternalPluginList().size() + "")).send(commandSender);
 
         for (String pluginName : rp.getHooksAPI().getExternalPluginListSorted()) {
             ExternalPlugin ep = rp.getHooksAPI().getExternalPluginList().get(pluginName);
