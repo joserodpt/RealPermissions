@@ -9,6 +9,13 @@
     <version>0.4.2</version>
     <packaging>jar</packaging>
 
+    <parent>
+        <groupId>joserodpt.realpermissions</groupId>
+        <artifactId>realpermissions-parent</artifactId>
+        <version>0.4.2</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
     <name>realpermissions-api</name>
 
     <properties>
