@@ -9,6 +9,13 @@
     <version>0.4.2</version>
     <packaging>jar</packaging>
 
+    <parent>
+        <groupId>joserodpt.realpermissions</groupId>
+        <artifactId>realpermissions-parent</artifactId>
+        <version>0.4.2</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
     <name>realpermissions-plugin</name>
 
     <properties>
@@ -68,7 +75,7 @@
         </repository>
         <repository>
             <id>placeholderapi</id>
-            <url>https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
+            <url>https://repo.extendedclip.com/releases/</url>
         </repository>
     </repositories>
 
@@ -104,7 +111,7 @@
         <dependency>
             <groupId>me.clip</groupId>
             <artifactId>placeholderapi</artifactId>
-            <version>2.11.1</version>
+            <version>2.11.5</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
