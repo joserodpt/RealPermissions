@@ -15,6 +15,7 @@ package joserodpt.realpermissions.plugin;
 
 import joserodpt.realpermissions.api.RealPermissionsAPI;
 import joserodpt.realpermissions.api.player.RPPlayer;
+import joserodpt.realpermissions.api.rank.Rank;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
@@ -99,22 +100,42 @@ public class RealPermissionsPlaceholderAPI extends PlaceholderExpansion {
     }
 
     @Override
-    public String onRequest(final OfflinePlayer player, final String identifier) {
+    public String onRequest(final OfflinePlayer player, @NotNull final String identifier) {
         final RPPlayer p = plugin.getPlayerManagerAPI().getPlayer(player.getUniqueId());
+        if (p == null) {
+            return "nullPlayer";
+        }
+
+        final Rank rank = p.getRank();
+        if (rank == null) {
+            return "?";
+        }
+
         if (identifier.equalsIgnoreCase("rank_name")) {
-            return p.getRank().getName();
+            return rank.getName();
         }
         if (identifier.equalsIgnoreCase("rank_prefix")) {
-            return p.getRank().getPrefix();
+            return rank.getPrefix();
         }
         if (identifier.equalsIgnoreCase("rank_permission_count")) {
-            return p.getRank().getPermissions(false).size()+"";
+            return rank.getPermissions(false).size()+"";
         }
         if (identifier.equalsIgnoreCase("timed_rank_time_left")) {
-            return p.hasTimedRank() ? plugin.getPlayerManagerAPI().getPlayer(player.getUniqueId()).getGetTimedRankCountdown().getSecondsLeft()+""
-                    : "none";
+            if (!p.hasTimedRank()) {
+                return "none";
+            }
+
+            if (p.getGetTimedRankCountdown() == null) {
+                return "none";
+            }
+
+            return p.getGetTimedRankCountdown().getSecondsLeft()+"";
         }
         if (identifier.equalsIgnoreCase("player_permission_count")) {
+            if (p.getPlayerDataRow() == null) {
+                return "0";
+            }
+
             return p.getPlayerDataRow().getPlayerPermissions().size()+"";
         }
 
