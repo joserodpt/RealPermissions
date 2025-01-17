@@ -9,7 +9,7 @@ package joserodpt.realpermissions.api.managers;
  *  |_|  \_\___|\__,_|_|_|   \___|_|  |_| |_| |_|_|___/___/_|\___/|_| |_|___/
  *
  * Licensed under the MIT License
- * @author José Rodrigues © 2020-2024
+ * @author José Rodrigues © 2023-2025
  * @link https://github.com/joserodpt/RealPermissions
  */
 

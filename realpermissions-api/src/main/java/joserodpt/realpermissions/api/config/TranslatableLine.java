@@ -9,7 +9,7 @@ package joserodpt.realpermissions.api.config;
  *  \_| \_\___|\__,_|_\_|  |_/_|_| |_|\___||___/
  *
  * Licensed under the MIT License
- * @author José Rodrigues © 2020-2024
+ * @author José Rodrigues © 2023-2025
  * @link https://github.com/joserodpt/RealMines
  */
 
