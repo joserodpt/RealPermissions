@@ -13,6 +13,12 @@ package joserodpt.realpermissions.plugin.commands;
  * @link https://github.com/joserodpt/RealPermissions
  */
 
+import dev.triumphteam.cmd.bukkit.annotation.Permission;
+import dev.triumphteam.cmd.core.BaseCommand;
+import dev.triumphteam.cmd.core.annotation.Command;
+import dev.triumphteam.cmd.core.annotation.Default;
+import dev.triumphteam.cmd.core.annotation.SubCommand;
+import dev.triumphteam.cmd.core.annotation.Suggestion;
 import joserodpt.realpermissions.api.RealPermissionsAPI;
 import joserodpt.realpermissions.api.config.RPConfig;
 import joserodpt.realpermissions.api.config.RPLanguageConfig;
@@ -30,16 +36,13 @@ import joserodpt.realpermissions.plugin.gui.PlayersGUI;
 import joserodpt.realpermissions.plugin.gui.RankPermissionsGUI;
 import joserodpt.realpermissions.plugin.gui.RanksListGUI;
 import joserodpt.realpermissions.plugin.gui.RealPermissionsGUI;
-import me.mattstudios.mf.annotations.*;
-import me.mattstudios.mf.base.CommandBase;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
 
-@Command("realpermissions")
-@Alias("rp")
-public class RealPermissionsCMD extends CommandBase {
+@Command(value="realpermissions", alias="rp")
+public class RealPermissionsCMD extends BaseCommand {
 
     private final String noConsole = "[RealPermissions] Only players can run this command.";
 
@@ -65,8 +68,7 @@ public class RealPermissionsCMD extends CommandBase {
         }
     }
 
-    @SubCommand("reload")
-    @Alias("rl")
+    @SubCommand(value="reload",alias="rl")
     @Permission("realpermissions.admin")
     @SuppressWarnings("unused")
     public void reloadcmd(final CommandSender commandSender) {
@@ -80,12 +82,10 @@ public class RealPermissionsCMD extends CommandBase {
         TranslatableLine.SYSTEM_RELOADED.send(commandSender);
     }
 
-    @SubCommand("rank")
-    @Alias("r")
-    @Completion("#ranks")
+    @SubCommand(value="rank",alias="r")
     @Permission("realpermissions.admin")
     @SuppressWarnings("unused")
-    public void rankcmd(final CommandSender commandSender, final String rank) {
+    public void rankcmd(final CommandSender commandSender, @Suggestion("#ranks") final String rank) {
         if (commandSender instanceof Player) {
             Rank r = rp.getRankManagerAPI().getRank(rank);
             if (r == null) {
@@ -101,9 +101,7 @@ public class RealPermissionsCMD extends CommandBase {
         }
     }
 
-    @SubCommand("players")
-    @Alias("plrs")
-    @Completion("#ranks")
+    @SubCommand(value="players",alias="plrs")
     @Permission("realpermissions.admin")
     @SuppressWarnings("unused")
     public void playerscmd(final CommandSender commandSender) {
@@ -131,11 +129,9 @@ public class RealPermissionsCMD extends CommandBase {
         }
     }
 
-    @SubCommand("setsuper")
-    @Alias("setsu")
-    @Completion({"#players"})
+    @SubCommand(value="setsuper", alias="setsu")
     @Permission("realpermissions.admin")
-    @WrongUsage("/rp setsu <player>")
+    //@WrongUsage("/rp setsu <player>")
     @SuppressWarnings("unused")
     public void setsupercmd(final CommandSender commandSender, final Player p) {
         if (commandSender instanceof Player) {
@@ -154,13 +150,11 @@ public class RealPermissionsCMD extends CommandBase {
         Text.send(commandSender, TranslatableLine.SYSTEM_SUPER_USER_STATE.setV1(TranslatableLine.ReplacableVar.PLAYER.eq(p.getName())).get() + (rp.getPlayerManagerAPI().getPlayer(p).isSuperUser() ? "&aON" : "&cOFF"));
     }
 
-    @SubCommand("setrank")
-    @Alias("sr")
-    @Completion({"#players", "#ranks"})
-    @WrongUsage("/rp setrank <player> <rank>")
+    @SubCommand(value="setrank",alias="sr")
+    //@WrongUsage("/rp setrank <player> <rank>")
     @Permission("realpermissions.admin")
     @SuppressWarnings("unused")
-    public void setrankcmd(final CommandSender commandSender, final Player p, final String rank) {
+    public void setrankcmd(final CommandSender commandSender, final Player p, @Suggestion("#ranks")final String rank) {
         if (commandSender instanceof Player) {
             if (rp.getPlayerManagerAPI().isNotSuperUser((Player) commandSender)) {
                 TranslatableLine.SYSTEM_NO_PERMISSION_COMMAND.send(commandSender);
@@ -183,13 +177,11 @@ public class RealPermissionsCMD extends CommandBase {
         }
     }
 
-    @SubCommand("settimedrank")
-    @Alias("str")
-    @Completion({"#players", "#ranks"})
-    @WrongUsage("/rp str <player> <rank> <seconds>")
+    @SubCommand(value="settimedrank",alias="str")
+    //@WrongUsage("/rp str <player> <rank> <seconds>")
     @Permission("realpermissions.admin")
     @SuppressWarnings("unused")
-    public void settimedrankcmd(final CommandSender commandSender, final Player p, final String rank, final Integer seconds) {
+    public void settimedrankcmd(final CommandSender commandSender, final Player p, @Suggestion("#ranks")final String rank, final Integer seconds) {
         if (commandSender instanceof Player) {
             if (rp.getPlayerManagerAPI().isNotSuperUser((Player) commandSender)) {
                 TranslatableLine.SYSTEM_NO_PERMISSION_COMMAND.send(commandSender);
@@ -216,10 +208,8 @@ public class RealPermissionsCMD extends CommandBase {
         TranslatableLine.RANKS_TIMED_RANK_SET.setV1(TranslatableLine.ReplacableVar.PLAYER.eq(p.getName())).setV2(TranslatableLine.ReplacableVar.RANK.eq(r.getPrefix())).send(commandSender);
     }
 
-    @SubCommand("cleartimedrank")
-    @Alias("ctr")
-    @Completion("#players")
-    @WrongUsage("/rp ctr <player>")
+    @SubCommand(value = "cleartimedrank",alias = "ctr")
+    //@WrongUsage("/rp ctr <player>")
     @Permission("realpermissions.admin")
     @SuppressWarnings("unused")
     public void cleartimedcmd(final CommandSender commandSender, final Player p) {
@@ -243,13 +233,11 @@ public class RealPermissionsCMD extends CommandBase {
         }
     }
 
-    @SubCommand("rename")
-    @Alias("ren")
-    @Completion("#ranks")
+    @SubCommand(value = "rename",alias = "ren")
     @Permission("realpermissions.admin")
-    @WrongUsage("/rp ren <rank> <new name>")
+    //@WrongUsage("/rp ren <rank> <new name>")
     @SuppressWarnings("unused")
-    public void renamecmd(final CommandSender commandSender, final String rank, final String name) {
+    public void renamecmd(final CommandSender commandSender, @Suggestion("#ranks")final String rank, final String name) {
         Rank r = rp.getRankManagerAPI().getRank(rank);
         if (r == null) {
             TranslatableLine.RANKS_NO_RANK_FOUND.setV1(TranslatableLine.ReplacableVar.NAME.eq(rank)).send(commandSender);
@@ -265,13 +253,11 @@ public class RealPermissionsCMD extends CommandBase {
         TranslatableLine.RANKS_NEW_NAME.setV1(TranslatableLine.ReplacableVar.NAME.eq(name)).send(commandSender);
     }
 
-    @SubCommand("delete")
-    @Alias("del")
-    @Completion("#ranks")
+    @SubCommand(value = "delete",alias = "del")
     @Permission("realpermissions.admin")
-    @WrongUsage("/rp del <rank>")
+    //@WrongUsage("/rp del <rank>")
     @SuppressWarnings("unused")
-    public void delrankcmd(final CommandSender commandSender, final String rank) {
+    public void delrankcmd(final CommandSender commandSender, @Suggestion("#ranks")final String rank) {
         if (commandSender instanceof Player) {
             if (rp.getPlayerManagerAPI().isNotSuperUser((Player) commandSender)) {
                 TranslatableLine.SYSTEM_NO_PERMISSION_COMMAND.send(commandSender);
@@ -293,13 +279,11 @@ public class RealPermissionsCMD extends CommandBase {
         }
     }
 
-    @SubCommand("permission")
-    @Alias("perm")
-    @Completion({"#permOperations", "#ranks", "#permissions"})
-    @WrongUsage("/rp perm <add/remove> <rank> <permission>")
+    @SubCommand(value = "permission",alias = "perm")
+    //@WrongUsage("/rp perm <add/remove> <rank> <permission>")
     @Permission("realpermissions.admin")
     @SuppressWarnings("unused")
-    public void permcmd(final CommandSender commandSender, final String operation, final String rank, final String perm) {
+    public void permcmd(final CommandSender commandSender, @Suggestion("#permOperations")final String operation, @Suggestion("#ranks")final String rank, @Suggestion("#permissions")final String perm) {
         if (commandSender instanceof Player) {
             if (rp.getPlayerManagerAPI().isNotSuperUser((Player) commandSender)) {
                 TranslatableLine.SYSTEM_NO_PERMISSION_COMMAND.send(commandSender);
@@ -349,13 +333,11 @@ public class RealPermissionsCMD extends CommandBase {
         }
     }
 
-    @SubCommand("playerperm")
-    @Alias("pperm")
-    @Completion({"#permOperations", "#players", "#permissions"})
-    @WrongUsage("/rp pperm <add/remove> <player> <permission>")
+    @SubCommand(value = "playerperm", alias = "pperm")
+    //@WrongUsage("/rp pperm <add/remove> <player> <permission>")
     @Permission("realpermissions.admin")
     @SuppressWarnings("unused")
-    public void permcmd(final CommandSender commandSender, final String operation, final Player p, final String perm) {
+    public void permcmd(final CommandSender commandSender, @Suggestion("#permOperations")final String operation, final Player p, @Suggestion("#permissions")final String perm) {
         if (commandSender instanceof Player) {
             if (rp.getPlayerManagerAPI().isNotSuperUser((Player) commandSender)) {
                 TranslatableLine.SYSTEM_NO_PERMISSION_COMMAND.send(commandSender);
@@ -399,10 +381,8 @@ public class RealPermissionsCMD extends CommandBase {
         }
     }
 
-    @SubCommand("player")
-    @Alias("p")
-    @Completion("#players")
-    @WrongUsage("/rp player <player>")
+    @SubCommand(value = "player", alias = "p")
+    //@WrongUsage("/rp player <player>")
     @Permission("realpermissions.admin")
     @SuppressWarnings("unused")
     public void playercmd(final CommandSender commandSender, final Player p) {
@@ -419,10 +399,9 @@ public class RealPermissionsCMD extends CommandBase {
         }
     }
 
-    @SubCommand("hooks")
-    @Alias("hks")
+    @SubCommand(value = "hooks", alias = "hks")
     @Permission("realpermissions.admin")
-    @WrongUsage("/rp hooks")
+    //@WrongUsage("/rp hooks")
     @SuppressWarnings("unused")
     public void hooks(final CommandSender commandSender) {
         TranslatableLine.SYSTEM_REGISTERED_HOOKS.setV1(TranslatableLine.ReplacableVar.STRING.eq(rp.getHooksAPI().getExternalPluginList().size() + "")).send(commandSender);
@@ -433,13 +412,11 @@ public class RealPermissionsCMD extends CommandBase {
         }
     }
 
-    @SubCommand("hook")
-    @Alias("hk")
-    @Completion("#plugins")
+    @SubCommand(value = "hook", alias = "hk")
     @Permission("realpermissions.admin")
-    @WrongUsage("/rp hook <plugin>")
+    //@WrongUsage("/rp hook <plugin>")
     @SuppressWarnings("unused")
-    public void hook(final CommandSender commandSender, final String pluginName) {
+    public void hook(final CommandSender commandSender, @Suggestion("#plugins")final String pluginName) {
         if (commandSender instanceof Player) {
             if (pluginName == null || pluginName.isEmpty()) {
                 return;

@@ -13,6 +13,10 @@ package joserodpt.realpermissions.plugin;
  * @link https://github.com/joserodpt/RealPermissions
  */
 
+import dev.triumphteam.cmd.bukkit.BukkitCommandManager;
+import dev.triumphteam.cmd.bukkit.message.BukkitMessageKey;
+import dev.triumphteam.cmd.core.message.MessageKey;
+import dev.triumphteam.cmd.core.suggestion.SuggestionKey;
 import joserodpt.realpermissions.api.config.RPConfig;
 import joserodpt.realpermissions.api.config.RPLanguageConfig;
 import joserodpt.realpermissions.api.config.RPLegacyPlayersConfig;
@@ -37,9 +41,9 @@ import joserodpt.realpermissions.plugin.gui.RankupPathGUI;
 import joserodpt.realpermissions.plugin.gui.RealPermissionsGUI;
 import joserodpt.realpermissions.plugin.gui.SettingsGUI;
 import joserodpt.realpermissions.plugin.managers.DatabaseManager;
-import me.mattstudios.mf.base.CommandManager;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -112,35 +116,34 @@ public final class RealPermissionsPlugin extends JavaPlugin {
             getLogger().info("Hooked onto PlaceholderAPI!");
         }
 
+        BukkitCommandManager<CommandSender> commandManager = BukkitCommandManager.create(this);
+
         //register commands
-        CommandManager cm = new CommandManager(this);
+        commandManager.registerMessage(MessageKey.UNKNOWN_COMMAND, (sender, context) -> Text.send(sender, "&cThe command you're trying to use doesn't exist"));
+        commandManager.registerMessage(MessageKey.NOT_ENOUGH_ARGUMENTS, (sender, context) -> Text.send(sender, "&cWrong usage for the command!"));
+        commandManager.registerMessage(BukkitMessageKey.NO_PERMISSION, (sender, context) -> Text.send(sender, "&cYou don't have permission to execute this command!"));
 
-        cm.getMessageHandler().register("cmd.no.permission", (sender) -> Text.send(sender, "&cYou don't have permission to execute this command!"));
-        cm.getMessageHandler().register("cmd.no.exists", (sender) -> Text.send(sender, "&cThe command you're trying to use doesn't exist"));
-        cm.getMessageHandler().register("cmd.wrong.usage", (sender) -> Text.send(sender, "&cWrong usage for the command!"));
-        cm.getMessageHandler().register("cmd.no.console", sender -> Text.send(sender, "&cCommand can't be used in the console!"));
 
-        cm.hideTabComplete(true);
-        cm.getCompletionHandler().register("#ranks", input ->
+        commandManager.registerSuggestion(SuggestionKey.of("#ranks"),(sender, context) ->
                 realPermissions.getRankManagerAPI().getRanksList()
                         .stream()
                         .map(Rank::getName)
                         .collect(Collectors.toList())
         );
-        cm.getCompletionHandler().register("#permOperations", input ->
+        commandManager.registerSuggestion(SuggestionKey.of("#permOperations"),(sender, context) ->
                 Arrays.asList("add", "remove")
         );
-        cm.getCompletionHandler().register("#permissions", input ->
+        commandManager.registerSuggestion(SuggestionKey.of("#permissions"),(sender, context) ->
                 realPermissions.getHooksAPI().getListPermissionsExternalPlugins().stream()
                         .map(ExternalPluginPermission::getPermission)
                         .collect(Collectors.toList())
         );
-        cm.getCompletionHandler().register("#plugins", input ->
+        commandManager.registerSuggestion(SuggestionKey.of("#plugins"),(sender, context) ->
                 new ArrayList<>(realPermissions.getHooksAPI().getExternalPluginList().keySet())
         );
 
-        cm.register(new RealPermissionsCMD(realPermissions));
-        cm.register(new RankupCMD(realPermissions));
+        commandManager.registerCommand(new RealPermissionsCMD(realPermissions));
+        commandManager.registerCommand(new RankupCMD(realPermissions));
 
         //register events
         PluginManager pm = Bukkit.getPluginManager();

@@ -13,21 +13,19 @@ package joserodpt.realpermissions.plugin.commands;
  * @link https://github.com/joserodpt/RealPermissions
  */
 
+import dev.triumphteam.cmd.bukkit.annotation.Permission;
+import dev.triumphteam.cmd.core.BaseCommand;
+import dev.triumphteam.cmd.core.annotation.Command;
+import dev.triumphteam.cmd.core.annotation.Default;
 import joserodpt.realpermissions.api.RealPermissionsAPI;
 import joserodpt.realpermissions.api.config.TranslatableLine;
 import joserodpt.realpermissions.api.utils.Text;
 import joserodpt.realpermissions.plugin.gui.RankupGUI;
-import me.mattstudios.mf.annotations.Alias;
-import me.mattstudios.mf.annotations.Command;
-import me.mattstudios.mf.annotations.Default;
-import me.mattstudios.mf.annotations.Permission;
-import me.mattstudios.mf.base.CommandBase;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-@Command("rankup")
-@Alias("rk")
-public class RankupCMD extends CommandBase {
+@Command(value="rankup", alias="rk")
+public class RankupCMD extends BaseCommand {
 
     RealPermissionsAPI rp;
     public RankupCMD(RealPermissionsAPI rp) {
