@@ -392,8 +392,8 @@ public class RealPermissionsCMD extends BaseCommand {
                 return;
             }
 
-            PlayerPermissionsGUI ppg = new PlayerPermissionsGUI(p, rp.getPlayerManagerAPI().getPlayerDataRow(p), rp);
-            ppg.openInventory(p);
+            PlayerPermissionsGUI ppg = new PlayerPermissionsGUI((Player) commandSender, rp.getPlayerManagerAPI().getPlayerDataRow(p), rp);
+            ppg.openInventory((Player) commandSender);
         } else {
             Text.send(commandSender, noConsole);
         }

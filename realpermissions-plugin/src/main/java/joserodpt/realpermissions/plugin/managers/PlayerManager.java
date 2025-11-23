@@ -38,12 +38,17 @@ public class PlayerManager extends PlayerManagerAPI {
 
     @Override
     public RPPlayer getPlayer(Player p) {
-        return this.getPlayerMap().get(p.getUniqueId());
+        return getPlayer(p.getUniqueId());
     }
 
     @Override
     public RPPlayer getPlayer(UUID u) {
         return this.getPlayerMap().get(u);
+    }
+
+    @Override
+    public RPPlayer getPlayer(PlayerDataObject po) {
+        return getPlayer(po.getUUID());
     }
 
     @Override

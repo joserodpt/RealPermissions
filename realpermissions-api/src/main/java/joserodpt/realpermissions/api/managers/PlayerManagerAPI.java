@@ -30,6 +30,8 @@ public abstract class PlayerManagerAPI {
 
     public abstract RPPlayer getPlayer(UUID u);
 
+    public abstract RPPlayer getPlayer(PlayerDataObject po);
+
     public abstract void playerJoin(Player p);
 
     public abstract void playerLeave(Player player);
