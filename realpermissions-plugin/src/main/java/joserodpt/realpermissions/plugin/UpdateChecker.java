@@ -13,6 +13,7 @@ package joserodpt.realpermissions.plugin;
  * @link https://github.com/joserodpt/RealPermissions
  */
 
+import joserodpt.realpermissions.api.config.RPConfig;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -35,6 +36,7 @@ public class UpdateChecker {
     }
 
     public void getVersion(final Consumer<String> consumer) {
+        if (!RPConfig.file().getBoolean("RealPermissions.Update-Checker")) return;
         Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
             try (final InputStream inputStream = new URL("https://api.spigotmc.org/legacy/update.php?resource=" + this.resourceId).openStream(); final Scanner ignored = new Scanner(inputStream)) {
                 consumer.accept(new BufferedReader(new InputStreamReader(inputStream)).readLine());
