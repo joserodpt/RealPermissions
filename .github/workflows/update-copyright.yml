@@ -1,12 +1,13 @@
 name: Update Copyright Year
 
 on:
-  schedule:
-    - cron: "0 0 * * *"   # runs daily at midnight UTC
-  workflow_dispatch:
+  push:             # Trigger on every push
+    branches:
+      - main        # Or your default branch
+  workflow_dispatch: # Allow manual run
 
 permissions:
-  contents: write
+  contents: write   # Needed to push commits
 
 jobs:
   update-year:
@@ -24,22 +25,16 @@ jobs:
         run: |
           CURRENT_YEAR=${{ steps.date.outputs.year }}
 
-          # Files (excluding .git)
           FILES=$(find . -type f ! -path "./.git/*")
 
           for f in $FILES; do
-            # Match © 2023-2025 patterns
             MATCH=$(grep -oE "© [0-9]{4}-[0-9]{4}" "$f" || true)
 
             if [[ -n "$MATCH" ]]; then
-              # Extract the last year
               LAST_YEAR=$(echo "$MATCH" | sed 's/.*-//')
 
-              # Only update if the current year is greater
               if (( CURRENT_YEAR > LAST_YEAR )); then
                 echo "Updating $f"
-
-                # Proper GNU sed notation for GitHub Actions (Linux)
                 sed -i "s/© \([0-9]\{4\}\)-[0-9]\{4\}/© \1-${CURRENT_YEAR}/g" "$f"
               fi
             fi
@@ -55,4 +50,3 @@ jobs:
             git push
           else
             echo "No changes needed."
-          fi
