@@ -1,0 +1,58 @@
+name: Update Copyright Year
+
+on:
+  schedule:
+    - cron: "0 0 * * *"   # runs daily at midnight UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-year:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Get current year
+        id: date
+        run: echo "year=$(date +'%Y')" >> $GITHUB_OUTPUT
+
+      - name: Update copyright year in all files
+        run: |
+          CURRENT_YEAR=${{ steps.date.outputs.year }}
+
+          # Files (excluding .git)
+          FILES=$(find . -type f ! -path "./.git/*")
+
+          for f in $FILES; do
+            # Match © 2023-2025 patterns
+            MATCH=$(grep -oE "© [0-9]{4}-[0-9]{4}" "$f" || true)
+
+            if [[ -n "$MATCH" ]]; then
+              # Extract the last year
+              LAST_YEAR=$(echo "$MATCH" | sed 's/.*-//')
+
+              # Only update if the current year is greater
+              if (( CURRENT_YEAR > LAST_YEAR )); then
+                echo "Updating $f"
+
+                # Proper GNU sed notation for GitHub Actions (Linux)
+                sed -i "s/© \([0-9]\{4\}\)-[0-9]\{4\}/© \1-${CURRENT_YEAR}/g" "$f"
+              fi
+            fi
+          done
+
+      - name: Commit and push changes
+        run: |
+          if [[ -n "$(git status --porcelain)" ]]; then
+            git config user.name "github-actions"
+            git config user.email "github-actions@github.com"
+            git add -A
+            git commit -m "Auto-update copyright year to ${{ steps.date.outputs.year }}"
+            git push
+          else
+            echo "No changes needed."
+          fi
