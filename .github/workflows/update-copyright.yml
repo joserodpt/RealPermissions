@@ -1,20 +1,20 @@
 name: Update Copyright Year
 
 on:
-  push:             # Trigger on every push
+  push:
     branches:
-      - main        # Or your default branch
-  workflow_dispatch: # Allow manual run
+      - main
+  workflow_dispatch:
 
 permissions:
-  contents: write   # Needed to push commits
+  contents: write
 
 jobs:
   update-year:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Get current year
@@ -24,15 +24,12 @@ jobs:
       - name: Update copyright year in all files
         run: |
           CURRENT_YEAR=${{ steps.date.outputs.year }}
-
           FILES=$(find . -type f ! -path "./.git/*")
 
           for f in $FILES; do
             MATCH=$(grep -oE "© [0-9]{4}-[0-9]{4}" "$f" || true)
-
             if [[ -n "$MATCH" ]]; then
               LAST_YEAR=$(echo "$MATCH" | sed 's/.*-//')
-
               if (( CURRENT_YEAR > LAST_YEAR )); then
                 echo "Updating $f"
                 sed -i "s/© \([0-9]\{4\}\)-[0-9]\{4\}/© \1-${CURRENT_YEAR}/g" "$f"
@@ -48,5 +45,3 @@ jobs:
             git add -A
             git commit -m "Auto-update copyright year to ${{ steps.date.outputs.year }}"
             git push
-          else
-            echo "No changes needed."
