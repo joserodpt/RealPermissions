@@ -88,6 +88,19 @@ public class PlayerDataObject {
         RealPermissionsAPI.getInstance().getDatabaseManagerAPI().savePlayerPermissions(uuid, permissions.stream().map(s -> new PlayerPermissionRow(this.getUUID(), new Permission(s))).collect(Collectors.toList()), true);
     }
 
+    /** A player who hasn't joined yet, as an import brings them in. */
+    public PlayerDataObject(UUID uuid, String name, String rankName) {
+        this.uuid = uuid;
+        this.name = name;
+        this.rank_name = rankName;
+        this.superUser = false;
+        this.joinDate = System.currentTimeMillis();
+        this.lastLogin = 0;
+        this.lastLogout = 0;
+        this.timedrank_prevrank = "";
+        this.timedrank_timeleft = 0;
+    }
+
     public PlayerDataObject() {
         //for ORMLite
     }

@@ -34,6 +34,7 @@ import joserodpt.realpermissions.plugin.gui.RankPermissionsGUI;
 import joserodpt.realpermissions.plugin.gui.RanksListGUI;
 import joserodpt.realpermissions.plugin.gui.RealPermissionsGUI;
 import joserodpt.realpermissions.plugin.gui.SettingsGUI;
+import joserodpt.realpermissions.plugin.importer.PermissionImporter;
 import joserodpt.realutils.dialog.Dialogs;
 import joserodpt.realutils.text.Text;
 import org.bukkit.Bukkit;
@@ -614,6 +615,19 @@ public class RealPermissionsCMD {
         }
 
         PermissionCheck.explain(rp, p, perm).forEach(commandSender::sendMessage);
+    }
+
+    @Subcommand("import")
+    @CommandPermission("realpermissions.admin")
+    @Usage("&c/rp import <luckperms|pex|groupmanager> [confirm]")
+    @SuppressWarnings("unused")
+    public void importcmd(final CommandSender commandSender, @SuggestFrom(RPSuggestion.IMPORT_SOURCES) @Single final String source, @Optional @Single final String confirm) {
+        if (commandSender instanceof Player && rp.getPlayerManagerAPI().isNotSuperUser((Player) commandSender)) {
+            TranslatableLine.SYSTEM_NO_PERMISSION_COMMAND.send(commandSender);
+            return;
+        }
+
+        PermissionImporter.run(rp, commandSender, source, "confirm".equalsIgnoreCase(confirm));
     }
 
     @Subcommand({"hooks", "hks"})

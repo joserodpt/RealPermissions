@@ -17,6 +17,7 @@ import joserodpt.realpermissions.api.RealPermissionsAPI;
 import joserodpt.realpermissions.api.config.TranslatableLine;
 import joserodpt.realpermissions.api.pluginhook.ExternalPluginPermission;
 import joserodpt.realpermissions.api.rank.Rank;
+import joserodpt.realpermissions.plugin.importer.PermissionImporter;
 import joserodpt.realutils.command.LampExceptionHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -76,6 +77,8 @@ public final class RPCommandManager {
                 .collect(Collectors.toList()));
 
         sources.put(RPSuggestion.TRACKS, context -> new ArrayList<>(rp.getRankManagerAPI().getTracks().keySet()));
+
+        sources.put(RPSuggestion.IMPORT_SOURCES, SuggestionProvider.of(PermissionImporter.sources()));
 
         return sources;
     }

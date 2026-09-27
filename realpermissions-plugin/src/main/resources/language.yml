@@ -92,6 +92,22 @@ Check:
   Default: "   &7- The permission's own default gives &b%string%&7."
   Child: "   &7- A child of another permission they are given."
   Nothing: "   &7- Nothing gives it to them."
+Import:
+  Unknown-Source: "&cUnknown source. &fUse &bluckperms&f, &bpex &for &bgroupmanager&f."
+  Not-Found: "&cNo %name% data found. &fLooked for: &b%string%"
+  Read-Error: "&cCouldn't read &f%string%&c: &f%name%"
+  Preview: "&fFound in &b%string%&f:"
+  Preview-Ranks: " &f> &b%string% &fgroups, &b%name% &fof them new ranks"
+  Preview-Players: " &f> &b%string% &fplayers"
+  Preview-Tracks: " &f> &b%string% &ftracks"
+  # What has no place in RealPermissions, and is left out.
+  Skipped-Contextual: " &f> &7Left out: &f%string% &7world or server specific entries."
+  Skipped-Extra-Groups: " &f> &7Left out: &f%string% &7groups of players in more than one; each keeps their first."
+  Skipped-Timed-Groups: " &f> &7Left out: &f%string% &7timed group memberships."
+  Skipped-Other: " &f> &7Left out: &f%string% &7suffixes, meta and other entries."
+  Confirm: "&fRun &b/rp import %string% confirm &fto import it. Groups with the name of a rank are merged into it."
+  Ranks-Done: "&aImported &b%string% &aranks. &fNow importing the players..."
+  Done: "&aImport finished: &b%string% &fplayers imported, &b%name% &fhad nothing to bring over."
 Rankup:
   Disabled: "&cRackup is disabled on this server."
   Cant-Rankdown: "&cYou can't rankdown."
@@ -100,4 +116,4 @@ Rankup:
   Error: "&fAn &cerror &foccured: %string%"
   Ranked-Up: "&fYou ranked up to &b%rank% &ffor &b%string% &fcoins."
   Already-Has-Rank: "&cYou already have this rank."
-Version: 8
+Version: 9

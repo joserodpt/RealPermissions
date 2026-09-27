@@ -37,10 +37,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class RankManager extends RankManagerAPI {
@@ -119,6 +121,30 @@ public class RankManager extends RankManagerAPI {
             }
             this.tracks.put(trackName, new Track(trackName, trackRanks));
         }
+    }
+
+    /**
+     * Writes every rank to ranks.yml again, each after the ones it inherits from: loadRanks reads
+     * the file top to bottom, and drops an inheritance on a rank it hasn't read yet.
+     */
+    public void saveAllRanks() {
+        List<Rank> ordered = new ArrayList<>();
+        Set<Rank> seen = new HashSet<>();
+        for (Rank r : this.ranks.values()) {
+            this.parentsFirst(r, seen, ordered);
+        }
+
+        RPRanksConfig.file().remove("Ranks");
+        ordered.forEach(r -> r.saveData(Rank.RankData.ALL, false));
+        RPRanksConfig.save();
+    }
+
+    private void parentsFirst(Rank r, Set<Rank> seen, List<Rank> ordered) {
+        if (!seen.add(r)) {
+            return;
+        }
+        r.getInheritances().forEach(parent -> this.parentsFirst(parent, seen, ordered));
+        ordered.add(r);
     }
 
     @Override

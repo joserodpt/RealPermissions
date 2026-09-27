@@ -29,5 +29,7 @@ public enum RPSuggestion {
     /** Online players only, so an unknown name never costs a Mojang lookup. */
     PLAYERS,
     /** The tracks in ranks.yml. */
-    TRACKS
+    TRACKS,
+    /** The permissions plugins /rp import reads. */
+    IMPORT_SOURCES
 }
