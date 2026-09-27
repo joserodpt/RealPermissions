@@ -121,13 +121,9 @@ final class PermissionCheck {
         return lines;
     }
 
-    //"*" matches everything, "essentials.*" or "essentials*" everything starting with "essentials."/"essentials"
+    //a wildcard other than the permission itself, which the lines above already cover
     private static boolean wildcardMatches(String node, String perm) {
-        if (!node.endsWith("*") || node.equalsIgnoreCase(perm)) {
-            return false;
-        }
-        String start = node.substring(0, node.length() - 1).toLowerCase();
-        return perm.toLowerCase().startsWith(start);
+        return node.endsWith("*") && !node.equalsIgnoreCase(perm) && Permission.covers(node, perm);
     }
 
     private static String prefixOf(RealPermissionsAPI rp, String rankName) {

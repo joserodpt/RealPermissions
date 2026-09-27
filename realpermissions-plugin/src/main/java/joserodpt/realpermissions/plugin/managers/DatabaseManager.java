@@ -36,15 +36,16 @@ import java.io.File;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class DatabaseManager extends DatabaseManagerAPI {
 
     private final Dao<PlayerDataObject, UUID> playerDataDao;
-    private final Map<UUID, PlayerDataObject> playerDataCache = new HashMap<>();
+    //read off the main thread too, by Vault's callers
+    private final Map<UUID, PlayerDataObject> playerDataCache = new ConcurrentHashMap<>();
 
     private final Dao<PlayerPermissionRow, UUID> playerPermissionsDao;
 
@@ -181,6 +182,13 @@ public class DatabaseManager extends DatabaseManagerAPI {
             return playerDataCache.get(p.getUniqueId());
         });
 
+    }
+
+    @Override
+    public PlayerDataObject getPlayerDataByName(String name) {
+        return playerDataCache.values().stream()
+                .filter(data -> data.getName() != null && data.getName().equalsIgnoreCase(name))
+                .findFirst().orElse(null);
     }
 
     @Override

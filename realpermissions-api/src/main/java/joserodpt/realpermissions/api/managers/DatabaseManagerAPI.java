@@ -48,6 +48,9 @@ public abstract class DatabaseManagerAPI {
 
     public abstract PlayerDataObject getPlayerData(Player p);
 
+    /** A player's data by their last known name, ignoring case, from what is loaded; null if none. */
+    public abstract PlayerDataObject getPlayerDataByName(String name);
+
     /**
      * Saves provided playerdata asynchronously or not
      *

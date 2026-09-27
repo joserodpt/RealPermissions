@@ -32,17 +32,21 @@ import joserodpt.realpermissions.plugin.gui.RankupGUI;
 import joserodpt.realpermissions.plugin.gui.RankupPathGUI;
 import joserodpt.realpermissions.plugin.gui.RealPermissionsGUI;
 import joserodpt.realpermissions.plugin.gui.SettingsGUI;
+import joserodpt.realpermissions.plugin.hooks.VaultChatHook;
+import joserodpt.realpermissions.plugin.hooks.VaultPermissionHook;
 import joserodpt.realpermissions.plugin.managers.DatabaseManager;
 import joserodpt.realutils.RealUtils;
 import joserodpt.realutils.dialog.Dialogs;
 import joserodpt.realutils.input.PlayerInput;
 import joserodpt.realutils.text.Text;
 import joserodpt.realutils.update.UpdateChecker;
+import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.economy.Economy;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
+import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class RealPermissionsPlugin extends JavaPlugin {
@@ -116,6 +120,14 @@ public final class RealPermissionsPlugin extends JavaPlugin {
             getLogger().info("Loaded " + realPermissions.getRankManagerAPI().getRankups().size() + " rankups.");
         } else {
             getLogger().warning("Vault not found. Rankup will be disabled.");
+        }
+
+        //other plugins ask Vault for groups, permissions and prefixes; with Vault, they get ranks
+        if (getServer().getPluginManager().getPlugin("Vault") != null) {
+            VaultPermissionHook vaultPerms = new VaultPermissionHook(realPermissions);
+            getServer().getServicesManager().register(net.milkbowl.vault.permission.Permission.class, vaultPerms, this, ServicePriority.High);
+            getServer().getServicesManager().register(Chat.class, new VaultChatHook(realPermissions, vaultPerms), this, ServicePriority.High);
+            getLogger().info("Registered as Vault's permission and chat provider.");
         }
 
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {

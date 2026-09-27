@@ -52,6 +52,18 @@ public class Permission {
         this(playerPermissionRow.getPermission(), playerPermissionRow.isNegated());
     }
 
+    /**
+     * Whether a permission node gives {@code perm}: the same node, or a wildcard over it, as
+     * RealPermissions reads them: {@code *} for everything, {@code essentials.*} for everything
+     * under essentials.
+     */
+    public static boolean covers(String node, String perm) {
+        if (node.equalsIgnoreCase(perm)) {
+            return true;
+        }
+        return node.endsWith("*") && perm.toLowerCase().startsWith(node.substring(0, node.length() - 1).toLowerCase());
+    }
+
     public String getPermissionString() {
         return this.permissionString;
     }
