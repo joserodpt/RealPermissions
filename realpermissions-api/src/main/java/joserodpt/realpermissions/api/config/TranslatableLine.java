@@ -70,6 +70,18 @@ public enum TranslatableLine {
     PERMISSIONS_PLAYER_DELETE("Permissions.Player.Delete", ReplacableVar.PLAYER),
     PERMISSIONS_PLAYER_DELETE_CONFIRM("Permissions.Player.Delete-Confirm", ReplacableVar.PLAYER),
 
+    TRACKS_NO_TRACK_FOUND("Tracks.No-Track-Found", ReplacableVar.NAME),
+    TRACKS_PROMOTED("Tracks.Promoted", ReplacableVar.PLAYER, ReplacableVar.RANK),
+    TRACKS_DEMOTED("Tracks.Demoted", ReplacableVar.PLAYER, ReplacableVar.RANK),
+    TRACKS_AT_TOP("Tracks.At-Top", ReplacableVar.PLAYER, ReplacableVar.NAME),
+    TRACKS_AT_BOTTOM("Tracks.At-Bottom", ReplacableVar.PLAYER, ReplacableVar.NAME),
+    TRACKS_NOT_ON_TRACK("Tracks.Not-On-Track", ReplacableVar.PLAYER, ReplacableVar.NAME),
+    TRACKS_HAS_TIMED_RANK("Tracks.Has-Timed-Rank", ReplacableVar.PLAYER),
+    TRACKS_LIST("Tracks.List", ReplacableVar.STRING),
+    TRACKS_SET("Tracks.Set", ReplacableVar.NAME, ReplacableVar.STRING),
+    TRACKS_DELETED("Tracks.Deleted", ReplacableVar.NAME),
+    TRACKS_NEEDS_TWO_RANKS("Tracks.Needs-Two-Ranks"),
+
     RANKUP_CANT_RANKUP("Rankup.Cant-Rankup"),
     RANKUP_INSUFICIENT_FUNDS("Rankup.Insuficient-Funds"),
     RANKUP_CANT_RANKDOWN("Rankup.Cant-Rankdown"),

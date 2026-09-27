@@ -1,5 +1,12 @@
 Version: 1
 Default-Rank: Player
+# Orders of ranks, lowest first, that /rp promote and /rp demote move players along. Besides super
+# users, players with realpermissions.track.<track> may use them on that track.
+Tracks:
+  staff:
+    - Player
+    - Moderator
+    - Admin
 # Each rank may also have a Weight: higher is more important, and sorts first in the tab list.
 # Without one, a rank's weight is how many ranks it inherits from.
 Ranks:

@@ -18,6 +18,7 @@ import joserodpt.realpermissions.api.player.RPPlayer;
 import joserodpt.realpermissions.api.rank.Rank;
 import joserodpt.realpermissions.api.rank.Rankup;
 import joserodpt.realpermissions.api.rank.RankupEntry;
+import joserodpt.realpermissions.api.rank.Track;
 import org.bukkit.Material;
 
 import java.util.List;
@@ -63,4 +64,15 @@ public abstract class RankManagerAPI {
     public abstract void addNewRank(String input);
 
     public abstract void updateRank(Rank rank);
+
+    /** The tracks in ranks.yml, by name, in the order they are written there. */
+    public abstract Map<String, Track> getTracks();
+
+    /** A track by name, ignoring case; null if there is none. */
+    public abstract Track getTrack(String name);
+
+    /** Creates or replaces a track, and saves it to ranks.yml. */
+    public abstract void setTrack(String name, List<Rank> ranks);
+
+    public abstract void deleteTrack(String name);
 }

@@ -59,6 +59,18 @@ Permissions:
     Remove: "&fPermission %perm% &cremoved &ffrom %player%"
     Delete: "&fPlayer %player% &chas been deleted."
     Delete-Confirm: "&fDelete %player%&f? Their rank and permissions are erased."
+Tracks:
+  No-Track-Found: "There is no track named &c%name%"
+  Promoted: "%player% &fwas &apromoted &fto %rank%"
+  Demoted: "%player% &fwas &cdemoted &fto %rank%"
+  At-Top: "%player% &fis already at the top of &b%name%&f."
+  At-Bottom: "%player% &fis already at the bottom of &b%name%&f."
+  Not-On-Track: "%player% &fisn't on the &b%name% &ftrack."
+  Has-Timed-Rank: "%player% &fhas a timed rank. &cClear it first &f(/rp ctr)."
+  List: "&fThere are &b%string% &ftracks:"
+  Set: "&fTrack &b%name% &fis now: %string%"
+  Deleted: "&fTrack &b%name% &cdeleted."
+  Needs-Two-Ranks: "&cA track needs at least two ranks."
 Rankup:
   Disabled: "&cRackup is disabled on this server."
   Cant-Rankdown: "&cYou can't rankdown."

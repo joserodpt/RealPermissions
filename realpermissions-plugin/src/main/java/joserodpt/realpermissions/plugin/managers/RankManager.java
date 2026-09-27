@@ -25,6 +25,7 @@ import joserodpt.realpermissions.api.player.RPPlayer;
 import joserodpt.realpermissions.api.rank.Rank;
 import joserodpt.realpermissions.api.rank.Rankup;
 import joserodpt.realpermissions.api.rank.RankupEntry;
+import joserodpt.realpermissions.api.rank.Track;
 import joserodpt.realpermissions.api.utils.Format;
 import joserodpt.realutils.text.Text;
 import net.milkbowl.vault.economy.EconomyResponse;
@@ -36,8 +37,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class RankManager extends RankManagerAPI {
@@ -45,6 +48,7 @@ public class RankManager extends RankManagerAPI {
     private RealPermissionsAPI rp;
     private Map<String, Rank> ranks = new HashMap<>();
     private Map<String, Rankup> rankups = new HashMap<>();
+    private final Map<String, Track> tracks = new LinkedHashMap<>();
     private Rank defaultRank;
     public RankManager(RealPermissionsAPI rp) {
         this.rp = rp;
@@ -88,6 +92,95 @@ public class RankManager extends RankManagerAPI {
 
         //load default rank
         this.defaultRank = this.rp.getRankManagerAPI().getRank(RPRanksConfig.file().getString("Default-Rank"));
+
+        this.loadTracks();
+    }
+
+    private void loadTracks() {
+        this.tracks.clear();
+        if (!RPRanksConfig.file().isSection("Tracks")) {
+            return;
+        }
+
+        for (String trackName : RPRanksConfig.file().getSection("Tracks").getRoutesAsStrings(false)) {
+            List<Rank> trackRanks = new ArrayList<>();
+            for (String rankName : RPRanksConfig.file().getStringList("Tracks." + trackName)) {
+                Rank r = this.getRank(rankName);
+                if (r == null) {
+                    rp.getLogger().warning("Track " + trackName + " names a rank that doesn't exist: " + rankName + ". It is left out of the track.");
+                } else if (!trackRanks.contains(r)) {
+                    trackRanks.add(r);
+                }
+            }
+
+            if (trackRanks.size() < 2) {
+                rp.getLogger().warning("Track " + trackName + " needs at least two ranks. It will be ignored.");
+                continue;
+            }
+            this.tracks.put(trackName, new Track(trackName, trackRanks));
+        }
+    }
+
+    @Override
+    public Map<String, Track> getTracks() {
+        return this.tracks;
+    }
+
+    @Override
+    public Track getTrack(String name) {
+        if (name == null) {
+            return null;
+        }
+        Track t = this.tracks.get(name);
+        if (t != null) {
+            return t;
+        }
+        return this.tracks.values().stream().filter(track -> track.getName().equalsIgnoreCase(name)).findFirst().orElse(null);
+    }
+
+    @Override
+    public void setTrack(String name, List<Rank> ranks) {
+        Track existing = this.getTrack(name);
+        if (existing != null) {
+            //keep the name as it was first written, so the entry in ranks.yml is replaced, not doubled
+            name = existing.getName();
+        }
+        this.tracks.put(name, new Track(name, ranks));
+        RPRanksConfig.file().set("Tracks." + name, ranks.stream().map(Rank::getName).collect(Collectors.toList()));
+        RPRanksConfig.save();
+    }
+
+    @Override
+    public void deleteTrack(String name) {
+        Track t = this.getTrack(name);
+        if (t == null) {
+            return;
+        }
+        this.tracks.remove(t.getName());
+        RPRanksConfig.file().remove("Tracks." + t.getName());
+        RPRanksConfig.save();
+    }
+
+    //a rank that is renamed or deleted takes its place on every track with it, or leaves it
+    private void replaceOnTracks(Rank old, Rank replacement) {
+        for (Track t : new ArrayList<>(this.tracks.values())) {
+            if (!t.contains(old)) {
+                continue;
+            }
+            List<Rank> updated = new ArrayList<>();
+            for (Rank r : t.getRanks()) {
+                if (!r.getName().equalsIgnoreCase(old.getName())) {
+                    updated.add(r);
+                } else if (replacement != null) {
+                    updated.add(replacement);
+                }
+            }
+            if (updated.size() < 2) {
+                this.deleteTrack(t.getName());
+            } else {
+                this.setTrack(t.getName(), updated);
+            }
+        }
     }
 
     @Override
@@ -133,6 +226,7 @@ public class RankManager extends RankManagerAPI {
 
         a.deleteConfig();
         this.ranks.remove(a.getName());
+        this.replaceOnTracks(a, null);
     }
 
     @Override
@@ -146,6 +240,10 @@ public class RankManager extends RankManagerAPI {
     public void renameRank(Rank r, String input) {
         //get list of players in old rank
         Collection<Player> pls = rp.getPlayerManagerAPI().getPlayersWithRank(r.getName());
+
+        //the tracks it is on, before deleteRank takes it off them
+        Map<String, List<String>> onTracks = new LinkedHashMap<>();
+        this.tracks.values().stream().filter(t -> t.contains(r)).forEach(t -> onTracks.put(t.getName(), t.getRankNames()));
 
         //remove old rank
         this.deleteRank(r);
@@ -166,6 +264,12 @@ public class RankManager extends RankManagerAPI {
         pls.forEach(player -> rp.getPlayerManagerAPI().getPlayer(player).setRank(newR));
 
         newR.saveData(Rank.RankData.ALL, true);
+
+        //put it back on its tracks, under the new name
+        onTracks.forEach((track, names) -> this.setTrack(track, names.stream()
+                .map(n -> n.equalsIgnoreCase(r.getName()) ? newR : this.getRank(n))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList())));
 
         //check if the rank being renamed is default rank, if it is, we set it to the default
         if (rp.getRankManagerAPI().getDefaultRank() == r) {

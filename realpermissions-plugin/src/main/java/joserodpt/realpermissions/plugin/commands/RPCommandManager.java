@@ -75,6 +75,8 @@ public final class RPCommandManager {
                 .map(Player::getName)
                 .collect(Collectors.toList()));
 
+        sources.put(RPSuggestion.TRACKS, context -> new ArrayList<>(rp.getRankManagerAPI().getTracks().keySet()));
+
         return sources;
     }
 

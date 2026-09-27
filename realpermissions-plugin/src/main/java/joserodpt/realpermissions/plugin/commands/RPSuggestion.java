@@ -27,5 +27,7 @@ public enum RPSuggestion {
     /** The plugins hooked into RealPermissions. */
     PLUGINS,
     /** Online players only, so an unknown name never costs a Mojang lookup. */
-    PLAYERS
+    PLAYERS,
+    /** The tracks in ranks.yml. */
+    TRACKS
 }

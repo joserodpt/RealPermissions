@@ -23,6 +23,7 @@ import joserodpt.realpermissions.api.config.TranslatableLine;
 import joserodpt.realpermissions.api.player.RPPlayer;
 import joserodpt.realpermissions.api.pluginhook.ExternalPlugin;
 import joserodpt.realpermissions.api.rank.Rank;
+import joserodpt.realpermissions.api.rank.Track;
 import joserodpt.realpermissions.api.utils.TabSorter;
 import joserodpt.realpermissions.plugin.gui.EPPermissionsViewerGUI;
 import joserodpt.realpermissions.plugin.gui.PlayerPermissionsGUI;
@@ -43,7 +44,10 @@ import revxrsal.commands.annotation.Subcommand;
 import revxrsal.commands.annotation.Usage;
 import revxrsal.commands.bukkit.annotation.CommandPermission;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Command({"realpermissions", "rp"})
 public class RealPermissionsCMD {
@@ -272,6 +276,127 @@ public class RealPermissionsCMD {
 
         rp.getRankManagerAPI().renameRank(r, name);
         TranslatableLine.RANKS_NEW_NAME.setV1(TranslatableLine.ReplacableVar.NAME.eq(name)).send(commandSender);
+    }
+
+    @Subcommand("promote")
+    @Usage("&c/rp promote <player> <track>")
+    @SuppressWarnings("unused")
+    public void promotecmd(final CommandSender commandSender, @SuggestFrom(RPSuggestion.PLAYERS) @Single final String player, @SuggestFrom(RPSuggestion.TRACKS) @Single final String track) {
+        this.moveOnTrack(commandSender, player, track, true);
+    }
+
+    @Subcommand("demote")
+    @Usage("&c/rp demote <player> <track>")
+    @SuppressWarnings("unused")
+    public void demotecmd(final CommandSender commandSender, @SuggestFrom(RPSuggestion.PLAYERS) @Single final String player, @SuggestFrom(RPSuggestion.TRACKS) @Single final String track) {
+        this.moveOnTrack(commandSender, player, track, false);
+    }
+
+    /**
+     * No @CommandPermission on promote and demote: besides super users, anyone with
+     * realpermissions.track.&lt;track&gt; may move players along that one track, so staff can promote
+     * without being able to hand out any rank at all.
+     */
+    private void moveOnTrack(final CommandSender commandSender, final String player, final String trackName, final boolean up) {
+        Track t = rp.getRankManagerAPI().getTrack(trackName);
+        if (t == null) {
+            TranslatableLine.TRACKS_NO_TRACK_FOUND.setV1(TranslatableLine.ReplacableVar.NAME.eq(trackName)).send(commandSender);
+            return;
+        }
+
+        if (commandSender instanceof Player && rp.getPlayerManagerAPI().isNotSuperUser((Player) commandSender)
+                && !commandSender.hasPermission("realpermissions.track." + t.getName().toLowerCase())) {
+            TranslatableLine.SYSTEM_NO_PERMISSION_COMMAND.send(commandSender);
+            return;
+        }
+
+        final Player p = Bukkit.getPlayerExact(player);
+        if (p == null) {
+            TranslatableLine.SYSTEM_NO_PLAYER_FOUND.send(commandSender);
+            return;
+        }
+
+        RPPlayer rpp = rp.getPlayerManagerAPI().getPlayer(p);
+        //the timed rank would put the old one back when it runs out, undoing the move
+        if (rpp.hasTimedRank()) {
+            TranslatableLine.TRACKS_HAS_TIMED_RANK.setV1(TranslatableLine.ReplacableVar.PLAYER.eq(p.getName())).send(commandSender);
+            return;
+        }
+
+        Rank current = rpp.getRank();
+        Rank target = up ? t.next(current) : t.previous(current);
+        if (target == null) {
+            if (!t.contains(current)) {
+                TranslatableLine.TRACKS_NOT_ON_TRACK.setV1(TranslatableLine.ReplacableVar.PLAYER.eq(p.getName())).setV2(TranslatableLine.ReplacableVar.NAME.eq(t.getName())).send(commandSender);
+            } else {
+                (up ? TranslatableLine.TRACKS_AT_TOP : TranslatableLine.TRACKS_AT_BOTTOM).setV1(TranslatableLine.ReplacableVar.PLAYER.eq(p.getName())).setV2(TranslatableLine.ReplacableVar.NAME.eq(t.getName())).send(commandSender);
+            }
+            return;
+        }
+
+        rpp.setRank(target);
+        (up ? TranslatableLine.TRACKS_PROMOTED : TranslatableLine.TRACKS_DEMOTED).setV1(TranslatableLine.ReplacableVar.PLAYER.eq(p.getName())).setV2(TranslatableLine.ReplacableVar.RANK.eq(target.getPrefix())).send(commandSender);
+    }
+
+    @Subcommand("tracks")
+    @CommandPermission("realpermissions.admin")
+    @SuppressWarnings("unused")
+    public void trackscmd(final CommandSender commandSender) {
+        TranslatableLine.TRACKS_LIST.setV1(TranslatableLine.ReplacableVar.STRING.eq(String.valueOf(rp.getRankManagerAPI().getTracks().size()))).send(commandSender);
+        rp.getRankManagerAPI().getTracks().values().forEach(t -> commandSender.sendMessage(Text.color("&7 > &b" + t.getName() + "&f: "
+                + t.getRanks().stream().map(Rank::getPrefix).collect(Collectors.joining(" &7> &r")))));
+    }
+
+    @Subcommand({"settrack", "st"})
+    @CommandPermission("realpermissions.admin")
+    @Usage("&c/rp settrack <track> <rank> <rank> [rank...]")
+    @SuppressWarnings("unused")
+    public void settrackcmd(final CommandSender commandSender, @SuggestFrom(RPSuggestion.TRACKS) @Single final String track, @SuggestFrom(RPSuggestion.RANKS) final String ranks) {
+        if (commandSender instanceof Player && rp.getPlayerManagerAPI().isNotSuperUser((Player) commandSender)) {
+            TranslatableLine.SYSTEM_NO_PERMISSION_COMMAND.send(commandSender);
+            return;
+        }
+
+        List<Rank> trackRanks = new ArrayList<>();
+        for (String name : ranks.trim().split("\\s+")) {
+            Rank r = rp.getRankManagerAPI().getRank(name);
+            if (r == null) {
+                TranslatableLine.RANKS_NO_RANK_FOUND.setV1(TranslatableLine.ReplacableVar.NAME.eq(name)).send(commandSender);
+                return;
+            }
+            if (!trackRanks.contains(r)) {
+                trackRanks.add(r);
+            }
+        }
+
+        if (trackRanks.size() < 2) {
+            TranslatableLine.TRACKS_NEEDS_TWO_RANKS.send(commandSender);
+            return;
+        }
+
+        rp.getRankManagerAPI().setTrack(track, trackRanks);
+        TranslatableLine.TRACKS_SET.setV1(TranslatableLine.ReplacableVar.NAME.eq(track)).setV2(TranslatableLine.ReplacableVar.STRING.eq(
+                trackRanks.stream().map(Rank::getPrefix).collect(Collectors.joining(" &7> &r")))).send(commandSender);
+    }
+
+    @Subcommand({"deltrack", "dt"})
+    @CommandPermission("realpermissions.admin")
+    @Usage("&c/rp deltrack <track>")
+    @SuppressWarnings("unused")
+    public void deltrackcmd(final CommandSender commandSender, @SuggestFrom(RPSuggestion.TRACKS) @Single final String track) {
+        if (commandSender instanceof Player && rp.getPlayerManagerAPI().isNotSuperUser((Player) commandSender)) {
+            TranslatableLine.SYSTEM_NO_PERMISSION_COMMAND.send(commandSender);
+            return;
+        }
+
+        Track t = rp.getRankManagerAPI().getTrack(track);
+        if (t == null) {
+            TranslatableLine.TRACKS_NO_TRACK_FOUND.setV1(TranslatableLine.ReplacableVar.NAME.eq(track)).send(commandSender);
+            return;
+        }
+
+        rp.getRankManagerAPI().deleteTrack(t.getName());
+        TranslatableLine.TRACKS_DELETED.setV1(TranslatableLine.ReplacableVar.NAME.eq(t.getName())).send(commandSender);
     }
 
     @Subcommand({"setweight", "sw"})
