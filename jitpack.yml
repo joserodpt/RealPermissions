@@ -1,0 +1,4 @@
+# JitPack builds this repo on demand so realpermissions-api can be consumed without a
+# manual `git clone && mvn install`.
+jdk:
+  - openjdk21
