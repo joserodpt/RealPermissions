@@ -14,6 +14,7 @@
         <!-- Shared with the other Real* plugins: dialogs (1.21.6+), the chat prompt, GUIs and config. -->
         <realutils.version>1.1.0</realutils.version>
         <bstats.version>3.2.1</bstats.version>
+        <lamp.version>4.0.0-rc.18</lamp.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 

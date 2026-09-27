@@ -33,6 +33,9 @@ public enum TranslatableLine {
     SYSTEM_DIALOG_DELETE("System.Dialog-Delete"),
     SYSTEM_DIALOG_REMOVE("System.Dialog-Remove"),
     SYSTEM_SETTINGS_SAVED("System.Settings-Saved"),
+    SYSTEM_PLAYER_ONLY("System.Player-Only"),
+    SYSTEM_ERROR_COMMAND("System.Error-Command"),
+    SYSTEM_ERROR_USAGE("System.Error-Usage"),
 
     // Rank Messages
     RANKS_SET_DEFAULT("Ranks.Set-Default", ReplacableVar.RANK),

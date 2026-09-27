@@ -13,10 +13,6 @@ package joserodpt.realpermissions.plugin;
  * @link https://github.com/joserodpt/RealPermissions
  */
 
-import dev.triumphteam.cmd.bukkit.BukkitCommandManager;
-import dev.triumphteam.cmd.bukkit.message.BukkitMessageKey;
-import dev.triumphteam.cmd.core.message.MessageKey;
-import dev.triumphteam.cmd.core.suggestion.SuggestionKey;
 import joserodpt.realpermissions.api.config.RPConfig;
 import joserodpt.realpermissions.api.config.RPLanguageConfig;
 import joserodpt.realpermissions.api.config.RPLegacyPlayersConfig;
@@ -24,10 +20,7 @@ import joserodpt.realpermissions.api.config.RPRanksConfig;
 import joserodpt.realpermissions.api.config.RPRankupsConfig;
 import joserodpt.realpermissions.api.config.RPSQLConfig;
 import joserodpt.realpermissions.api.config.TranslatableLine;
-import joserodpt.realpermissions.api.pluginhook.ExternalPluginPermission;
-import joserodpt.realpermissions.api.rank.Rank;
-import joserodpt.realpermissions.plugin.commands.RankupCMD;
-import joserodpt.realpermissions.plugin.commands.RealPermissionsCMD;
+import joserodpt.realpermissions.plugin.commands.RPCommandManager;
 import joserodpt.realpermissions.plugin.gui.EPPermissionsViewerGUI;
 import joserodpt.realpermissions.plugin.gui.ExternalPluginsViewerGUI;
 import joserodpt.realpermissions.plugin.gui.PlayerPermissionsGUI;
@@ -47,14 +40,9 @@ import joserodpt.realutils.update.UpdateChecker;
 import net.milkbowl.vault.economy.Economy;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
-import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.stream.Collectors;
 
 public final class RealPermissionsPlugin extends JavaPlugin {
 
@@ -134,34 +122,8 @@ public final class RealPermissionsPlugin extends JavaPlugin {
             getLogger().info("Hooked onto PlaceholderAPI!");
         }
 
-        BukkitCommandManager<CommandSender> commandManager = BukkitCommandManager.create(this);
-
-        //register commands
-        commandManager.registerMessage(MessageKey.UNKNOWN_COMMAND, (sender, context) -> Text.send(sender, "&cThe command you're trying to use doesn't exist"));
-        commandManager.registerMessage(MessageKey.NOT_ENOUGH_ARGUMENTS, (sender, context) -> Text.send(sender, "&cWrong usage for the command!"));
-        commandManager.registerMessage(BukkitMessageKey.NO_PERMISSION, (sender, context) -> Text.send(sender, "&cYou don't have permission to execute this command!"));
-
-
-        commandManager.registerSuggestion(SuggestionKey.of("#ranks"),(sender, context) ->
-                realPermissions.getRankManagerAPI().getRanksList()
-                        .stream()
-                        .map(Rank::getName)
-                        .collect(Collectors.toList())
-        );
-        commandManager.registerSuggestion(SuggestionKey.of("#permOperations"),(sender, context) ->
-                Arrays.asList("add", "remove")
-        );
-        commandManager.registerSuggestion(SuggestionKey.of("#permissions"),(sender, context) ->
-                realPermissions.getHooksAPI().getListPermissionsExternalPlugins().stream()
-                        .map(ExternalPluginPermission::getPermission)
-                        .collect(Collectors.toList())
-        );
-        commandManager.registerSuggestion(SuggestionKey.of("#plugins"),(sender, context) ->
-                new ArrayList<>(realPermissions.getHooksAPI().getExternalPluginList().keySet())
-        );
-
-        commandManager.registerCommand(new RealPermissionsCMD(realPermissions));
-        commandManager.registerCommand(new RankupCMD(realPermissions));
+        //Lamp owns the command tree: the suggestions, the permissions and the error messages
+        new RPCommandManager(realPermissions);
 
         //register events
         PluginManager pm = Bukkit.getPluginManager();

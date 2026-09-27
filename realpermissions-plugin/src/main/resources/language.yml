@@ -22,6 +22,9 @@ System:
   Dialog-Delete: "&cDelete"
   Dialog-Remove: "&cRemove"
   Settings-Saved: "&fSettings saved."
+  Player-Only: "&cOnly players can run this command."
+  Error-Command: "&cThe command you're trying to use doesn't exist."
+  Error-Usage: "&cWrong usage for the command!"
 Ranks:
   Set-Default: "%rank%&r&f is now the &bdefault rank&f!"
   Cant-Delete-Default-Rank: "&cYou can't delete the default rank."
@@ -62,4 +65,4 @@ Rankup:
   Error: "&fAn &cerror &foccured: %string%"
   Ranked-Up: "&fYou ranked up to &b%rank% &ffor &b%string% &fcoins."
   Already-Has-Rank: "&cYou already have this rank."
-Version: 4
+Version: 5

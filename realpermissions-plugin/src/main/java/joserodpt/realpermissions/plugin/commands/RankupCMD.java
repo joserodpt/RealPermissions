@@ -13,27 +13,25 @@ package joserodpt.realpermissions.plugin.commands;
  * @link https://github.com/joserodpt/RealPermissions
  */
 
-import dev.triumphteam.cmd.bukkit.annotation.Permission;
-import dev.triumphteam.cmd.core.BaseCommand;
-import dev.triumphteam.cmd.core.annotation.Command;
-import dev.triumphteam.cmd.core.annotation.Default;
 import joserodpt.realpermissions.api.RealPermissionsAPI;
 import joserodpt.realpermissions.api.config.TranslatableLine;
 import joserodpt.realpermissions.plugin.gui.RankupGUI;
-import joserodpt.realutils.text.Text;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import revxrsal.commands.annotation.Command;
+import revxrsal.commands.annotation.CommandPlaceholder;
+import revxrsal.commands.bukkit.annotation.CommandPermission;
 
-@Command(value="rankup", alias="rk")
-public class RankupCMD extends BaseCommand {
+@Command({"rankup", "rk"})
+public class RankupCMD {
 
     RealPermissionsAPI rp;
     public RankupCMD(RealPermissionsAPI rp) {
         this.rp = rp;
     }
 
-    @Default
-    @Permission("realpermissions.rankup")
+    @CommandPlaceholder
+    @CommandPermission("realpermissions.rankup")
     @SuppressWarnings("unused")
     public void defaultCommand(final CommandSender commandSender) {
         if (!rp.getRankManagerAPI().isRankupEnabled()) {
@@ -47,7 +45,7 @@ public class RankupCMD extends BaseCommand {
             RankupGUI rg = new RankupGUI(rp.getPlayerManagerAPI().getPlayer(p), rp, false);
             rg.openInventory(p);
         } else {
-            Text.send(commandSender,"[RealPermissions] Only players can run this command.");
+            TranslatableLine.SYSTEM_PLAYER_ONLY.send(commandSender);
         }
     }
 }
