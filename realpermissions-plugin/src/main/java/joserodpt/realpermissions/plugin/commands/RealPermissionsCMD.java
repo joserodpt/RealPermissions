@@ -37,6 +37,7 @@ import joserodpt.realpermissions.plugin.gui.RealPermissionsGUI;
 import joserodpt.realpermissions.plugin.gui.SettingsGUI;
 import joserodpt.realpermissions.plugin.importer.PermissionImporter;
 import joserodpt.realutils.dialog.Dialogs;
+import joserodpt.realutils.BuildInfo;
 import joserodpt.realutils.text.Text;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -81,7 +82,9 @@ public class RealPermissionsCMD {
                 rg.openInventory(p);
             }
         } else {
-            Text.sendList(commandSender, Arrays.asList("         &fReal&cPermissions", "         &7Release &a" + rp.getVersion()));
+            Text.sendList(commandSender, Arrays.asList("         &fReal&cPermissions", "         &7Release &a" + rp.getVersion(),
+                    "         &7Built &a" + BuildInfo.time(rp.getPlugin()),
+                    "         &7RealUtils &a" + BuildInfo.realUtilsVersion(rp.getPlugin())));
         }
     }
 

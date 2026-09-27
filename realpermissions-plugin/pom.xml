@@ -18,6 +18,13 @@
 
     <name>realpermissions-plugin</name>
 
+    <properties>
+        <!-- the build time, stamped into build.properties for the console to show. maven.build.timestamp
+             is always UTC and can't be filtered into resources itself, so it goes through a property -->
+        <maven.build.timestamp.format>yyyy-MM-dd'T'HH:mm:ss'Z'</maven.build.timestamp.format>
+        <build.time>${maven.build.timestamp}</build.time>
+    </properties>
+
     <build>
         <finalName>realpermissions-${project.version}</finalName>
         <plugins>
