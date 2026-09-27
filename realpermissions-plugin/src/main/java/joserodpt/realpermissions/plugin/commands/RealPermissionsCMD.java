@@ -28,6 +28,7 @@ import joserodpt.realpermissions.api.rank.Rank;
 import joserodpt.realpermissions.api.rank.Track;
 import joserodpt.realpermissions.api.utils.TabSorter;
 import joserodpt.realpermissions.plugin.gui.EPPermissionsViewerGUI;
+import joserodpt.realpermissions.plugin.gui.HooksDialog;
 import joserodpt.realpermissions.plugin.gui.PlayerPermissionsGUI;
 import joserodpt.realpermissions.plugin.gui.PlayersGUI;
 import joserodpt.realpermissions.plugin.gui.RankPermissionsGUI;
@@ -639,12 +640,19 @@ public class RealPermissionsCMD {
     @CommandPermission("realpermissions.admin")
     @SuppressWarnings("unused")
     public void hooks(final CommandSender commandSender) {
+        if (commandSender instanceof Player) {
+            //to look through, as dialogs where the server has them and the chest screens otherwise
+            HooksDialog.view((Player) commandSender, rp);
+            return;
+        }
+
         TranslatableLine.SYSTEM_REGISTERED_HOOKS.with(STRING, rp.getHooksAPI().getExternalPluginList().size() + "").send(commandSender);
 
         for (String pluginName : rp.getHooksAPI().getExternalPluginListSorted()) {
             ExternalPlugin ep = rp.getHooksAPI().getExternalPluginList().get(pluginName);
-            commandSender.sendMessage(Text.color("&7 > &f" + ep.getDisplayName() + " &r&f[" + pluginName + ", version: " + ep.getVersion() + "] - &b" + ep.getPermissionList().size() + " &fpermissions registered."));
+            commandSender.sendMessage(Text.color("&7 > &f" + ep.getDisplayName() + " &r&f[" + pluginName + ", version: " + ep.getVersion() + "] &7(" + ep.getPluginSource().getLabel() + "&7) &f- &b" + ep.getPermissionList().size() + " &fpermissions registered."));
         }
+        commandSender.sendMessage(Text.color("&7 " + ExternalPlugin.PluginSource.API.getNote() + "&7, " + ExternalPlugin.PluginSource.JAR_YML_SCAN.getNote() + "&7."));
     }
 
     @Subcommand({"hook", "hk"})

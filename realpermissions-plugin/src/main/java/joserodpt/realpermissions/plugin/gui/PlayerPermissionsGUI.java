@@ -178,8 +178,8 @@ public class PlayerPermissionsGUI {
                                 break;
                             case 39:
                                 p.closeInventory();
-                                ExternalPluginsViewerGUI epvg = new ExternalPluginsViewerGUI(p, current.rp, current.po, "");
-                                epvg.openInventory(p);
+                                //dialogs where the server has them, the chest screens otherwise
+                                HooksDialog.forPlayer(p, current.rp, current.po);
                                 break;
                         }
 

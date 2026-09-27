@@ -72,6 +72,8 @@ public class EPPermissionsViewerGUI {
     private ExternalPlugin ep;
     private boolean enableSearch = true;
     private boolean forceExit = false;
+    /** Where "Go Back" leads while only browsing, or null to just close. */
+    private Runnable onBack = null;
 
     public EPPermissionsViewerGUI(Player pl, RealPermissionsAPI rp, ExternalPlugin ep, String search) {
         this.ep = ep;
@@ -134,6 +136,16 @@ public class EPPermissionsViewerGUI {
         fillChest(this.p.getPage(this.pageNumber));
 
         this.register();
+    }
+
+    /**
+     * Only to look through: clicking a permission gives it to no one, and "Go Back" runs {@code back}
+     * instead of returning to a rank or player.
+     */
+    public EPPermissionsViewerGUI browsing(Runnable back) {
+        this.forceExit = true;
+        this.onBack = back;
+        return this;
     }
 
     public void load(String search) {
@@ -281,6 +293,9 @@ public class EPPermissionsViewerGUI {
                             case 49:
                                 p.closeInventory();
                                 if (current.forceExit) {
+                                    if (current.onBack != null) {
+                                        current.onBack.run();
+                                    }
                                     return;
                                 }
 

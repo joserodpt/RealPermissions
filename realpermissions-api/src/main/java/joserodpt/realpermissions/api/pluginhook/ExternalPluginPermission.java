@@ -48,17 +48,33 @@ public class ExternalPluginPermission {
         return commands;
     }
 
+    /**
+     * What the permission is and which commands it applies on, each under its own heading and apart
+     * by a blank line. A part it has nothing for is left out.
+     */
+    public List<String> getInfo() {
+        List<String> info = new ArrayList<>();
+        if (this.getDescription() != null && !this.getDescription().isEmpty()) {
+            info.add("&b&nDescription:");
+            info.add("&f" + this.getDescription());
+        }
+        if (!this.getCommands().isEmpty()) {
+            if (!info.isEmpty()) {
+                info.add("");
+            }
+            info.add("&b&nApplies on:");
+            this.getCommands().forEach(s -> info.add("&f/" + s));
+        }
+        return info;
+    }
+
     public ItemStack getItemStack() {
         List<String> desc = new ArrayList<>();
         desc.add("&fClick to &aadd this permission");
-        if (this.getDescription() != null && !this.getDescription().isEmpty()) {
-            desc.add("&b&nDescription:");
-            desc.add("&f" + this.getDescription());
-        }
-        if (!this.getCommands().isEmpty()) {
+        List<String> info = this.getInfo();
+        if (!info.isEmpty()) {
             desc.add("");
-            desc.add("&b&nCommands granted:");
-            this.getCommands().forEach(s -> desc.add("&f/" + s));
+            desc.addAll(info);
         }
 
         return Items.createItem(Material.FILLED_MAP, Math.max(1, Math.min(this.commands.size(), 64)), "&f&l" + this.getPermission(), desc);

@@ -216,8 +216,8 @@ public class RankPermissionsGUI {
                                 break;
                             case 39:
                                 p.closeInventory();
-                                ExternalPluginsViewerGUI ev = new ExternalPluginsViewerGUI(p, current.rp, current.r, "");
-                                ev.openInventory(p);
+                                //dialogs where the server has them, the chest screens otherwise
+                                HooksDialog.forRank(p, current.rp, current.r);
                                 break;
                         }
 

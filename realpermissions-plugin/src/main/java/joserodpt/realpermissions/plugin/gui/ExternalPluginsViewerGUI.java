@@ -66,6 +66,8 @@ public class ExternalPluginsViewerGUI {
             Collections.singletonList("&fClick here to go back to the next page."));
     private final ItemStack close = Items.createItem(Material.ACACIA_DOOR, 1, "&cGo Back",
             Collections.singletonList("&fClick here to close this menu."));
+    private final ItemStack exit = Items.createItem(Material.OAK_DOOR, 1, "&cClose",
+            Collections.singletonList("&fClick here to close this menu."));
 
     private UUID uuid;
     private Map<Integer, ExternalPlugin> display = new HashMap<>();
@@ -76,8 +78,24 @@ public class ExternalPluginsViewerGUI {
     private Rank rank = null;
     private PlayerDataObject po = null;
 
+    /** Every hooked plugin, only to look through: nothing is added to anyone from here, as {@code /rp hooks} opens it. */
     public ExternalPluginsViewerGUI(Player pl, RealPermissionsAPI rp, String search) {
+        this(pl, rp, null, null, search);
+    }
+
+    public ExternalPluginsViewerGUI(Player p, RealPermissionsAPI rp, Rank r, String search) {
+        this(p, rp, r, null, search);
+    }
+
+    public ExternalPluginsViewerGUI(Player p, RealPermissionsAPI rp, PlayerDataObject po, String search) {
+        this(p, rp, null, po, search);
+    }
+
+    //the rank or player is set before the chest is filled, which needs to know whether there is one
+    private ExternalPluginsViewerGUI(Player pl, RealPermissionsAPI rp, Rank r, PlayerDataObject po, String search) {
         this.rp = rp;
+        this.rank = r;
+        this.po = po;
         this.inv = Bukkit.getServer().createInventory(null, 54, Text.color("&f&lReal&c&lPermissions &8| Plugins"));
         this.uuid = pl.getUniqueId();
 
@@ -86,14 +104,14 @@ public class ExternalPluginsViewerGUI {
         this.register();
     }
 
-    public ExternalPluginsViewerGUI(Player p, RealPermissionsAPI rp, Rank r, String search) {
-        this(p, rp, search);
-        this.rank = r;
+    /** Neither a rank nor a player to give permissions to. */
+    private boolean isBrowsing() {
+        return this.rank == null && this.po == null;
     }
 
-    public ExternalPluginsViewerGUI(Player p, RealPermissionsAPI rp, PlayerDataObject po, String search) {
-        this(p, rp, search);
-        this.po = po;
+    /** This screen again, for the same rank or player (or neither), with another search. */
+    private void reopen(Player p, String search) {
+        new ExternalPluginsViewerGUI(p, this.rp, this.rank, this.po, search).openInventory(p);
     }
 
     public void load(String search) {
@@ -145,7 +163,8 @@ public class ExternalPluginsViewerGUI {
             this.inv.setItem(35, next);
         }
 
-        this.inv.setItem(4, writeperm);
+        //there is no one to give a typed permission to while only browsing
+        this.inv.setItem(4, isBrowsing() ? placeholder : writeperm);
 
         int slot = 0;
         for (ItemStack i : this.inv.getContents()) {
@@ -160,7 +179,7 @@ public class ExternalPluginsViewerGUI {
             ++slot;
         }
 
-        this.inv.setItem(49, close);
+        this.inv.setItem(49, isBrowsing() ? exit : close);
     }
 
     public void openInventory(Player target) {
@@ -202,37 +221,16 @@ public class ExternalPluginsViewerGUI {
                                 p.closeInventory();
                                 new PlayerInput(p, true, s -> {
                                     if (current.rp.getHooksAPI().getExternalPluginList().keySet().stream().anyMatch(ep -> ep.toLowerCase().contains(s.toLowerCase()))) {
-                                        if (current.rank != null) {
-                                            ExternalPluginsViewerGUI rg = new ExternalPluginsViewerGUI(p, current.rp, current.rank, s);
-                                            rg.openInventory(p);
-                                        }
-                                        if (current.po != null) {
-                                            ExternalPluginsViewerGUI ppg = new ExternalPluginsViewerGUI(p, current.rp, current.po, s);
-                                            ppg.openInventory(p);
-                                        }
+                                        current.reopen(p, s);
                                     } else {
                                         Text.send(p, "&fNothing found for your search terms.");
 
-                                        if (current.rank != null) {
-                                            ExternalPluginsViewerGUI rg = new ExternalPluginsViewerGUI(p, current.rp, current.rank, "");
-                                            rg.openInventory(p);
-                                        }
-                                        if (current.po != null) {
-                                            ExternalPluginsViewerGUI ppg = new ExternalPluginsViewerGUI(p, current.rp, current.po, "");
-                                            ppg.openInventory(p);
-                                        }
+                                        current.reopen(p, "");
                                     }
 
 
                                 }, s -> {
-                                    if (current.rank != null) {
-                                        ExternalPluginsViewerGUI rg = new ExternalPluginsViewerGUI(p, current.rp, current.rank, "");
-                                        rg.openInventory(p);
-                                    }
-                                    if (current.po != null) {
-                                        ExternalPluginsViewerGUI ppg = new ExternalPluginsViewerGUI(p, current.rp, current.po, "");
-                                        ppg.openInventory(p);
-                                    }
+                                    current.reopen(p, "");
                                 });
                                 break;
 
@@ -251,33 +249,26 @@ public class ExternalPluginsViewerGUI {
                                             EPPermissionsViewerGUI ppg = new EPPermissionsViewerGUI(p, current.rp, current.po, search);
                                             ppg.openInventory(p);
                                         }
+                                        if (current.isBrowsing()) {
+                                            new EPPermissionsViewerGUI(p, current.rp, (Rank) null, search)
+                                                    .browsing(() -> current.reopen(p, "")).openInventory(p);
+                                        }
                                     } else {
                                         Text.send(p, "&fNothing found for your search terms.");
 
-                                        if (current.rank != null) {
-                                            ExternalPluginsViewerGUI rg = new ExternalPluginsViewerGUI(p, current.rp, current.rank, "");
-                                            rg.openInventory(p);
-                                        }
-                                        if (current.po != null) {
-                                            ExternalPluginsViewerGUI ppg = new ExternalPluginsViewerGUI(p, current.rp, current.po, "");
-                                            ppg.openInventory(p);
-                                        }
+                                        current.reopen(p, "");
                                     }
 
 
                                 }, s -> {
-                                    if (current.rank != null) {
-                                        ExternalPluginsViewerGUI rg = new ExternalPluginsViewerGUI(p, current.rp, current.rank, "");
-                                        rg.openInventory(p);
-                                    }
-                                    if (current.po != null) {
-                                        ExternalPluginsViewerGUI ppg = new ExternalPluginsViewerGUI(p, current.rp, current.po, "");
-                                        ppg.openInventory(p);
-                                    }
+                                    current.reopen(p, "");
                                 });
                                 break;
 
                             case 4:
+                                if (current.isBrowsing()) {
+                                    break;
+                                }
                                 //returns to the rank or player being edited either way
                                 final Runnable back = () -> {
                                     if (current.po != null) {
@@ -352,6 +343,10 @@ public class ExternalPluginsViewerGUI {
                                 if (current.rank != null) {
                                     EPPermissionsViewerGUI ep = new EPPermissionsViewerGUI(p, current.rp, clickedEP, current.rank, "");
                                     ep.openInventory(p);
+                                }
+                                if (current.isBrowsing()) {
+                                    new EPPermissionsViewerGUI(p, current.rp, clickedEP)
+                                            .browsing(() -> current.reopen(p, "")).openInventory(p);
                                 }
                             }, 1);
                         }

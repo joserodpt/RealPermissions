@@ -23,7 +23,29 @@ import java.util.List;
 
 public class ExternalPlugin {
 
-    public enum PluginSource {JAR_YML_SCAN, API}
+    public enum PluginSource {
+        /** Read from the plugin's own plugin.yml: only the permissions it declares there. */
+        JAR_YML_SCAN("&eImported", "&7read from its plugin.yml"),
+        /** Registered by the plugin itself through the RealPermissions API. */
+        API("&aNative", "&7hooked through the RealPermissions API");
+
+        private final String label, detail;
+
+        PluginSource(String label, String detail) {
+            this.label = label;
+            this.detail = detail;
+        }
+
+        /** A short tag, e.g. {@code Native}, for lists. */
+        public String getLabel() {
+            return this.label;
+        }
+
+        /** The tag with what it means, for tooltips. */
+        public String getNote() {
+            return this.label + " &7- " + this.detail;
+        }
+    }
 
     private final PluginSource ps;
     private final String name, description, displayName, version;
@@ -84,6 +106,7 @@ public class ExternalPlugin {
     public ItemStack getItemStack() {
         List<String> desc = new ArrayList<>();
         desc.add("&b&nVersion:&r&f " + this.getVersion());
+        desc.add("&b&nHook:&r " + this.getPluginSource().getNote());
         if (this.getDescription() != null && !this.getDescription().isEmpty()) {
             desc.add("&b&nDescription:");
             desc.add("&f" + this.getDescription());
