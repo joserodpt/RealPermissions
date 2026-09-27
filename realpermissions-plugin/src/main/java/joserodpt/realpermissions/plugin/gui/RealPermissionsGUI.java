@@ -138,8 +138,7 @@ public class RealPermissionsGUI {
                             case 16:
                                 p.closeInventory();
                                 Bukkit.getScheduler().scheduleSyncDelayedTask(RealPermissions.getInstance().getPlugin(), () -> {
-                                    SettingsGUI sg = new SettingsGUI(p, current.rp);
-                                    sg.openInventory(p);
+                                    SettingsGUI.open(p, current.rp);
                                 }, 1);
                                 break;
                         }

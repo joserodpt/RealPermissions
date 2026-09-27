@@ -23,6 +23,16 @@ public enum TranslatableLine {
     SYSTEM_NO_PLAYER_FOUND("System.No-Player-Found"),
     SYSTEM_SUPER_USER_STATE("System.Super-User-State"),
     SYSTEM_REGISTERED_HOOKS("System.Registered-Hooks", ReplacableVar.STRING),
+    SYSTEM_INPUT_CANCELLED("System.Input-Cancelled"),
+    SYSTEM_ERROR_OCCURRED("System.Error-Occurred"),
+    SYSTEM_DIALOG_CONFIRM("System.Dialog-Confirm"),
+    SYSTEM_DIALOG_CANCEL("System.Dialog-Cancel"),
+    SYSTEM_DIALOG_SAVE("System.Dialog-Save"),
+    SYSTEM_DIALOG_BACK("System.Dialog-Back"),
+    SYSTEM_DIALOG_CLOSE("System.Dialog-Close"),
+    SYSTEM_DIALOG_DELETE("System.Dialog-Delete"),
+    SYSTEM_DIALOG_REMOVE("System.Dialog-Remove"),
+    SYSTEM_SETTINGS_SAVED("System.Settings-Saved"),
 
     // Rank Messages
     RANKS_SET_DEFAULT("Ranks.Set-Default", ReplacableVar.RANK),
@@ -39,6 +49,8 @@ public enum TranslatableLine {
     RANKS_PLAYER_RANK_UPDATED("Ranks.Player-Rank-Updated", ReplacableVar.RANK),
     RANKS_PREFIX_SET("Ranks.Prefix-Set", ReplacableVar.NAME),
     RANKS_NAME_SET("Ranks.Name-Set", ReplacableVar.NAME),
+    RANKS_DELETE_CONFIRM("Ranks.Delete-Confirm", ReplacableVar.RANK),
+    RANKS_REMOVE_TIMED_RANK_CONFIRM("Ranks.Remove-Timed-Rank-Confirm", ReplacableVar.PLAYER),
 
     PERMISSIONS_RANK_ALREADY_HAS_PERMISSION("Permissions.Rank-Already-Has-Permission", ReplacableVar.PERM),
     PERMISSIONS_PLAYER_ALREADY_HAS_PERMISSION("Permissions.Player-Already-Has-Permission", ReplacableVar.PERM),
@@ -51,6 +63,7 @@ public enum TranslatableLine {
     PERMISSIONS_PLAYER_ADD("Permissions.Player.Add", ReplacableVar.PERM, ReplacableVar.PLAYER),
     PERMISSIONS_PLAYER_REMOVE("Permissions.Player.Remove", ReplacableVar.PERM, ReplacableVar.PLAYER),
     PERMISSIONS_PLAYER_DELETE("Permissions.Player.Delete", ReplacableVar.PLAYER),
+    PERMISSIONS_PLAYER_DELETE_CONFIRM("Permissions.Player.Delete-Confirm", ReplacableVar.PLAYER),
 
     RANKUP_CANT_RANKUP("Rankup.Cant-Rankup"),
     RANKUP_INSUFICIENT_FUNDS("Rankup.Insuficient-Funds"),

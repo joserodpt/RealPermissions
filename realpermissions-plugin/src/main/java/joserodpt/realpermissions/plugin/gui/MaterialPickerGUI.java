@@ -22,7 +22,7 @@ import joserodpt.realpermissions.api.rank.Rank;
 import joserodpt.realpermissions.api.rank.Rankup;
 import joserodpt.realpermissions.api.utils.Items;
 import joserodpt.realpermissions.api.utils.Pagination;
-import joserodpt.realpermissions.api.utils.PlayerInput;
+import joserodpt.realutils.input.PlayerInput;
 import joserodpt.realpermissions.api.utils.Text;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -185,7 +185,7 @@ public class MaterialPickerGUI {
                         switch (e.getRawSlot())
                         {
                             case 4:
-                                new PlayerInput(rp.getPlayer(), input -> {
+                                new PlayerInput(rp.getPlayer(), true, input -> {
                                     if (current.searchMaterial(input).isEmpty()) {
                                         Text.send(rp.getPlayer(), "&fNothing found for your search terms.");
 

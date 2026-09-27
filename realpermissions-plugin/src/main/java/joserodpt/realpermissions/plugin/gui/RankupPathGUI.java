@@ -19,7 +19,7 @@ import joserodpt.realpermissions.api.rank.Rankup;
 import joserodpt.realpermissions.api.rank.RankupEntry;
 import joserodpt.realpermissions.api.utils.Items;
 import joserodpt.realpermissions.api.utils.Pagination;
-import joserodpt.realpermissions.api.utils.PlayerInput;
+import joserodpt.realutils.input.PlayerInput;
 import joserodpt.realpermissions.api.utils.Text;
 import joserodpt.realpermissions.plugin.RealPermissions;
 import org.bukkit.Bukkit;
@@ -202,7 +202,7 @@ public class RankupPathGUI {
                                         break;
                                     case LEFT:
                                         p.closeInventory();
-                                        new PlayerInput(p, s -> {
+                                        new PlayerInput(p, true, s -> {
                                             double d;
                                             try {
                                                 d = Double.parseDouble(s);

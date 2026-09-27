@@ -25,7 +25,7 @@ import joserodpt.realpermissions.api.config.RPRankupsConfig;
 import joserodpt.realpermissions.api.config.RPSQLConfig;
 import joserodpt.realpermissions.api.pluginhook.ExternalPluginPermission;
 import joserodpt.realpermissions.api.rank.Rank;
-import joserodpt.realpermissions.api.utils.PlayerInput;
+import joserodpt.realpermissions.api.config.TranslatableLine;
 import joserodpt.realpermissions.api.utils.Text;
 import joserodpt.realpermissions.plugin.commands.RankupCMD;
 import joserodpt.realpermissions.plugin.commands.RealPermissionsCMD;
@@ -41,6 +41,9 @@ import joserodpt.realpermissions.plugin.gui.RankupPathGUI;
 import joserodpt.realpermissions.plugin.gui.RealPermissionsGUI;
 import joserodpt.realpermissions.plugin.gui.SettingsGUI;
 import joserodpt.realpermissions.plugin.managers.DatabaseManager;
+import joserodpt.realutils.RealUtils;
+import joserodpt.realutils.dialog.Dialogs;
+import joserodpt.realutils.input.PlayerInput;
 import net.milkbowl.vault.economy.Economy;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
@@ -66,7 +69,11 @@ public final class RealPermissionsPlugin extends JavaPlugin {
 
         new Metrics(this, 19519);
 
+        //first: the GUIs' listeners, and the plugin RealUtils schedules and logs through
+        RealUtils.setup(this);
         RPConfig.setup(this);
+        //read on every message, so a reloaded prefix applies
+        joserodpt.realutils.text.Text.prefix(() -> RPConfig.file().getString("RealPermissions.Prefix") + "&r ");
         realPermissions = new RealPermissions(this);
         RealPermissions.setInstance(realPermissions);
 
@@ -77,6 +84,16 @@ public final class RealPermissionsPlugin extends JavaPlugin {
         RPRankupsConfig.setup(this);
         RPLegacyPlayersConfig.setup(this);
         RPSQLConfig.setup(this);
+
+        //typed input is asked for in a dialog on servers that have them, in chat everywhere else
+        Dialogs.setup(this, () -> RPConfig.file().getBoolean("RealPermissions.useDialogs", true));
+        Dialogs.labels(TranslatableLine.SYSTEM_DIALOG_CONFIRM.get(), TranslatableLine.SYSTEM_DIALOG_CANCEL.get(),
+                TranslatableLine.SYSTEM_DIALOG_CLOSE.get(), TranslatableLine.SYSTEM_DIALOG_BACK.get(), TranslatableLine.SYSTEM_DIALOG_SAVE.get());
+        PlayerInput.setup(this,
+                p -> RPLanguageConfig.file().getStringList("System.Type-Input"),
+                p -> RPLanguageConfig.file().getStringList("System.Type-Input-Dialog"),
+                TranslatableLine.SYSTEM_INPUT_CANCELLED::send,
+                TranslatableLine.SYSTEM_ERROR_OCCURRED::send);
 
         //load ranks
         realPermissions.getRankManagerAPI().loadRanks();
@@ -207,6 +224,8 @@ public final class RealPermissionsPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        Dialogs.shutdown();
+        PlayerInput.cancelAll();
         realPermissions.getPlayerManagerAPI().getPlayerMap().values().forEach(rpPlayer -> rpPlayer.saveData(false));
     }
 

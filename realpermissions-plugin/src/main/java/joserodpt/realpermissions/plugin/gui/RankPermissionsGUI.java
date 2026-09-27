@@ -19,7 +19,7 @@ import joserodpt.realpermissions.api.permission.Permission;
 import joserodpt.realpermissions.api.rank.Rank;
 import joserodpt.realpermissions.api.utils.Items;
 import joserodpt.realpermissions.api.utils.Pagination;
-import joserodpt.realpermissions.api.utils.PlayerInput;
+import joserodpt.realutils.input.PlayerInput;
 import joserodpt.realpermissions.api.utils.Text;
 import org.bukkit.*;
 import org.bukkit.entity.HumanEntity;
@@ -163,7 +163,7 @@ public class RankPermissionsGUI {
                                 break;
                             case 25:
                                 p.closeInventory();
-                                new PlayerInput(p, input -> {
+                                new PlayerInput(p, false, input -> {
                                     current.r.setPrefix(input);
                                     TranslatableLine.RANKS_PREFIX_SET.setV1(TranslatableLine.ReplacableVar.NAME.eq(input)).send(p);
 
@@ -176,7 +176,7 @@ public class RankPermissionsGUI {
                                 break;
                             case 34:
                                 p.closeInventory();
-                                new PlayerInput(p, input -> {
+                                new PlayerInput(p, false, input -> {
                                     current.rp.getRankManagerAPI().renameRank(current.r, input);
                                     TranslatableLine.RANKS_NAME_SET.setV1(TranslatableLine.ReplacableVar.NAME.eq(input)).send(p);
 

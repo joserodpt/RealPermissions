@@ -22,7 +22,8 @@ import joserodpt.realpermissions.api.rank.Rankup;
 import joserodpt.realpermissions.api.rank.RankupEntry;
 import joserodpt.realpermissions.api.utils.Items;
 import joserodpt.realpermissions.api.utils.Pagination;
-import joserodpt.realpermissions.api.utils.PlayerInput;
+import joserodpt.realutils.dialog.Dialogs;
+import joserodpt.realutils.input.PlayerInput;
 import joserodpt.realpermissions.api.utils.Text;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -199,7 +200,7 @@ public class RanksListGUI {
                             case 4:
                                 if (current.po == null && current.rk == null && current.rpe == null) {
                                     p.closeInventory();
-                                    new PlayerInput(p, input -> {
+                                    new PlayerInput(p, false, input -> {
                                         current.rp.getRankManagerAPI().addNewRank(input);
 
                                         RanksListGUI rv = new RanksListGUI(p, current.rp);
@@ -255,9 +256,23 @@ public class RanksListGUI {
                                             p.closeInventory();
                                             TranslatableLine.RANKS_CANT_DELETE_DEFAULT_RANK.send(p);
                                         } else {
-                                            current.rp.getRankManagerAPI().deleteRank(clickedRank);
-                                            TranslatableLine.RANKS_DELETED.setV1(TranslatableLine.ReplacableVar.RANK.eq(clickedRank.getPrefix())).send(p);
-                                            current.load();
+                                            final Runnable delete = () -> {
+                                                current.rp.getRankManagerAPI().deleteRank(clickedRank);
+                                                TranslatableLine.RANKS_DELETED.setV1(TranslatableLine.ReplacableVar.RANK.eq(clickedRank.getPrefix())).send(p);
+                                                current.load();
+                                            };
+                                            //asked first where the server has dialogs: its players lose the rank. The menu is
+                                            //built again after, as the dialog closed this one
+                                            if (!Dialogs.confirm(p, "&f&lReal&c&lPermissions &8| &fRanks",
+                                                    TranslatableLine.RANKS_DELETE_CONFIRM.setV1(TranslatableLine.ReplacableVar.RANK.eq(clickedRank.getPrefix())).get(),
+                                                    TranslatableLine.SYSTEM_DIALOG_DELETE.get(), null,
+                                                    () -> {
+                                                        delete.run();
+                                                        new RanksListGUI(p, current.rp).openInventory(p);
+                                                    },
+                                                    () -> new RanksListGUI(p, current.rp).openInventory(p))) {
+                                                delete.run();
+                                            }
                                         }
                                         break;
                                     case RIGHT:

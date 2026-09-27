@@ -20,6 +20,7 @@ import joserodpt.realpermissions.api.player.RPPlayer;
 import joserodpt.realpermissions.api.utils.Items;
 import joserodpt.realpermissions.api.utils.Pagination;
 import joserodpt.realpermissions.api.utils.Text;
+import joserodpt.realutils.dialog.Dialogs;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -219,16 +220,41 @@ public class PlayersGUI {
 
                             switch (e.getClick()) {
                                 case DROP: //delete player
-                                    current.rp.getPlayerManagerAPI().deletePlayer(po);
-                                    TranslatableLine.PERMISSIONS_PLAYER_DELETE.setV1(TranslatableLine.ReplacableVar.PLAYER.eq(po.getName())).send(p);
-                                    current.load();
+                                    final Runnable delete = () -> {
+                                        current.rp.getPlayerManagerAPI().deletePlayer(po);
+                                        TranslatableLine.PERMISSIONS_PLAYER_DELETE.setV1(TranslatableLine.ReplacableVar.PLAYER.eq(po.getName())).send(p);
+                                        current.load();
+                                    };
+                                    //asked first where the server has dialogs: it can't be undone
+                                    if (!Dialogs.confirm(p, "&f&lReal&c&lPermissions &8| &fPlayers",
+                                            TranslatableLine.PERMISSIONS_PLAYER_DELETE_CONFIRM.setV1(TranslatableLine.ReplacableVar.PLAYER.eq(po.getName())).get(),
+                                            TranslatableLine.SYSTEM_DIALOG_DELETE.get(), null,
+                                            () -> {
+                                                delete.run();
+                                                new PlayersGUI(p, current.rp).openInventory(p);
+                                            },
+                                            () -> new PlayersGUI(p, current.rp).openInventory(p))) {
+                                        delete.run();
+                                    }
                                     break;
                                 case RIGHT:
                                     if (po.hasTimedRank()) {
                                         //eliminar timed rank
-                                        rp.removeTimedRank();
-                                        TranslatableLine.RANKS_PLAYER_REMOVE_TIMED_RANK.setV1(TranslatableLine.ReplacableVar.PLAYER.eq(po.getName())).send(p);
-                                        current.load();
+                                        final Runnable remove = () -> {
+                                            rp.removeTimedRank();
+                                            TranslatableLine.RANKS_PLAYER_REMOVE_TIMED_RANK.setV1(TranslatableLine.ReplacableVar.PLAYER.eq(po.getName())).send(p);
+                                            current.load();
+                                        };
+                                        if (!Dialogs.confirm(p, "&f&lReal&c&lPermissions &8| &fPlayers",
+                                                TranslatableLine.RANKS_REMOVE_TIMED_RANK_CONFIRM.setV1(TranslatableLine.ReplacableVar.PLAYER.eq(po.getName())).get(),
+                                                TranslatableLine.SYSTEM_DIALOG_REMOVE.get(), null,
+                                                () -> {
+                                                    remove.run();
+                                                    new PlayersGUI(p, current.rp).openInventory(p);
+                                                },
+                                                () -> new PlayersGUI(p, current.rp).openInventory(p))) {
+                                            remove.run();
+                                        }
                                     }
                                     break;
                                 case SHIFT_LEFT:

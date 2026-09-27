@@ -36,6 +36,8 @@ import joserodpt.realpermissions.plugin.gui.PlayersGUI;
 import joserodpt.realpermissions.plugin.gui.RankPermissionsGUI;
 import joserodpt.realpermissions.plugin.gui.RanksListGUI;
 import joserodpt.realpermissions.plugin.gui.RealPermissionsGUI;
+import joserodpt.realpermissions.plugin.gui.SettingsGUI;
+import joserodpt.realutils.dialog.Dialogs;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -80,6 +82,18 @@ public class RealPermissionsCMD extends BaseCommand {
         rp.getRankManagerAPI().loadRanks();
         rp.getRankManagerAPI().loadRankups();
         TranslatableLine.SYSTEM_RELOADED.send(commandSender);
+    }
+
+    /** config.yml as dialogs where the server has them, the inventory editor everywhere else. */
+    @SubCommand("settings")
+    @Permission("realpermissions.admin")
+    @SuppressWarnings("unused")
+    public void settingscmd(final CommandSender commandSender) {
+        if (commandSender instanceof Player) {
+            SettingsGUI.open((Player) commandSender, rp);
+        } else {
+            Text.send(commandSender, noConsole);
+        }
     }
 
     @SubCommand(value="rank",alias="r")
@@ -273,9 +287,18 @@ public class RealPermissionsCMD extends BaseCommand {
 
         if (rp.getRankManagerAPI().getDefaultRank() == r) {
             TranslatableLine.RANKS_CANT_DELETE_DEFAULT_RANK.send(commandSender);
-        } else {
+            return;
+        }
+
+        final Runnable delete = () -> {
             rp.getRankManagerAPI().deleteRank(r);
             TranslatableLine.RANKS_DELETED.setV1(TranslatableLine.ReplacableVar.RANK.eq(r.getPrefix())).send(commandSender);
+        };
+        //a player is asked first where the server has dialogs; console, and everyone else, straight away
+        if (!(commandSender instanceof Player) || !Dialogs.confirm((Player) commandSender, "&f&lReal&c&lPermissions &8| &fRanks",
+                TranslatableLine.RANKS_DELETE_CONFIRM.setV1(TranslatableLine.ReplacableVar.RANK.eq(r.getPrefix())).get(),
+                TranslatableLine.SYSTEM_DIALOG_DELETE.get(), null, delete, null)) {
+            delete.run();
         }
     }
 

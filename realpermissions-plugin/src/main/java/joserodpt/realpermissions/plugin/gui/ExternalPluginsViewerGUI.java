@@ -21,9 +21,8 @@ import joserodpt.realpermissions.api.pluginhook.ExternalPluginPermission;
 import joserodpt.realpermissions.api.rank.Rank;
 import joserodpt.realpermissions.api.utils.Items;
 import joserodpt.realpermissions.api.utils.Pagination;
-import joserodpt.realpermissions.api.utils.PlayerInput;
+import joserodpt.realutils.input.PlayerInput;
 import joserodpt.realpermissions.api.utils.Text;
-import net.wesjd.anvilgui.AnvilGUI;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -36,8 +35,8 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -197,7 +196,7 @@ public class ExternalPluginsViewerGUI {
                         {
                             case 0:
                                 p.closeInventory();
-                                new PlayerInput(p, s -> {
+                                new PlayerInput(p, true, s -> {
                                     if (current.rp.getHooksAPI().getExternalPluginList().keySet().stream().anyMatch(ep -> ep.toLowerCase().contains(s.toLowerCase()))) {
                                         if (current.rank != null) {
                                             ExternalPluginsViewerGUI rg = new ExternalPluginsViewerGUI(p, current.rp, current.rank, s);
@@ -235,7 +234,7 @@ public class ExternalPluginsViewerGUI {
 
                             case 8:
                                 p.closeInventory();
-                                new PlayerInput(p, s -> {
+                                new PlayerInput(p, true, s -> {
 
                                     List<ExternalPluginPermission> search = current.rp.getHooksAPI().getListPermissionsExternalPlugins().stream().filter(externalPluginPermission -> externalPluginPermission.getPermission().toLowerCase().contains(s.toLowerCase())).collect(Collectors.toList());
 
@@ -275,59 +274,42 @@ public class ExternalPluginsViewerGUI {
                                 break;
 
                             case 4:
-                                new AnvilGUI.Builder()
-                                        .onClose(stateSnapshot -> new BukkitRunnable() {
-                                            @Override
-                                            public void run() {
-                                            if (current.po != null) {
-                                                PlayerPermissionsGUI ppg = new PlayerPermissionsGUI(p, current.po, current.rp);
-                                                ppg.openInventory(p);
-                                            }
+                                //returns to the rank or player being edited either way
+                                final Runnable back = () -> {
+                                    if (current.po != null) {
+                                        PlayerPermissionsGUI ppg = new PlayerPermissionsGUI(p, current.po, current.rp);
+                                        ppg.openInventory(p);
+                                    }
 
-                                            if (current.rank != null) {
-                                                RankPermissionsGUI rg = new RankPermissionsGUI(p, current.rank, current.rp);
-                                                rg.openInventory(p);
-                                            }
-                                            }
-                                        }.runTaskLater(current.rp.getPlugin(), 2))
-                                        .onClick((slot, stateSnapshot) -> { // Either use sync or async variant, not both
-                                            if(slot != AnvilGUI.Slot.OUTPUT) {
-                                                return Collections.emptyList();
-                                            }
-
-                                            String perm = stateSnapshot.getText();
-
-                                            if (perm.isEmpty()) {
-                                                return Collections.singletonList(AnvilGUI.ResponseAction.replaceInputText("Invalid"));
+                                    if (current.rank != null) {
+                                        RankPermissionsGUI rg = new RankPermissionsGUI(p, current.rank, current.rp);
+                                        rg.openInventory(p);
+                                    }
+                                };
+                                new PlayerInput(p, true, Arrays.asList("&9Type the new permission", "&fType &4cancel &fto cancel"),
+                                        Arrays.asList("&9New permission", "&fThe permission to add."), perm -> {
+                                    if (!perm.isEmpty()) {
+                                        if (current.rank != null) {
+                                            if (current.rank.hasPermission(perm)) {
+                                                TranslatableLine.PERMISSIONS_RANK_ALREADY_HAS_PERMISSION.setV1(TranslatableLine.ReplacableVar.PERM.eq(perm)).send(p);
                                             } else {
-                                                if (current.rank != null) {
-                                                    if (current.rank.hasPermission(perm)) {
-                                                        TranslatableLine.PERMISSIONS_RANK_ALREADY_HAS_PERMISSION.setV1(TranslatableLine.ReplacableVar.PERM.eq(perm)).send(p);
-                                                    } else {
-                                                        current.rank.addPermission(perm);
-                                                        current.rp.getRankManagerAPI().refreshPermsAndPlayers();
-                                                        TranslatableLine.PERMISSIONS_RANK_PERM_ADD.setV1(TranslatableLine.ReplacableVar.PERM.eq(perm)).send(p);
-                                                    }
-                                                }
-
-                                                if (current.po != null) {
-                                                    if (current.po.hasPermission(perm)) {
-                                                        TranslatableLine.PERMISSIONS_PLAYER_ALREADY_HAS_PERMISSION.setV1(TranslatableLine.ReplacableVar.PERM.eq(perm)).send(p);
-                                                    } else {
-                                                        current.po.addPermission(perm, false);
-                                                        //current.rp.getRankManager().refreshPermsAndPlayers();
-                                                        TranslatableLine.PERMISSIONS_PLAYER_ADD.setV1(TranslatableLine.ReplacableVar.PERM.eq(perm)).setV2(TranslatableLine.ReplacableVar.PLAYER.eq(current.po.getName())).send(p);
-                                                    }
-                                                }
-
-                                                return Collections.singletonList(AnvilGUI.ResponseAction.close());
+                                                current.rank.addPermission(perm);
+                                                current.rp.getRankManagerAPI().refreshPermsAndPlayers();
+                                                TranslatableLine.PERMISSIONS_RANK_PERM_ADD.setV1(TranslatableLine.ReplacableVar.PERM.eq(perm)).setV2(TranslatableLine.ReplacableVar.RANK.eq(current.rank.getPrefix())).send(p);
                                             }
+                                        }
 
-                                        })
-                                        .text("Permission")
-                                        .title("New permission:")
-                                        .plugin(current.rp.getPlugin())
-                                        .open(p);
+                                        if (current.po != null) {
+                                            if (current.po.hasPermission(perm)) {
+                                                TranslatableLine.PERMISSIONS_PLAYER_ALREADY_HAS_PERMISSION.setV1(TranslatableLine.ReplacableVar.PERM.eq(perm)).send(p);
+                                            } else {
+                                                current.po.addPermission(perm, false);
+                                                TranslatableLine.PERMISSIONS_PLAYER_ADD.setV1(TranslatableLine.ReplacableVar.PERM.eq(perm)).setV2(TranslatableLine.ReplacableVar.PLAYER.eq(current.po.getName())).send(p);
+                                            }
+                                        }
+                                    }
+                                    back.run();
+                                }, input -> back.run());
                                 break;
                             case 49:
                                 p.closeInventory();

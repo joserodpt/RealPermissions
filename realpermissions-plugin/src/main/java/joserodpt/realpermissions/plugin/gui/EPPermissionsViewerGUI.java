@@ -21,7 +21,7 @@ import joserodpt.realpermissions.api.pluginhook.ExternalPluginPermission;
 import joserodpt.realpermissions.api.rank.Rank;
 import joserodpt.realpermissions.api.utils.Items;
 import joserodpt.realpermissions.api.utils.Pagination;
-import joserodpt.realpermissions.api.utils.PlayerInput;
+import joserodpt.realutils.input.PlayerInput;
 import joserodpt.realpermissions.api.utils.Text;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -238,7 +238,7 @@ public class EPPermissionsViewerGUI {
                                 }
 
                                 p.closeInventory();
-                                new PlayerInput(p, s -> {
+                                new PlayerInput(p, true, s -> {
                                     if (current.ep.getPermissionList().stream().anyMatch(ep -> ep.getPermission().toLowerCase().contains(s.toLowerCase()))) {
                                         if (current.rank != null) {
                                             EPPermissionsViewerGUI rg = new EPPermissionsViewerGUI(p, current.rp, current.ep, current.rank, s);

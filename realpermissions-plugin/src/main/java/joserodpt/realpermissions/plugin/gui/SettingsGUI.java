@@ -15,8 +15,11 @@ package joserodpt.realpermissions.plugin.gui;
 
 import joserodpt.realpermissions.api.RealPermissionsAPI;
 import joserodpt.realpermissions.api.config.RPConfig;
+import joserodpt.realpermissions.api.config.TranslatableLine;
 import joserodpt.realpermissions.api.utils.Items;
-import joserodpt.realpermissions.api.utils.PlayerInput;
+import joserodpt.realutils.dialog.SettingsDialog;
+import joserodpt.realutils.dialog.SettingsStore;
+import joserodpt.realutils.input.PlayerInput;
 import joserodpt.realpermissions.api.utils.Text;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -49,6 +52,33 @@ public class SettingsGUI {
     public enum Setting { REALP, CHAT_TABLIST }
 
     private Setting def = Setting.REALP;
+
+    /** Every setting in config.yml, by what it is about. */
+    private static SettingsDialog settings() {
+        final SettingsDialog settings = new SettingsDialog("&f&lReal&c&lPermissions &8| &fSettings")
+                .icon(Material.ENDER_CHEST)
+                .onSave((p, category) -> TranslatableLine.SYSTEM_SETTINGS_SAVED.send(p));
+        settings.category("&eGeneral", "&7Prefix, dates, updates and menus")
+                .text("RealPermissions.Prefix", "Plugin prefix", 64)
+                .text("RealPermissions.Date-Format", "Date format", 64).note("as in Java's SimpleDateFormat")
+                .toggle("RealPermissions.Update-Checker", "Check for updates").note("after a restart")
+                .toggle("RealPermissions.Warn-Modifications-To-Plugins-Via-API", "Log changes other plugins make through the API")
+                .toggle("RealPermissions.useDialogs", "Use dialogs").note("off: chat and inventory menus");
+        settings.category("&bChat and Tab", "&7Chat format, tab list prefixes and rankup")
+                .toggle("RealPermissions.Chat-Formatting", "Format chat with the rank's chat format")
+                .toggle("RealPermissions.Prefix-In-Tablist", "Show rank prefixes in the tab list")
+                .toggle("RealPermissions.Enable-Rankup", "Enable rankup").note("needs Vault");
+        return settings;
+    }
+
+    /**
+     * Opens the settings: on servers that have dialogs, a menu of the categories above, each its own
+     * dialog; the inventory editor everywhere else.
+     */
+    public static void open(final Player p, final RealPermissionsAPI rp) {
+        settings().open(p, SettingsStore.of(RPConfig.file()::get, RPConfig.file()::set, RPConfig::save),
+                () -> new SettingsGUI(p, rp).openInventory(p));
+    }
 
     public SettingsGUI(Player as, RealPermissionsAPI rp) {
         this.rp = rp;
@@ -135,7 +165,7 @@ public class SettingsGUI {
                             case 13:
                                 p.closeInventory();
 
-                                new PlayerInput(p, input -> {
+                                new PlayerInput(p, false, input -> {
                                     RPConfig.file().set("RealPermissions.Prefix", input);
                                     RPConfig.save();
                                     Text.send(p, "The plugin's prefix is now " + input);
@@ -149,6 +179,7 @@ public class SettingsGUI {
                                 break;
                             case 14:
                                 toggle("Warn-Modifications-To-Plugins-Via-API", current);
+                                break;
                             case 22:
                                 toggle("Chat-Formatting", current);
                                 break;
