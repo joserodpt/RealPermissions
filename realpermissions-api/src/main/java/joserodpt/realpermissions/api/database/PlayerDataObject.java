@@ -18,8 +18,8 @@ import com.j256.ormlite.table.DatabaseTable;
 import joserodpt.realpermissions.api.RealPermissionsAPI;
 import joserodpt.realpermissions.api.permission.Permission;
 import joserodpt.realpermissions.api.rank.Rank;
-import joserodpt.realpermissions.api.utils.Items;
-import joserodpt.realpermissions.api.utils.Text;
+import joserodpt.realpermissions.api.utils.Format;
+import joserodpt.realutils.item.Items;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -174,18 +174,18 @@ public class PlayerDataObject {
         ));
 
         if (this.hasTimedRank()) {
-            lore.addAll(Arrays.asList(" &f> This rank is Timed.", " &f> Previous Rank: &b" + this.getTimedRankPreviousRank() + " &f- &fTime: &b" + Text.formatSeconds(this.getTimedRankTimeLeft())));
+            lore.addAll(Arrays.asList(" &f> This rank is Timed.", " &f> Previous Rank: &b" + this.getTimedRankPreviousRank() + " &f- &fTime: &b" + Format.formatSeconds(this.getTimedRankTimeLeft())));
         }
 
         if (!this.getPlayerPermissions().isEmpty()) {
             lore.addAll(Arrays.asList("", "&e" + this.getPlayerRowPermissions().size() + " Permissions:"));
             lore.addAll(this.getPlayerPermissions().stream()
-                    .map(Permission::getPermissionStringStyled)
+                    .map(permission -> "&f" + permission.getPermissionStringStyled())
                     .limit(10)
                     .collect(Collectors.toList()));
         }
 
-        lore.addAll(Arrays.asList("","&fJoined: &b" + Text.formatTimestamp(this.getJoinDate()), "&fLast Login: &b" + Text.formatTimestamp(this.getLastLogin()), "&fLast Logout: &b" + Text.formatTimestamp(this.getLastLogout()), "", "&c&nQ (Drop)&r&f to &cdelete &fthis player.", "&a&nLeft-Click&r&f to edit player permissions.", "&c&nShift-Left&r&f to edit player rank."));
+        lore.addAll(Arrays.asList("","&fJoined: &b" + Format.formatTimestamp(this.getJoinDate()), "&fLast Login: &b" + Format.formatTimestamp(this.getLastLogin()), "&fLast Logout: &b" + Format.formatTimestamp(this.getLastLogout()), "", "&c&nQ (Drop)&r&f to &cdelete &fthis player.", "&a&nLeft-Click&r&f to edit player permissions.", "&c&nShift-Left&r&f to edit player rank."));
 
         if (this.hasTimedRank()) {
             lore.add("&c&nRight-Click&r&f to remove timed rank.");

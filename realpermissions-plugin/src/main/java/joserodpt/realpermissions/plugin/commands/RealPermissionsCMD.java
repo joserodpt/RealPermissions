@@ -29,7 +29,6 @@ import joserodpt.realpermissions.api.config.TranslatableLine;
 import joserodpt.realpermissions.api.player.RPPlayer;
 import joserodpt.realpermissions.api.pluginhook.ExternalPlugin;
 import joserodpt.realpermissions.api.rank.Rank;
-import joserodpt.realpermissions.api.utils.Text;
 import joserodpt.realpermissions.plugin.gui.EPPermissionsViewerGUI;
 import joserodpt.realpermissions.plugin.gui.PlayerPermissionsGUI;
 import joserodpt.realpermissions.plugin.gui.PlayersGUI;
@@ -38,6 +37,7 @@ import joserodpt.realpermissions.plugin.gui.RanksListGUI;
 import joserodpt.realpermissions.plugin.gui.RealPermissionsGUI;
 import joserodpt.realpermissions.plugin.gui.SettingsGUI;
 import joserodpt.realutils.dialog.Dialogs;
+import joserodpt.realutils.text.Text;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 

@@ -13,54 +13,28 @@ package joserodpt.realpermissions.api.config;
  * @link https://github.com/joserodpt/RealPermissions
  */
 
+
 import dev.dejvokep.boostedyaml.YamlDocument;
-import dev.dejvokep.boostedyaml.dvs.versioning.BasicVersioning;
-import dev.dejvokep.boostedyaml.settings.dumper.DumperSettings;
-import dev.dejvokep.boostedyaml.settings.general.GeneralSettings;
-import dev.dejvokep.boostedyaml.settings.loader.LoaderSettings;
-import dev.dejvokep.boostedyaml.settings.updater.UpdaterSettings;
-import joserodpt.realpermissions.api.RealPermissionsAPI;
-import org.bukkit.event.Listener;
+import joserodpt.realutils.config.YamlConfig;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.File;
-import java.io.IOException;
+public class RPLanguageConfig {
 
-public class RPLanguageConfig implements Listener {
-
-    private static final String name = "language.yml";
-    private static YamlDocument document;
+    private static YamlConfig config;
 
     public static void setup(final JavaPlugin rm) {
-        try {
-            document = YamlDocument.create(new File(rm.getDataFolder(), name), rm.getResource(name),
-                    GeneralSettings.DEFAULT,
-                    LoaderSettings.builder().setAutoUpdate(true).build(),
-                    DumperSettings.DEFAULT,
-                    UpdaterSettings.builder().setVersioning(new BasicVersioning("Version")).build());
-        } catch (final IOException e) {
-            RealPermissionsAPI.getInstance().getLogger().severe( "Couldn't setup " + name + "!");
-            RealPermissionsAPI.getInstance().getLogger().severe(e.getMessage());
-        }
+        config = YamlConfig.of(rm, "language.yml").versioned("Version").load();
     }
 
     public static YamlDocument file() {
-        return document;
+        return config.file();
     }
 
     public static void save() {
-        try {
-            document.save();
-        } catch (final IOException e) {
-            RealPermissionsAPI.getInstance().getLogger().severe( "Couldn't save " + name + "!");
-        }
+        config.save();
     }
 
     public static void reload() {
-        try {
-            document.reload();
-        } catch (final IOException e) {
-            RealPermissionsAPI.getInstance().getLogger().severe( "Couldn't reload " + name + "!");
-        }
+        config.reload();
     }
 }

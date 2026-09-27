@@ -13,44 +13,29 @@ package joserodpt.realpermissions.api.config;
  * @link https://github.com/joserodpt/RealPermissions
  */
 
+
 import dev.dejvokep.boostedyaml.YamlDocument;
-import joserodpt.realpermissions.api.RealPermissionsAPI;
-import org.bukkit.event.Listener;
+import joserodpt.realutils.config.YamlConfig;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.File;
-import java.io.IOException;
+public class RPSQLConfig {
 
-public class RPSQLConfig implements Listener {
-	private static final String name = "sql.yml";
-	private static YamlDocument document;
+    private static YamlConfig config;
 
-	public static void setup(final JavaPlugin rm) {
-		try {
-			document = YamlDocument.create(new File(rm.getDataFolder(), name), rm.getResource(name));
-		} catch (final IOException e) {
-			RealPermissionsAPI.getInstance().getLogger().severe( "Couldn't setup " + name + "!");
-			RealPermissionsAPI.getInstance().getLogger().severe(e.getMessage());
-		}
-	}
+    public static void setup(final JavaPlugin rm) {
+        //not versioned: it never was, and a server's credentials are left exactly as written
+        config = YamlConfig.of(rm, "sql.yml").load();
+    }
 
-	public static YamlDocument file() {
-		return document;
-	}
+    public static YamlDocument file() {
+        return config.file();
+    }
 
-	public static void save() {
-		try {
-			document.save();
-		} catch (final IOException e) {
-			RealPermissionsAPI.getInstance().getLogger().severe( "Couldn't save " + name + "!");
-		}
-	}
+    public static void save() {
+        config.save();
+    }
 
-	public static void reload() {
-		try {
-			document.reload();
-		} catch (final IOException e) {
-			RealPermissionsAPI.getInstance().getLogger().severe( "Couldn't reload " + name + "!");
-		}
-	}
+    public static void reload() {
+        config.reload();
+    }
 }

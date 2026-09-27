@@ -13,36 +13,27 @@ package joserodpt.realpermissions.api.config;
  * @link https://github.com/joserodpt/RealPermissions
  */
 
+
 import dev.dejvokep.boostedyaml.YamlDocument;
-import joserodpt.realpermissions.api.RealPermissionsAPI;
-import org.bukkit.event.Listener;
+import joserodpt.realutils.config.YamlConfig;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.io.IOException;
 
-public class RPLegacyPlayersConfig implements Listener {
-	private static final String name = "players.yml";
-	private static YamlDocument document;
+public class RPLegacyPlayersConfig {
 
-	public static void setup(final JavaPlugin rm) {
-		try {
-			document = YamlDocument.create(new File(rm.getDataFolder(), name));
-		} catch (final IOException e) {
-			RealPermissionsAPI.getInstance().getLogger().severe( "Couldn't setup " + name + "!");
-			RealPermissionsAPI.getInstance().getLogger().severe(e.getMessage());
-		}
-	}
+    private static YamlConfig config;
 
-	public static YamlDocument file() {
-		return document;
-	}
+    public static void setup(final JavaPlugin rm) {
+        //from before the database, so nothing is bundled for it: only ever read to migrate old data
+        config = YamlConfig.of(rm, new File(rm.getDataFolder(), "players.yml"), null).load();
+    }
 
-	public static void saveLegacy() {
-		try {
-			document.save();
-		} catch (final IOException e) {
-			RealPermissionsAPI.getInstance().getLogger().severe( "Couldn't save " + name + "!");
-		}
-	}
+    public static YamlDocument file() {
+        return config.file();
+    }
+
+    public static void saveLegacy() {
+        config.save();
+    }
 }

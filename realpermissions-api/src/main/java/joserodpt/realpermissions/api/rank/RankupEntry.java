@@ -14,8 +14,8 @@ package joserodpt.realpermissions.api.rank;
  */
 
 import joserodpt.realpermissions.api.RealPermissionsAPI;
-import joserodpt.realpermissions.api.utils.Items;
-import joserodpt.realpermissions.api.utils.Text;
+import joserodpt.realpermissions.api.utils.Format;
+import joserodpt.realutils.item.Items;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Arrays;
@@ -46,11 +46,11 @@ public class RankupEntry {
 
     public ItemStack getIcon(Rank r, boolean admin) {
         if (admin) {
-            return Items.createItem(this.getRank().getIcon(), 1, this.getRank().getPrefix() + " &7| &fCost: &b" + Text.formatCost(this.getCost()), Arrays.asList("&a&nRight-Click&r&f to change the rank of this entry.", "&e&nLeft-Click&r&f to change the cost of this entry.", "&c&nQ (Drop)&r&f to delete this entry."));
+            return Items.createItem(this.getRank().getIcon(), 1, this.getRank().getPrefix() + " &7| &fCost: &b" + Format.formatCost(this.getCost()), Arrays.asList("&a&nRight-Click&r&f to change the rank of this entry.", "&e&nLeft-Click&r&f to change the cost of this entry.", "&c&nQ (Drop)&r&f to delete this entry."));
         }
 
-        return this.getRank().equals(r) ? Items.createItemEnchanted(this.getRank().getIcon(), 1, this.getRank().getPrefix() + " &7| &fCost: &b" + Text.formatCost(this.getCost()), Collections.singletonList("&fThis is your current rank!")) :
-                Items.createItem(this.getRank().getIcon(), 1, this.getRank().getPrefix() + " &7| &fCost: &b" + Text.formatCost(this.getCost()), Arrays.asList("", "&fClick to rankup!"));
+        return this.getRank().equals(r) ? Items.createItemLoreEnchanted(this.getRank().getIcon(), 1, this.getRank().getPrefix() + " &7| &fCost: &b" + Format.formatCost(this.getCost()), Collections.singletonList("&fThis is your current rank!")) :
+                Items.createItem(this.getRank().getIcon(), 1, this.getRank().getPrefix() + " &7| &fCost: &b" + Format.formatCost(this.getCost()), Arrays.asList("", "&fClick to rankup!"));
     }
 
     public void setRank(Rank clickedRank) {

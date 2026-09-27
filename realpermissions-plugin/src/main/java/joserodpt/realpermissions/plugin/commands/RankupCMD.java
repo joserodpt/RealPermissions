@@ -19,8 +19,8 @@ import dev.triumphteam.cmd.core.annotation.Command;
 import dev.triumphteam.cmd.core.annotation.Default;
 import joserodpt.realpermissions.api.RealPermissionsAPI;
 import joserodpt.realpermissions.api.config.TranslatableLine;
-import joserodpt.realpermissions.api.utils.Text;
 import joserodpt.realpermissions.plugin.gui.RankupGUI;
+import joserodpt.realutils.text.Text;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 

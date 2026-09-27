@@ -16,7 +16,7 @@ package joserodpt.realpermissions.api;
 import joserodpt.realpermissions.api.config.RPConfig;
 import joserodpt.realpermissions.api.pluginhook.ExternalPlugin;
 import joserodpt.realpermissions.api.pluginhook.ExternalPluginPermission;
-import joserodpt.realpermissions.api.utils.Text;
+import joserodpt.realpermissions.api.utils.Format;
 import org.bukkit.Material;
 import org.bukkit.plugin.Plugin;
 
@@ -125,7 +125,7 @@ public class RealPermissionsHooksAPI {
     }
 
     public LinkedHashSet<String> getExternalPluginListSorted() {
-        return this.getExternalPluginList().keySet().stream().sorted(Text.ALPHABETICAL_ORDER).collect(Collectors.toCollection(LinkedHashSet::new));
+        return this.getExternalPluginList().keySet().stream().sorted(Format.ALPHABETICAL_ORDER).collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     public void injectVaultPermissions(String ver) {

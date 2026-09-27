@@ -16,7 +16,8 @@ package joserodpt.realpermissions.plugin;
 import joserodpt.realpermissions.api.RealPermissionsAPI;
 import joserodpt.realpermissions.api.config.RPConfig;
 import joserodpt.realpermissions.api.rank.Rank;
-import joserodpt.realpermissions.api.utils.Text;
+import joserodpt.realpermissions.api.utils.Format;
+import joserodpt.realutils.text.Text;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
@@ -48,7 +49,7 @@ public class PlayerListener implements Listener {
         if (RPConfig.file().getBoolean("RealPermissions.Chat-Formatting")) {
             Rank r = rp.getPlayerManagerAPI().getPlayer(e.getPlayer()).getRank();
             if (r != null) {
-                e.setFormat(Text.formatChat(e.getPlayer(), e.getMessage(), r));
+                e.setFormat(Format.formatChat(e.getPlayer(), e.getMessage(), r));
             }
         }
     }

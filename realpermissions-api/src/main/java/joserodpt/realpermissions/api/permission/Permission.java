@@ -14,7 +14,7 @@ package joserodpt.realpermissions.api.permission;
  */
 
 import joserodpt.realpermissions.api.database.PlayerPermissionRow;
-import joserodpt.realpermissions.api.utils.Items;
+import joserodpt.realutils.item.Items;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
@@ -75,7 +75,7 @@ public class Permission {
     }
 
     public ItemStack getRankPermissionIcon(String rank) {
-        return Items.createItem(this.isNegated ? Material.PAPER : Material.FILLED_MAP, 1, (this.isNegated() ? "&c&l" : "&f&l") + this.getPermissionString(), Arrays.asList(this.getAssociatedRankName().equalsIgnoreCase(rank) ? "" : "Permission inherited from &b" + this.getAssociatedRankName(), "&a&nClick&r&f to " + (this.isNegated() ? "&aactivate" : "&cdeactivate") + " &r&fthis permission.","&c&nQ (Drop)&r&f to &cremove"));
+        return Items.createItem(this.isNegated ? Material.PAPER : Material.FILLED_MAP, 1, (this.isNegated() ? "&c&l" : "&f&l") + this.getPermissionString(), Arrays.asList(this.getAssociatedRankName().equalsIgnoreCase(rank) ? "" : "&fPermission inherited from &b" + this.getAssociatedRankName(), "&a&nClick&r&f to " + (this.isNegated() ? "&aactivate" : "&cdeactivate") + " &r&fthis permission.","&c&nQ (Drop)&r&f to &cremove"));
     }
 
     public void setAssociatedRankName(String input) {

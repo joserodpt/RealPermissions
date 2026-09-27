@@ -18,14 +18,15 @@ import joserodpt.realpermissions.api.RealPermissionsAPI;
 import joserodpt.realpermissions.api.config.RPConfig;
 import joserodpt.realpermissions.api.config.RPRanksConfig;
 import joserodpt.realpermissions.api.config.RPRankupsConfig;
-import joserodpt.realpermissions.api.managers.RankManagerAPI;
 import joserodpt.realpermissions.api.config.TranslatableLine;
+import joserodpt.realpermissions.api.managers.RankManagerAPI;
 import joserodpt.realpermissions.api.permission.Permission;
 import joserodpt.realpermissions.api.player.RPPlayer;
 import joserodpt.realpermissions.api.rank.Rank;
 import joserodpt.realpermissions.api.rank.Rankup;
 import joserodpt.realpermissions.api.rank.RankupEntry;
-import joserodpt.realpermissions.api.utils.Text;
+import joserodpt.realpermissions.api.utils.Format;
+import joserodpt.realutils.text.Text;
 import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -284,7 +285,7 @@ public class RankManager extends RankManagerAPI {
                     EconomyResponse r = rp.getEcon().withdrawPlayer(player.getPlayer(), po.getCost());
                     if(r.transactionSuccess()) {
                         player.setRank(po.getRank());
-                        TranslatableLine.RANKUP_RANKED_UP.setV1(TranslatableLine.ReplacableVar.RANK.eq(po.getRank().getPrefix())).setV2(TranslatableLine.ReplacableVar.STRING.eq(Text.formatCost(po.getCost()))).send(player.getPlayer());
+                        TranslatableLine.RANKUP_RANKED_UP.setV1(TranslatableLine.ReplacableVar.RANK.eq(po.getRank().getPrefix())).setV2(TranslatableLine.ReplacableVar.STRING.eq(Format.formatCost(po.getCost()))).send(player.getPlayer());
                     } else {
                         TranslatableLine.RANKUP_ERROR.setV1(TranslatableLine.ReplacableVar.STRING.eq(r.errorMessage)).send(player.getPlayer());
                     }

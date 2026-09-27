@@ -17,9 +17,10 @@ import joserodpt.realpermissions.api.RealPermissionsAPI;
 import joserodpt.realpermissions.api.config.TranslatableLine;
 import joserodpt.realpermissions.api.player.RPPlayer;
 import joserodpt.realpermissions.api.rank.Rankup;
-import joserodpt.realpermissions.api.utils.Items;
-import joserodpt.realpermissions.api.utils.Pagination;
-import joserodpt.realpermissions.api.utils.Text;
+import joserodpt.realutils.gui.MaterialPickerGUI;
+import joserodpt.realutils.gui.Pagination;
+import joserodpt.realutils.item.Items;
+import joserodpt.realutils.text.Text;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -210,7 +211,15 @@ public class RankupGUI {
                                     case RIGHT:
                                         p.closeInventory();
                                         Bukkit.getScheduler().scheduleSyncDelayedTask(RealPermissionsAPI.getInstance().getPlugin(), () -> {
-                                            MaterialPickerGUI mp = new MaterialPickerGUI(p, r, MaterialPickerGUI.PickType.RANKUP, current.rp);
+                                            //null when the picker was closed without picking
+                                            MaterialPickerGUI mp = new MaterialPickerGUI(p, "Select icon for " + r.getDisplayName(),
+                                                    MaterialPickerGUI.MaterialLists.ONLY_ITEMS, m -> {
+                                                if (m != null) {
+                                                    r.setIcon(m);
+                                                }
+                                                RankupGUI rk = new RankupGUI(current.player, current.rp, true);
+                                                rk.openInventory(p);
+                                            });
                                             mp.openInventory(p);
                                         }, 1);
                                         break;

@@ -16,8 +16,8 @@ package joserodpt.realpermissions.api.database;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 import joserodpt.realpermissions.api.permission.Permission;
-import joserodpt.realpermissions.api.utils.Items;
-import joserodpt.realpermissions.api.utils.Text;
+import joserodpt.realpermissions.api.utils.Format;
+import joserodpt.realutils.item.Items;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -91,6 +91,6 @@ public class PlayerPermissionRow {
     }
 
     public ItemStack getPlayerPermissionIcon() {
-        return Items.createItem(this.isNegated ? Material.PAPER : Material.FILLED_MAP, 1, (this.isNegated() ? "&c&l" : "&f&l") + this.getPermission(), Arrays.asList("","&fAdded on: &b" + Text.formatTimestamp(this.getAddedDate()),"&a&nClick&r&f to " + (this.isNegated() ? "&aallow" : "&cnegate") + " &r&fthis permission.","&c&nQ (Drop)&r&f to &cremove"));
+        return Items.createItem(this.isNegated ? Material.PAPER : Material.FILLED_MAP, 1, (this.isNegated() ? "&c&l" : "&f&l") + this.getPermission(), Arrays.asList("","&fAdded on: &b" + Format.formatTimestamp(this.getAddedDate()),"&a&nClick&r&f to " + (this.isNegated() ? "&aallow" : "&cnegate") + " &r&fthis permission.","&c&nQ (Drop)&r&f to &cremove"));
     }
 }

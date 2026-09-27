@@ -16,7 +16,7 @@ package joserodpt.realpermissions.api.rank;
 import joserodpt.realpermissions.api.RealPermissionsAPI;
 import joserodpt.realpermissions.api.config.RPRanksConfig;
 import joserodpt.realpermissions.api.permission.Permission;
-import joserodpt.realpermissions.api.utils.Items;
+import joserodpt.realutils.item.Items;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 

@@ -17,10 +17,11 @@ import joserodpt.realpermissions.api.RealPermissionsAPI;
 import joserodpt.realpermissions.api.config.TranslatableLine;
 import joserodpt.realpermissions.api.permission.Permission;
 import joserodpt.realpermissions.api.rank.Rank;
-import joserodpt.realpermissions.api.utils.Items;
-import joserodpt.realpermissions.api.utils.Pagination;
+import joserodpt.realutils.gui.MaterialPickerGUI;
+import joserodpt.realutils.gui.Pagination;
 import joserodpt.realutils.input.PlayerInput;
-import joserodpt.realpermissions.api.utils.Text;
+import joserodpt.realutils.item.Items;
+import joserodpt.realutils.text.Text;
 import org.bukkit.*;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -156,7 +157,15 @@ public class RankPermissionsGUI {
                                 new BukkitRunnable() {
                                     @Override
                                     public void run() {
-                                        MaterialPickerGUI mp = new MaterialPickerGUI(p, current.r, MaterialPickerGUI.PickType.RANK, current.rp);
+                                        //null when the picker was closed without picking
+                                        MaterialPickerGUI mp = new MaterialPickerGUI(p, "Select icon for " + current.r.getPrefix(),
+                                                MaterialPickerGUI.MaterialLists.ONLY_ITEMS, m -> {
+                                            if (m != null) {
+                                                current.r.setIcon(m);
+                                            }
+                                            RankPermissionsGUI rg = new RankPermissionsGUI(p, current.r, current.rp);
+                                            rg.openInventory(p);
+                                        });
                                         mp.openInventory(p);
                                     }
                                 }.runTaskLater(current.rp.getPlugin(), 2);

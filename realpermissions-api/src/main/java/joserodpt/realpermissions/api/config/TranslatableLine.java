@@ -13,7 +13,7 @@ package joserodpt.realpermissions.api.config;
  * @link https://github.com/joserodpt/RealMines
  */
 
-import joserodpt.realpermissions.api.utils.Text;
+import joserodpt.realutils.text.Text;
 import org.bukkit.command.CommandSender;
 
 public enum TranslatableLine {

@@ -13,7 +13,7 @@ package joserodpt.realpermissions.api.pluginhook;
  * @link https://github.com/joserodpt/RealPermissions
  */
 
-import joserodpt.realpermissions.api.utils.Items;
+import joserodpt.realutils.item.Items;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
@@ -58,7 +58,7 @@ public class ExternalPluginPermission {
         if (!this.getCommands().isEmpty()) {
             desc.add("");
             desc.add("&b&nCommands granted:");
-            this.getCommands().forEach(s -> desc.add("/" + s));
+            this.getCommands().forEach(s -> desc.add("&f/" + s));
         }
 
         return Items.createItem(Material.FILLED_MAP, Math.max(1, Math.min(this.commands.size(), 64)), "&f&l" + this.getPermission(), desc);

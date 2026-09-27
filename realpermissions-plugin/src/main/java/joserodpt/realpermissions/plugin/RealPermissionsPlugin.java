@@ -23,15 +23,13 @@ import joserodpt.realpermissions.api.config.RPLegacyPlayersConfig;
 import joserodpt.realpermissions.api.config.RPRanksConfig;
 import joserodpt.realpermissions.api.config.RPRankupsConfig;
 import joserodpt.realpermissions.api.config.RPSQLConfig;
+import joserodpt.realpermissions.api.config.TranslatableLine;
 import joserodpt.realpermissions.api.pluginhook.ExternalPluginPermission;
 import joserodpt.realpermissions.api.rank.Rank;
-import joserodpt.realpermissions.api.config.TranslatableLine;
-import joserodpt.realpermissions.api.utils.Text;
 import joserodpt.realpermissions.plugin.commands.RankupCMD;
 import joserodpt.realpermissions.plugin.commands.RealPermissionsCMD;
 import joserodpt.realpermissions.plugin.gui.EPPermissionsViewerGUI;
 import joserodpt.realpermissions.plugin.gui.ExternalPluginsViewerGUI;
-import joserodpt.realpermissions.plugin.gui.MaterialPickerGUI;
 import joserodpt.realpermissions.plugin.gui.PlayerPermissionsGUI;
 import joserodpt.realpermissions.plugin.gui.PlayersGUI;
 import joserodpt.realpermissions.plugin.gui.RankPermissionsGUI;
@@ -44,6 +42,8 @@ import joserodpt.realpermissions.plugin.managers.DatabaseManager;
 import joserodpt.realutils.RealUtils;
 import joserodpt.realutils.dialog.Dialogs;
 import joserodpt.realutils.input.PlayerInput;
+import joserodpt.realutils.text.Text;
+import joserodpt.realutils.update.UpdateChecker;
 import net.milkbowl.vault.economy.Economy;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
@@ -73,7 +73,7 @@ public final class RealPermissionsPlugin extends JavaPlugin {
         RealUtils.setup(this);
         RPConfig.setup(this);
         //read on every message, so a reloaded prefix applies
-        joserodpt.realutils.text.Text.prefix(() -> RPConfig.file().getString("RealPermissions.Prefix") + "&r ");
+        Text.prefix(() -> RPConfig.file().getString("RealPermissions.Prefix") + "&r ");
         realPermissions = new RealPermissions(this);
         RealPermissions.setInstance(realPermissions);
 
@@ -172,7 +172,6 @@ public final class RealPermissionsPlugin extends JavaPlugin {
         pm.registerEvents(RankupPathGUI.getListener(), this);
         pm.registerEvents(RanksListGUI.getListener(), this);
         pm.registerEvents(RealPermissionsGUI.getListener(), this);
-        pm.registerEvents(MaterialPickerGUI.getListener(), this);
         pm.registerEvents(PlayersGUI.getListener(), this);
         pm.registerEvents(PlayerPermissionsGUI.getListener(), this);
         pm.registerEvents(SettingsGUI.getListener(), this);
@@ -182,14 +181,16 @@ public final class RealPermissionsPlugin extends JavaPlugin {
         //load permissions from known plugins
         realPermissions.getHooksAPI().loadPermissionsFromKnownPlugins();
 
-        new UpdateChecker(this, 112560).getVersion(version -> {
-            if (this.getDescription().getVersion().equalsIgnoreCase(version)) {
-                this.getLogger().info("The plugin is updated to the latest version.");
-            } else {
-                this.newUpdate = true;
-                this.getLogger().warning("There is a new update available! Version: " + version + " -> https://www.spigotmc.org/resources/112560");
-            }
-        });
+        if (RPConfig.file().getBoolean("RealPermissions.Update-Checker")) {
+            new UpdateChecker(this, 112560).getVersion(version -> {
+                if (this.getDescription().getVersion().equalsIgnoreCase(version)) {
+                    this.getLogger().info("The plugin is updated to the latest version.");
+                } else {
+                    this.newUpdate = true;
+                    this.getLogger().warning("There is a new update available! Version: " + version + " -> https://www.spigotmc.org/resources/112560");
+                }
+            });
+        }
 
         getLogger().info("Finished loading in " + ((System.currentTimeMillis() - start) / 1000F) + " seconds.");
         getLogger().info("<------------------ RealPermissions vPT ------------------>".replace("PT",
