@@ -13,6 +13,7 @@ package joserodpt.realpermissions.plugin.gui;
  * @link https://github.com/joserodpt/RealPermissions
  */
 
+import joserodpt.realpermissions.api.utils.TabSorter;
 import joserodpt.realpermissions.api.RealPermissionsAPI;
 import joserodpt.realpermissions.api.config.RPConfig;
 import joserodpt.realpermissions.api.config.TranslatableLine;
@@ -57,7 +58,11 @@ public class SettingsGUI {
     private static SettingsDialog settings() {
         final SettingsDialog settings = new SettingsDialog("&f&lReal&c&lPermissions &8| &fSettings")
                 .icon(Material.ENDER_CHEST)
-                .onSave((p, category) -> TranslatableLine.SYSTEM_SETTINGS_SAVED.send(p));
+                .onSave((p, category) -> {
+                    //the tab list sorting may have been switched either way
+                    TabSorter.refreshAll();
+                    TranslatableLine.SYSTEM_SETTINGS_SAVED.send(p);
+                });
         settings.category("&eGeneral", "&7Prefix, dates, updates and menus")
                 .text("RealPermissions.Prefix", "Plugin prefix", 64)
                 .text("RealPermissions.Date-Format", "Date format", 64).note("as in Java's SimpleDateFormat")
@@ -67,6 +72,7 @@ public class SettingsGUI {
         settings.category("&bChat and Tab", "&7Chat format, tab list prefixes and rankup")
                 .toggle("RealPermissions.Chat-Formatting", "Format chat with the rank's chat format")
                 .toggle("RealPermissions.Prefix-In-Tablist", "Show rank prefixes in the tab list")
+                .toggle("RealPermissions.Sort-Tablist", "Sort the tab list by rank weight")
                 .toggle("RealPermissions.Enable-Rankup", "Enable rankup").note("needs Vault");
         return settings;
     }

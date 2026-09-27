@@ -23,6 +23,7 @@ import joserodpt.realpermissions.api.config.TranslatableLine;
 import joserodpt.realpermissions.api.player.RPPlayer;
 import joserodpt.realpermissions.api.pluginhook.ExternalPlugin;
 import joserodpt.realpermissions.api.rank.Rank;
+import joserodpt.realpermissions.api.utils.TabSorter;
 import joserodpt.realpermissions.plugin.gui.EPPermissionsViewerGUI;
 import joserodpt.realpermissions.plugin.gui.PlayerPermissionsGUI;
 import joserodpt.realpermissions.plugin.gui.PlayersGUI;
@@ -80,6 +81,7 @@ public class RealPermissionsCMD {
         RPSQLConfig.reload();
         rp.getRankManagerAPI().loadRanks();
         rp.getRankManagerAPI().loadRankups();
+        TabSorter.refreshAll();
         TranslatableLine.SYSTEM_RELOADED.send(commandSender);
     }
 
@@ -270,6 +272,33 @@ public class RealPermissionsCMD {
 
         rp.getRankManagerAPI().renameRank(r, name);
         TranslatableLine.RANKS_NEW_NAME.setV1(TranslatableLine.ReplacableVar.NAME.eq(name)).send(commandSender);
+    }
+
+    @Subcommand({"setweight", "sw"})
+    @CommandPermission("realpermissions.admin")
+    @Usage("&c/rp setweight <rank> <weight|auto>")
+    @SuppressWarnings("unused")
+    public void setweightcmd(final CommandSender commandSender, @SuggestFrom(RPSuggestion.RANKS) @Single final String rank, @Single final String weight) {
+        Rank r = rp.getRankManagerAPI().getRank(rank);
+        if (r == null) {
+            TranslatableLine.RANKS_NO_RANK_FOUND.setV1(TranslatableLine.ReplacableVar.NAME.eq(rank)).send(commandSender);
+            return;
+        }
+
+        //auto: back to working it out from the inheritances
+        Integer w = null;
+        if (!weight.equalsIgnoreCase("auto")) {
+            try {
+                w = Integer.parseInt(weight);
+            } catch (NumberFormatException e) {
+                TranslatableLine.RANKS_INVALID_WEIGHT.send(commandSender);
+                return;
+            }
+        }
+
+        r.setWeight(w, true);
+        TabSorter.refreshAll();
+        TranslatableLine.RANKS_WEIGHT_SET.setV1(TranslatableLine.ReplacableVar.RANK.eq(r.getPrefix())).setV2(TranslatableLine.ReplacableVar.STRING.eq(String.valueOf(r.getWeight()))).send(commandSender);
     }
 
     @Subcommand({"delete", "del"})

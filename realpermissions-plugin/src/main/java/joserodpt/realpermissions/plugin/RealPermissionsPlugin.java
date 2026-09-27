@@ -20,6 +20,7 @@ import joserodpt.realpermissions.api.config.RPRanksConfig;
 import joserodpt.realpermissions.api.config.RPRankupsConfig;
 import joserodpt.realpermissions.api.config.RPSQLConfig;
 import joserodpt.realpermissions.api.config.TranslatableLine;
+import joserodpt.realpermissions.api.utils.TabSorter;
 import joserodpt.realpermissions.plugin.commands.RPCommandManager;
 import joserodpt.realpermissions.plugin.gui.EPPermissionsViewerGUI;
 import joserodpt.realpermissions.plugin.gui.ExternalPluginsViewerGUI;
@@ -187,6 +188,8 @@ public final class RealPermissionsPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        //the main scoreboard is saved with the world; our teams must not outlive the plugin
+        TabSorter.clear();
         Dialogs.shutdown();
         PlayerInput.cancelAll();
         realPermissions.getPlayerManagerAPI().getPlayerMap().values().forEach(rpPlayer -> rpPlayer.saveData(false));

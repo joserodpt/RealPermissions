@@ -1,5 +1,7 @@
 Version: 1
 Default-Rank: Player
+# Each rank may also have a Weight: higher is more important, and sorts first in the tab list.
+# Without one, a rank's weight is how many ranks it inherits from.
 Ranks:
   Player:
     Icon: LEATHER_HELMET

@@ -1,8 +1,11 @@
-Version: 5
+Version: 6
 RealPermissions:
   Prefix: "&fReal&cPermissions &7>"
   Chat-Formatting: true
   Prefix-In-Tablist: true
+  # Orders the tab list by rank weight, heaviest first (see Weight in ranks.yml). Players another
+  # plugin has already put in a scoreboard team, e.g. for name tags, are left where they are.
+  Sort-Tablist: true
   Enable-Rankup: true
   Warn-Modifications-To-Plugins-Via-API: true
   Date-Format: "dd/MM/yyyy HH:mm:ss"

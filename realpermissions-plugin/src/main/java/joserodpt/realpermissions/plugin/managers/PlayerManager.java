@@ -18,6 +18,7 @@ import joserodpt.realpermissions.api.database.PlayerDataObject;
 import joserodpt.realpermissions.api.managers.PlayerManagerAPI;
 import joserodpt.realpermissions.api.player.RPPlayer;
 import joserodpt.realpermissions.api.rank.Rank;
+import joserodpt.realpermissions.api.utils.TabSorter;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -114,6 +115,7 @@ public class PlayerManager extends PlayerManagerAPI {
 
     @Override
     public void playerLeave(Player player) {
+        TabSorter.remove(player);
         this.getPlayerMap().get(player.getUniqueId()).logout();
         this.getPlayerMap().remove(player.getUniqueId());
     }

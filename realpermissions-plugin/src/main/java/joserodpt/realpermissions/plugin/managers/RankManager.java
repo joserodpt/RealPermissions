@@ -80,7 +80,10 @@ public class RankManager extends RankManagerAPI {
                 }
             }
 
-            this.addRank(icon, rankName, prefix, chat, permissions, inheritances);
+            Rank rank = this.addRank(icon, rankName, prefix, chat, permissions, inheritances);
+            if (rankSection.contains("Weight")) {
+                rank.setWeight(rankSection.getInt("Weight"), false);
+            }
         }
 
         //load default rank
@@ -157,6 +160,7 @@ public class RankManager extends RankManagerAPI {
 
         //add new rank
         Rank newR = this.addRank(r.getIcon(), input, r.getPrefix(), r.getChat(), r.getMapPermissions(), r.getInheritances());
+        newR.setWeight(r.getExplicitWeight(), false);
 
         //add players to this new rank
         pls.forEach(player -> rp.getPlayerManagerAPI().getPlayer(player).setRank(newR));

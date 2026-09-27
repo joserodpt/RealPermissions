@@ -22,6 +22,7 @@ import joserodpt.realpermissions.api.permission.PermissionBase;
 import joserodpt.realpermissions.api.rank.Rank;
 import joserodpt.realpermissions.api.utils.Countdown;
 import joserodpt.realpermissions.api.utils.ReflectionHelper;
+import joserodpt.realpermissions.api.utils.TabSorter;
 import joserodpt.realutils.text.Text;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -183,10 +184,11 @@ public class RPPlayer {
     }
 
     private void setVisual() {
+        Player p = Bukkit.getPlayer(this.getUUID());
         if (RPConfig.file().getBoolean("RealPermissions.Prefix-In-Tablist")) {
-            Player p = Bukkit.getPlayer(this.getUUID());
             p.setPlayerListName(Text.color(this.getRank().getPrefix() + " &r" + p.getDisplayName()));
         }
+        TabSorter.apply(p, this.getRank());
     }
 
     public Rank getRank() {

@@ -20,11 +20,15 @@ import joserodpt.realutils.item.Items;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Deque;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class Rank {
@@ -32,6 +36,8 @@ public class Rank {
     private String name, prefix, chat;
     private Map<String, Permission> permissions;
     private List<Rank> inheritances;
+    //null: none set in ranks.yml, so the weight is worked out from the inheritances
+    private Integer weight;
 
     public Rank(String name, String prefix) {
         this.icon = Material.NETHER_STAR;
@@ -72,7 +78,8 @@ public class Rank {
             this.getInheritances().forEach(rank -> desc.add(" &f- &b" + rank.getName() + " &f(&b" + rank.getRankPermissions().size() + " &fperms)"));
         }
 
-        desc.addAll(Arrays.asList("","&b" + this.getPermissions(false).size() + " &ftotal permissions","",
+        desc.addAll(Arrays.asList("","&b" + this.getPermissions(false).size() + " &ftotal permissions",
+                "&fWeight: &b" + this.getWeight() + (this.weight == null ? " &7(from its inheritances)" : ""),"",
                 "&a&nLeft-Click&r&f to view this rank in detail.",
                 "&e&nRight-Click&r&f to set this rank as the default one.",
                 "&c&nQ (Drop)&f to remove this rank"));
@@ -177,7 +184,41 @@ public class Rank {
         return inheritances;
     }
 
-    public enum RankData { ICON, PREFIX, CHAT, PERMISSIONS, INHERITANCES, ALL}
+    /**
+     * Where this rank sits against the others: higher is more important, and comes first in the tab
+     * list. Without a Weight in ranks.yml it is the number of ranks this one inherits from, directly
+     * or not, which already orders a plain Player > VIP > Admin chain.
+     */
+    public int getWeight() {
+        return this.weight != null ? this.weight : this.getAncestors().size();
+    }
+
+    /** The weight set in ranks.yml, or null when it is worked out from the inheritances. */
+    public Integer getExplicitWeight() {
+        return this.weight;
+    }
+
+    public void setWeight(Integer weight, boolean save) {
+        this.weight = weight;
+        if (save) {
+            this.saveData(RankData.WEIGHT, true);
+        }
+    }
+
+    /** Every rank this one inherits from, however far up, each once. */
+    public Set<Rank> getAncestors() {
+        Set<Rank> ancestors = new LinkedHashSet<>();
+        Deque<Rank> todo = new ArrayDeque<>(this.getInheritances());
+        while (!todo.isEmpty()) {
+            Rank r = todo.pop();
+            if (r != this && ancestors.add(r)) {
+                todo.addAll(r.getInheritances());
+            }
+        }
+        return ancestors;
+    }
+
+    public enum RankData { ICON, PREFIX, CHAT, PERMISSIONS, INHERITANCES, WEIGHT, ALL}
     public void saveData(RankData rd, boolean save) {
         switch (rd) {
             case CHAT:
@@ -197,12 +238,20 @@ public class Rank {
                         .map(Rank::getName)
                         .collect(Collectors.toList()));
                 break;
+            case WEIGHT:
+                if (this.weight == null) {
+                    RPRanksConfig.file().remove("Ranks." + this.getName() + ".Weight");
+                } else {
+                    RPRanksConfig.file().set("Ranks." + this.getName() + ".Weight", this.weight);
+                }
+                break;
             case ALL:
                 this.saveData(RankData.PREFIX, false);
                 this.saveData(RankData.ICON, false);
                 this.saveData(RankData.CHAT, false);
                 this.saveData(RankData.PERMISSIONS, false);
                 this.saveData(RankData.INHERITANCES, false);
+                this.saveData(RankData.WEIGHT, false);
                 break;
         }
         if (save) {

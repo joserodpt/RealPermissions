@@ -54,6 +54,8 @@ public enum TranslatableLine {
     RANKS_NAME_SET("Ranks.Name-Set", ReplacableVar.NAME),
     RANKS_DELETE_CONFIRM("Ranks.Delete-Confirm", ReplacableVar.RANK),
     RANKS_REMOVE_TIMED_RANK_CONFIRM("Ranks.Remove-Timed-Rank-Confirm", ReplacableVar.PLAYER),
+    RANKS_WEIGHT_SET("Ranks.Weight-Set", ReplacableVar.RANK, ReplacableVar.STRING),
+    RANKS_INVALID_WEIGHT("Ranks.Invalid-Weight"),
 
     PERMISSIONS_RANK_ALREADY_HAS_PERMISSION("Permissions.Rank-Already-Has-Permission", ReplacableVar.PERM),
     PERMISSIONS_PLAYER_ALREADY_HAS_PERMISSION("Permissions.Player-Already-Has-Permission", ReplacableVar.PERM),

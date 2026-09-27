@@ -43,6 +43,8 @@ Ranks:
   # Asked in a dialog first, on servers that have them (1.21.6 and up).
   Delete-Confirm: "&fDelete the %rank% &frank? Its players are moved to the default rank."
   Remove-Timed-Rank-Confirm: "&fRemove %player%&f's timed rank? They go back to their previous rank."
+  Weight-Set: "%rank%&r&f's weight is now &b%string%&f."
+  Invalid-Weight: "&cThe weight must be a whole number, or auto."
 Permissions:
   Rank-Already-Has-Permission: "The rank already has the %perm% permission."
   Player-Already-Has-Permission: "The player already has the %perm% permission."
@@ -65,4 +67,4 @@ Rankup:
   Error: "&fAn &cerror &foccured: %string%"
   Ranked-Up: "&fYou ranked up to &b%rank% &ffor &b%string% &fcoins."
   Already-Has-Rank: "&cYou already have this rank."
-Version: 5
+Version: 6
