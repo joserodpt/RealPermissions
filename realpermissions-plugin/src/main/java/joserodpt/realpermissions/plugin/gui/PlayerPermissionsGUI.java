@@ -49,7 +49,7 @@ public class PlayerPermissionsGUI {
     private Inventory inv;
 
     private final ItemStack placeholder = Items.createItem(Material.BLACK_STAINED_GLASS_PANE, 1, "&7Permissions");
-    private final ItemStack newr = Items.createItem(Material.SIGN, 1, "&b&lNew Permission", Collections.singletonList("&FClick to add a new permission."));
+    private final ItemStack newr = Items.createItem(Material.OAK_SIGN, 1, "&b&lNew Permission", Collections.singletonList("&FClick to add a new permission."));
 
     private final ItemStack close = Items.createItem(Material.OAK_DOOR, 1, "&cClose",
             Collections.singletonList("&fClick here to close this menu."));

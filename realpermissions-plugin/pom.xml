@@ -18,32 +18,129 @@
 
     <name>realpermissions-plugin</name>
 
-    <properties>
-        <java.version>1.8</java.version>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
-
     <build>
+        <finalName>realpermissions-${project.version}</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+                <version>3.14.1</version>
                 <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
+                    <release>${maven.compiler.release}</release>
                 </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.4</version>
+                <version>3.6.1</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
                         <goals>
                             <goal>shade</goal>
                         </goals>
+
+                        <configuration>
+                            <!-- Replace the original jar rather than leaving an original-...jar beside it -->
+                            <outputFile>${project.build.directory}/${project.build.finalName}.jar</outputFile>
+                            <shadedArtifactAttached>false</shadedArtifactAttached>
+                            <minimizeJar>true</minimizeJar>
+
+                            <!-- Only these. Without an artifactSet the plugin shades every compile
+                                 dependency it can reach. -->
+                            <artifactSet>
+                                <includes>
+                                    <include>dev.dejvokep:boosted-yaml</include>
+                                    <include>dev.triumphteam:*</include>
+                                    <include>net.wesjd:anvilgui*</include>
+                                    <include>joserodpt:realpermissions-api</include>
+                                    <include>com.j256.ormlite:ormlite-core</include>
+                                    <include>com.j256.ormlite:ormlite-jdbc</include>
+                                    <include>com.github.joserodpt:RealUtils</include>
+                                    <include>io.github.projectunified:*</include>
+                                    <include>org.bstats:*</include>
+                                </includes>
+                            </artifactSet>
+
+                            <relocations>
+                                <relocation>
+                                    <pattern>dev.dejvokep.boostedyaml</pattern>
+                                    <shadedPattern>joserodpt.realpermissions.shaded.boostedyaml</shadedPattern>
+                                </relocation>
+                                <!-- Relocated so another plugin shading a different ORMLite cannot
+                                     clash with ours. -->
+                                <relocation>
+                                    <pattern>com.j256.ormlite</pattern>
+                                    <shadedPattern>joserodpt.realpermissions.shaded.ormlite</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>joserodpt.realutils</pattern>
+                                    <shadedPattern>joserodpt.realpermissions.shaded.realutils</shadedPattern>
+                                </relocation>
+                                <!-- Also rewrites the manager class names RealUtils loads by name. -->
+                                <relocation>
+                                    <pattern>io.github.projectunified.unidialog</pattern>
+                                    <shadedPattern>joserodpt.realpermissions.shaded.unidialog</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.bstats</pattern>
+                                    <shadedPattern>joserodpt.realpermissions.shaded.bstats</shadedPattern>
+                                </relocation>
+                            </relocations>
+
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/**</exclude>
+                                        <exclude>org/jetbrains/annotations/**</exclude>
+                                    </excludes>
+                                </filter>
+                                <!-- triumph-cmd and AnvilGUI reach their command and NMS wrappers
+                                     through reflection, so minimizeJar can't see they are used. -->
+                                <filter>
+                                    <artifact>dev.triumphteam:*</artifact>
+                                    <includes>
+                                        <include>**</include>
+                                    </includes>
+                                </filter>
+                                <filter>
+                                    <artifact>net.wesjd:*</artifact>
+                                    <includes>
+                                        <include>**</include>
+                                    </includes>
+                                </filter>
+                                <!-- ORMLite picks its database types and field converters by reflection,
+                                     which minimizeJar can't follow. -->
+                                <filter>
+                                    <artifact>com.j256.ormlite:*</artifact>
+                                    <includes>
+                                        <include>**</include>
+                                    </includes>
+                                </filter>
+                                <!-- The dialog managers and RealUtils' Paper text are only ever loaded by name. -->
+                                <filter>
+                                    <artifact>com.github.joserodpt:RealUtils</artifact>
+                                    <includes>
+                                        <include>**</include>
+                                    </includes>
+                                </filter>
+                                <filter>
+                                    <artifact>io.github.projectunified:*</artifact>
+                                    <includes>
+                                        <include>**</include>
+                                    </includes>
+                                </filter>
+                                <!-- Our own module: keep all of it rather than let minimizeJar guess.
+                                     Other plugins reach its classes through RealPermissionsAPI. -->
+                                <filter>
+                                    <artifact>joserodpt:realpermissions-api</artifact>
+                                    <includes>
+                                        <include>**</include>
+                                    </includes>
+                                </filter>
+                            </filters>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -87,7 +184,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.13-R0.1-SNAPSHOT</version>
+            <version>1.14-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -103,8 +200,19 @@
         <dependency>
             <groupId>joserodpt</groupId>
             <artifactId>realpermissions-api</artifactId>
-            <version>0.4.4</version>
-            <scope>compile</scope>
+            <version>${project.version}</version>
+        </dependency>
+        <!-- Dialogs, the chat prompt, GUIs and config, shaded and relocated above. It brings
+             UniDialog's Spigot and Paper backends with it, picked between at runtime. -->
+        <dependency>
+            <groupId>com.github.joserodpt</groupId>
+            <artifactId>RealUtils</artifactId>
+            <version>${realutils.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.bstats</groupId>
+            <artifactId>bstats-bukkit</artifactId>
+            <version>${bstats.version}</version>
         </dependency>
         <dependency>
             <groupId>com.github.MilkBowl</groupId>
@@ -118,6 +226,8 @@
             <version>2.11.5</version>
             <scope>provided</scope>
         </dependency>
+        <!-- Player storage. The JDBC drivers (SQLite, MySQL) come with the server, so only ORMLite
+             itself is shaded. -->
         <dependency>
             <groupId>com.j256.ormlite</groupId>
             <artifactId>ormlite-core</artifactId>

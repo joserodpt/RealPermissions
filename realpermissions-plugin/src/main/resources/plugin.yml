@@ -1,7 +1,7 @@
 name: RealPermissions
 version: '${project.version}'
 main: joserodpt.realpermissions.plugin.RealPermissionsPlugin
-api-version: '1.13'
+api-version: '1.14'
 softdepend: [Vault, EssentialsX]
 authors: [JoseGamer_PT]
 description: Fast and Flexible User Permission Management plugin.

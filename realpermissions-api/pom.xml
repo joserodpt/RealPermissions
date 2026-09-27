@@ -18,35 +18,20 @@
 
     <name>realpermissions-api</name>
 
-    <properties>
-        <java.version>1.8</java.version>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
-
     <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+                <version>3.14.1</version>
                 <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
+                    <release>${maven.compiler.release}</release>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.4</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+            <!-- No shade plugin here on purpose: this module is a library, consumed by
+                 realpermissions-plugin and by other plugins through JitPack. The plugin module
+                 does all the shading and relocating, so a fat jar here would only mean the
+                 same classes packaged twice. -->
         </plugins>
         <resources>
             <resource>
@@ -79,8 +64,16 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.13-R0.1-SNAPSHOT</version>
+            <version>1.14-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
+        </dependency>
+        <!-- The helpers the Real* plugins share. Optional, so the API's own users are not handed
+             it; realpermissions-plugin shades and relocates it. -->
+        <dependency>
+            <groupId>com.github.joserodpt</groupId>
+            <artifactId>RealUtils</artifactId>
+            <version>${realutils.version}</version>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>com.github.MilkBowl</groupId>
@@ -91,7 +84,7 @@
         <dependency>
             <groupId>dev.dejvokep</groupId>
             <artifactId>boosted-yaml</artifactId>
-            <version>1.3</version>
+            <version>1.3.7</version>
         </dependency>
         <dependency>
             <groupId>com.j256.ormlite</groupId>

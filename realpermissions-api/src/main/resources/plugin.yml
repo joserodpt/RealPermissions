@@ -1,4 +1,4 @@
 name: RealPermissionsAPI
 version: '${project.version}'
 main: joserodpt.realpermissions.api.RealPermissionsAPI
-api-version: '1.13'
+api-version: '1.14'

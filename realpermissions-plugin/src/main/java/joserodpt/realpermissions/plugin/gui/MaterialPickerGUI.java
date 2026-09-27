@@ -49,7 +49,7 @@ public class MaterialPickerGUI {
             Collections.singletonList("&fClick here to go back to the next page."));
     private final ItemStack close = Items.createItem(Material.ACACIA_DOOR, 1, "&cGo Back",
             Collections.singletonList("&fClick here to go back."));
-    private final ItemStack search = Items.createItem(Material.SIGN, 1, "&9Search",
+    private final ItemStack search = Items.createItem(Material.OAK_SIGN, 1, "&9Search",
             Collections.singletonList("&fClick here to search for a block."));
 
     private UUID uuid;
