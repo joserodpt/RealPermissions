@@ -106,7 +106,8 @@ public class PlayerManager extends PlayerManagerAPI {
             po.loadTimedRank(rp.getRankManagerAPI().getRank(pdo.getTimedRankPreviousRank()), secondsRemaining);
         }
 
-        this.getPlayerMap().put(p.getUniqueId(), new RPPlayer(p, rp));
+        //the same instance the timed rank's countdown was started on, or /rp ctr can't find it
+        this.getPlayerMap().put(p.getUniqueId(), po);
 
         pdo.setLastLogin(System.currentTimeMillis());
     }
