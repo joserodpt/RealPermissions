@@ -51,7 +51,6 @@ import revxrsal.commands.annotation.Usage;
 import revxrsal.commands.bukkit.annotation.CommandPermission;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -82,9 +81,7 @@ public class RealPermissionsCMD {
                 rg.openInventory(p);
             }
         } else {
-            Text.sendList(commandSender, Arrays.asList("         &fReal&cPermissions", "         &7Release &a" + rp.getVersion(),
-                    "         &7Built &a" + BuildInfo.time(rp.getPlugin()),
-                    "         &7RealUtils &a" + BuildInfo.realUtilsVersion(rp.getPlugin())));
+            BuildInfo.sendAbout(commandSender, rp.getPlugin(), "&fReal&cPermissions");
         }
     }
 
