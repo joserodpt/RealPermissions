@@ -36,6 +36,7 @@ public enum TranslatableLine {
     SYSTEM_PLAYER_ONLY("System.Player-Only"),
     SYSTEM_ERROR_COMMAND("System.Error-Command"),
     SYSTEM_ERROR_USAGE("System.Error-Usage"),
+    SYSTEM_INVALID_DURATION("System.Invalid-Duration"),
 
     // Rank Messages
     RANKS_SET_DEFAULT("Ranks.Set-Default", ReplacableVar.RANK),
@@ -66,6 +67,8 @@ public enum TranslatableLine {
     PERMISSIONS_PLAYER_ALREADY_HAS_PERMISSION_UNDER_PLAYER("Permissions.Player.Already-Has-Permission", ReplacableVar.PERM),
     PERMISSIONS_PLAYER_DOESNT_HAVE_PERMISSION("Permissions.Player.Doesnt-Have-Permission", ReplacableVar.PERM),
     PERMISSIONS_PLAYER_ADD("Permissions.Player.Add", ReplacableVar.PERM, ReplacableVar.PLAYER),
+    //with setV3(STRING): how long for
+    PERMISSIONS_PLAYER_ADD_TIMED("Permissions.Player.Add-Timed", ReplacableVar.PERM, ReplacableVar.PLAYER),
     PERMISSIONS_PLAYER_REMOVE("Permissions.Player.Remove", ReplacableVar.PERM, ReplacableVar.PLAYER),
     PERMISSIONS_PLAYER_DELETE("Permissions.Player.Delete", ReplacableVar.PLAYER),
     PERMISSIONS_PLAYER_DELETE_CONFIRM("Permissions.Player.Delete-Confirm", ReplacableVar.PLAYER),
@@ -91,7 +94,8 @@ public enum TranslatableLine {
     RANKUP_DISABLED("Rankup.Disabled");
 
     private final String configPath;
-    private ReplacableVar v1, v2 = null;
+    //v3 is only ever set by setV3, for the few lines that take three values
+    private ReplacableVar v1, v2, v3 = null;
 
     TranslatableLine(String configPath) {
         this.configPath = configPath;
@@ -117,6 +121,11 @@ public enum TranslatableLine {
         return this;
     }
 
+    public TranslatableLine setV3(ReplacableVar v3) {
+        this.v3 = v3;
+        return this;
+    }
+
     public String get() {
         String s = RPLanguageConfig.file().getString(this.configPath);
         if (v1 != null) {
@@ -124,6 +133,9 @@ public enum TranslatableLine {
         }
         if (v2 != null) {
             s = s.replace(v2.getKey(), v2.getVal());
+        }
+        if (v3 != null) {
+            s = s.replace(v3.getKey(), v3.getVal());
         }
 
         return Text.color(s);

@@ -44,12 +44,21 @@ public class PlayerPermissionRow {
     @DatabaseField(columnName = "added_date")
     private long added_date;
 
+    //epoch milliseconds the permission stops applying at; 0 for one that never does
+    @DatabaseField(columnName = "expires_at")
+    private long expires_at;
+
     public PlayerPermissionRow(@NotNull UUID player, Permission perm) {
+        this(player, perm, 0);
+    }
+
+    public PlayerPermissionRow(@NotNull UUID player, Permission perm, long expiresAt) {
         this.id = UUID.randomUUID();
         this.player_uuid = player;
         this.permission = perm.getPermissionString();
         this.isNegated = perm.isNegated();
         this.added_date = System.currentTimeMillis();
+        this.expires_at = expiresAt;
     }
     public PlayerPermissionRow() {
         //for ORMLite
@@ -78,6 +87,23 @@ public class PlayerPermissionRow {
         return isNegated;
     }
 
+    public long getExpiresAt() {
+        return expires_at;
+    }
+
+    public boolean isTimed() {
+        return expires_at > 0;
+    }
+
+    public boolean isExpired() {
+        return this.isTimed() && System.currentTimeMillis() >= expires_at;
+    }
+
+    /** Whole seconds until it expires, or 0 for one that never does. */
+    public long getSecondsLeft() {
+        return this.isTimed() ? Math.max(0, (expires_at - System.currentTimeMillis()) / 1000L) : 0;
+    }
+
     public void negate() {
         isNegated = !isNegated;
     }
@@ -91,6 +117,8 @@ public class PlayerPermissionRow {
     }
 
     public ItemStack getPlayerPermissionIcon() {
-        return Items.createItem(this.isNegated ? Material.PAPER : Material.FILLED_MAP, 1, (this.isNegated() ? "&c&l" : "&f&l") + this.getPermission(), Arrays.asList("","&fAdded on: &b" + Format.formatTimestamp(this.getAddedDate()),"&a&nClick&r&f to " + (this.isNegated() ? "&aallow" : "&cnegate") + " &r&fthis permission.","&c&nQ (Drop)&r&f to &cremove"));
+        return Items.createItem(this.isNegated ? Material.PAPER : Material.FILLED_MAP, 1, (this.isNegated() ? "&c&l" : "&f&l") + this.getPermission(), Arrays.asList("","&fAdded on: &b" + Format.formatTimestamp(this.getAddedDate()),
+                this.isTimed() ? "&fExpires in: &b" + Format.formatSeconds(this.getSecondsLeft()) : "&fNever expires",
+                "&a&nClick&r&f to " + (this.isNegated() ? "&aallow" : "&cnegate") + " &r&fthis permission.","&c&nQ (Drop)&r&f to &cremove"));
     }
 }

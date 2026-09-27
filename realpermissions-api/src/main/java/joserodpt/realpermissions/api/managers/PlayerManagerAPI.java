@@ -44,6 +44,9 @@ public abstract class PlayerManagerAPI {
 
     public abstract void refreshPermissions();
 
+    /** Takes the timed permissions that have run out off online players. Runs every second. */
+    public abstract void checkExpiredPermissions();
+
     public abstract Collection<PlayerDataObject> getPlayerDataRows();
 
     public abstract void deletePlayer(PlayerDataObject po);

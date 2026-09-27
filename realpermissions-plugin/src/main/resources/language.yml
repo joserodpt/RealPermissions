@@ -25,6 +25,7 @@ System:
   Player-Only: "&cOnly players can run this command."
   Error-Command: "&cThe command you're trying to use doesn't exist."
   Error-Usage: "&cWrong usage for the command!"
+  Invalid-Duration: "&cThat isn't a duration. &fUse seconds, or e.g. &b30m&f, &b12h&f, &b7d &for &b1d12h&f."
 Ranks:
   Set-Default: "%rank%&r&f is now the &bdefault rank&f!"
   Cant-Delete-Default-Rank: "&cYou can't delete the default rank."
@@ -56,6 +57,7 @@ Permissions:
     Already-Has-Permission: "The player already has the %perm% permission."
     Doesnt-Have-Permission: "The player doesn't has the %perm% permission."
     Add: "&fPermission %perm% &aadded &fto %player%"
+    Add-Timed: "&fPermission %perm% &aadded &fto %player% &ffor &b%string%"
     Remove: "&fPermission %perm% &cremoved &ffrom %player%"
     Delete: "&fPlayer %player% &chas been deleted."
     Delete-Confirm: "&fDelete %player%&f? Their rank and permissions are erased."
@@ -79,4 +81,4 @@ Rankup:
   Error: "&fAn &cerror &foccured: %string%"
   Ranked-Up: "&fYou ranked up to &b%rank% &ffor &b%string% &fcoins."
   Already-Has-Rank: "&cYou already have this rank."
-Version: 6
+Version: 7

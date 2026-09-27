@@ -141,6 +141,9 @@ public final class RealPermissionsPlugin extends JavaPlugin {
         pm.registerEvents(ExternalPluginsViewerGUI.getListener(), this);
         pm.registerEvents(EPPermissionsViewerGUI.getListener(), this);
 
+        //timed player permissions are taken off within a second of running out
+        Bukkit.getScheduler().runTaskTimer(this, () -> realPermissions.getPlayerManagerAPI().checkExpiredPermissions(), 20L, 20L);
+
         //load permissions from known plugins
         realPermissions.getHooksAPI().loadPermissionsFromKnownPlugins();
 

@@ -21,6 +21,9 @@ import org.bukkit.entity.Player;
 import java.text.SimpleDateFormat;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * RealPermissions' own formatting, for what RealUtils' Text has no use for elsewhere.
@@ -36,6 +39,49 @@ public final class Format {
                 .replace("%player%", player.getDisplayName())
                 .replace("%message%", message)
                 .replace("%", "%%")); // Escape '%' characters
+    }
+
+    private static final Pattern DURATION_PART = Pattern.compile("(\\d+)([smhdwy])");
+
+    /**
+     * Reads a duration such as {@code 90}, {@code 30m} or {@code 1d12h}: a plain number is seconds,
+     * otherwise any run of numbers each followed by s, m, h, d, w or y.
+     *
+     * @return the duration in seconds, or -1 if it isn't one
+     */
+    public static long parseDuration(String input) {
+        if (input == null || input.isEmpty()) {
+            return -1;
+        }
+        String s = input.toLowerCase(Locale.ROOT);
+        try {
+            if (s.chars().allMatch(Character::isDigit)) {
+                long seconds = Long.parseLong(s);
+                return seconds > 0 ? seconds : -1;
+            }
+
+            Matcher m = DURATION_PART.matcher(s);
+            long total = 0;
+            int end = 0;
+            while (m.find()) {
+                if (m.start() != end) {
+                    return -1;
+                }
+                end = m.end();
+                long n = Long.parseLong(m.group(1));
+                switch (m.group(2)) {
+                    case "y": total += n * 60 * 60 * 24 * 365; break;
+                    case "w": total += n * 60 * 60 * 24 * 7; break;
+                    case "d": total += n * 60 * 60 * 24; break;
+                    case "h": total += n * 60 * 60; break;
+                    case "m": total += n * 60; break;
+                    default: total += n; break;
+                }
+            }
+            return end == s.length() && total > 0 ? total : -1;
+        } catch (NumberFormatException tooLong) {
+            return -1;
+        }
     }
 
     public static String formatSeconds(long seconds) {

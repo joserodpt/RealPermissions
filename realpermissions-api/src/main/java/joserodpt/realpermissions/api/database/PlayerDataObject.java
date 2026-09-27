@@ -213,11 +213,33 @@ public class PlayerDataObject {
 
 
     public List<Permission> getPlayerPermissions() {
-        return RealPermissionsAPI.getInstance().getDatabaseManagerAPI().getPlayerPermissions(this.getUUID()).stream().filter(playerPermissionRow -> !playerPermissionRow.isNegated()).map(Permission::new).collect(Collectors.toList());
+        return this.getPlayerRowPermissions().stream().filter(playerPermissionRow -> !playerPermissionRow.isNegated()).map(Permission::new).collect(Collectors.toList());
     }
 
+    /** The player's own permissions, leaving out timed ones that have run out but aren't purged yet. */
     public List<PlayerPermissionRow> getPlayerRowPermissions() {
-        return RealPermissionsAPI.getInstance().getDatabaseManagerAPI().getPlayerPermissions(this.getUUID());
+        return RealPermissionsAPI.getInstance().getDatabaseManagerAPI().getPlayerPermissions(this.getUUID()).stream()
+                .filter(row -> !row.isExpired())
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Deletes the timed permissions that have run out.
+     *
+     * @return the ones deleted, empty if none had
+     */
+    public List<PlayerPermissionRow> purgeExpiredPermissions() {
+        List<PlayerPermissionRow> all = RealPermissionsAPI.getInstance().getDatabaseManagerAPI().getPlayerPermissions(this.getUUID());
+        List<PlayerPermissionRow> expired = all.stream().filter(PlayerPermissionRow::isExpired).collect(Collectors.toList());
+        if (!expired.isEmpty()) {
+            all.removeAll(expired);
+            RealPermissionsAPI.getInstance().getDatabaseManagerAPI().savePlayerPermissions(this.getUUID(), all, true);
+        }
+        return expired;
+    }
+
+    public PlayerPermissionRow getPermissionRow(String perm) {
+        return this.getPlayerRowPermissions().stream().filter(ppr -> ppr.getPermission().equals(perm)).findFirst().orElse(null);
     }
 
     public boolean hasPermission(String perm) {
@@ -225,8 +247,20 @@ public class PlayerDataObject {
     }
 
     public void addPermission(String perm, boolean async) {
+        this.addPermission(perm, 0, async);
+    }
+
+    /**
+     * Gives the player a permission of their own, replacing the one they had under the same name,
+     * so adding it again with another expiry changes it.
+     *
+     * @param expiresAt epoch milliseconds it stops applying at, or 0 for never
+     */
+    public void addPermission(String perm, long expiresAt, boolean async) {
         List<PlayerPermissionRow> perms = new ArrayList<>(this.getPlayerRowPermissions());
-        perms.add(new PlayerPermissionRow(this.getUUID(), new Permission(perm)));
+        Permission permission = new Permission(perm);
+        perms.removeIf(ppr -> ppr.getPermission().equals(permission.getPermissionString()));
+        perms.add(new PlayerPermissionRow(this.getUUID(), permission, expiresAt));
 
         //this.getPermissionAttachment().setPermission(perm, true);
         RealPermissionsAPI.getInstance().getDatabaseManagerAPI().savePlayerPermissions(this.getUUID(), perms, async);

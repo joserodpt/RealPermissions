@@ -60,6 +60,9 @@ public class PlayerManager extends PlayerManagerAPI {
         //    pdo = new PlayerDataObject(p);
         //    rp.getDatabaseManagerAPI().savePlayerData(pdo, false);
         //}
+        //what ran out while they were away is gone before their permissions are set
+        pdo.purgeExpiredPermissions();
+
         Rank rank = rp.getRankManagerAPI().getRank(pdo.getRankName());
         if (rank == null) {
             rp.getLogger().warning("There is something wrong with " + p.getName() + "'s rank.");
@@ -158,6 +161,17 @@ public class PlayerManager extends PlayerManagerAPI {
     @Override
     public void refreshPermissions() {
         this.getPlayerMap().values().forEach(RPPlayer::refreshPlayerPermissions);
+    }
+
+    @Override
+    public void checkExpiredPermissions() {
+        long now = System.currentTimeMillis();
+        for (RPPlayer p : this.getPlayerMap().values()) {
+            if (p.getNextPermissionExpiry() > 0 && now >= p.getNextPermissionExpiry()) {
+                p.getPlayerDataRow().purgeExpiredPermissions();
+                p.refreshPlayerPermissions();
+            }
+        }
     }
 
     @Override

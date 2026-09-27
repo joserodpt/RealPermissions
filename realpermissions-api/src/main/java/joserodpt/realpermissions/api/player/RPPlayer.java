@@ -17,6 +17,7 @@ import joserodpt.realpermissions.api.RealPermissionsAPI;
 import joserodpt.realpermissions.api.config.RPConfig;
 import joserodpt.realpermissions.api.config.TranslatableLine;
 import joserodpt.realpermissions.api.database.PlayerDataObject;
+import joserodpt.realpermissions.api.database.PlayerPermissionRow;
 import joserodpt.realpermissions.api.permission.Permission;
 import joserodpt.realpermissions.api.permission.PermissionBase;
 import joserodpt.realpermissions.api.rank.Rank;
@@ -44,6 +45,8 @@ public class RPPlayer {
     private PlayerDataObject pdr;
     private PermissionAttachment pa;
     private Countdown getTimedRankCountdown;
+    //when the soonest of the player's timed permissions runs out, in epoch milliseconds; 0 for none
+    private long nextPermissionExpiry;
 
     public PermissionAttachment getPermissionAttachment() {
         return this.pa;
@@ -128,7 +131,9 @@ public class RPPlayer {
         this.getAllRankPermissions().forEach(this::setPermission);
 
         //set player permissions + rank to player
-        this.getPlayerDataRow().getPlayerPermissions().forEach(this::setPermission);
+        List<PlayerPermissionRow> rows = this.getPlayerDataRow().getPlayerRowPermissions();
+        rows.stream().filter(row -> !row.isNegated()).map(Permission::new).forEach(this::setPermission);
+        this.nextPermissionExpiry = rows.stream().filter(PlayerPermissionRow::isTimed).mapToLong(PlayerPermissionRow::getExpiresAt).min().orElse(0);
 
         this.setVisual();
 
@@ -177,6 +182,10 @@ public class RPPlayer {
 
         this.setRank(this.getPreviousRankBeforeTimedRank());
         getPlayerDataRow().setTimedRank(null, 0);
+    }
+
+    public long getNextPermissionExpiry() {
+        return this.nextPermissionExpiry;
     }
 
     public boolean hasTimedRank() {

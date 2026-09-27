@@ -69,6 +69,22 @@ public class DatabaseManager extends DatabaseManagerAPI {
 
         TableUtils.createTableIfNotExists(connectionSource, PlayerPermissionRow.class);
         this.playerPermissionsDao = DaoManager.createDao(connectionSource, PlayerPermissionRow.class);
+        this.addExpiryColumn();
+    }
+
+    /**
+     * expires_at came with timed permissions, and createTableIfNotExists leaves a table that exists
+     * as it is, so one made by an older version gets the column here.
+     */
+    private void addExpiryColumn() throws SQLException {
+        try {
+            playerPermissionsDao.queryRaw("SELECT expires_at FROM rp_player_permissions WHERE 1 = 0").getResults();
+        } catch (SQLException missing) {
+            //SQL Server alone has no COLUMN keyword in ADD
+            String add = "sqlserver".equalsIgnoreCase(RPSQLConfig.file().getString("driver")) ? "ADD" : "ADD COLUMN";
+            playerPermissionsDao.executeRaw("ALTER TABLE rp_player_permissions " + add + " expires_at BIGINT DEFAULT 0 NOT NULL");
+            rpa.getLogger().info("Added the expires_at column to rp_player_permissions, for timed permissions.");
+        }
     }
 
     /**

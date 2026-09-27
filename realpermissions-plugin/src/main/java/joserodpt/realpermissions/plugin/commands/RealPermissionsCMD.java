@@ -20,7 +20,9 @@ import joserodpt.realpermissions.api.config.RPRanksConfig;
 import joserodpt.realpermissions.api.config.RPRankupsConfig;
 import joserodpt.realpermissions.api.config.RPSQLConfig;
 import joserodpt.realpermissions.api.config.TranslatableLine;
+import joserodpt.realpermissions.api.database.PlayerPermissionRow;
 import joserodpt.realpermissions.api.player.RPPlayer;
+import joserodpt.realpermissions.api.utils.Format;
 import joserodpt.realpermissions.api.pluginhook.ExternalPlugin;
 import joserodpt.realpermissions.api.rank.Rank;
 import joserodpt.realpermissions.api.rank.Track;
@@ -39,6 +41,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import revxrsal.commands.annotation.Command;
 import revxrsal.commands.annotation.CommandPlaceholder;
+import revxrsal.commands.annotation.Optional;
 import revxrsal.commands.annotation.Single;
 import revxrsal.commands.annotation.Subcommand;
 import revxrsal.commands.annotation.Usage;
@@ -516,10 +519,10 @@ public class RealPermissionsCMD {
     }
 
     @Subcommand({"playerperm", "pperm"})
-    @Usage("&c/rp pperm <add/remove> <player> <permission>")
+    @Usage("&c/rp pperm <add/remove> <player> <permission> [duration]")
     @CommandPermission("realpermissions.admin")
     @SuppressWarnings("unused")
-    public void playerpermcmd(final CommandSender commandSender, @SuggestFrom(RPSuggestion.PERM_OPERATIONS) @Single final String operation, @SuggestFrom(RPSuggestion.PLAYERS) @Single final String player, @SuggestFrom(RPSuggestion.PERMISSIONS) @Single final String perm) {
+    public void playerpermcmd(final CommandSender commandSender, @SuggestFrom(RPSuggestion.PERM_OPERATIONS) @Single final String operation, @SuggestFrom(RPSuggestion.PLAYERS) @Single final String player, @SuggestFrom(RPSuggestion.PERMISSIONS) @Single final String perm, @Optional @Single final String duration) {
         final Player p = Bukkit.getPlayerExact(player);
         if (commandSender instanceof Player) {
             if (rp.getPlayerManagerAPI().isNotSuperUser((Player) commandSender)) {
@@ -548,8 +551,24 @@ public class RealPermissionsCMD {
         RPPlayer pa = rp.getPlayerManagerAPI().getPlayer(p);
 
         if (add) {
-            if (pa.getPlayerDataRow().hasPermission(perm)) {
+            long seconds = 0;
+            if (duration != null && !duration.isEmpty()) {
+                seconds = Format.parseDuration(duration);
+                if (seconds <= 0) {
+                    TranslatableLine.SYSTEM_INVALID_DURATION.send(commandSender);
+                    return;
+                }
+            }
+
+            //only the very same permanent permission is refused; otherwise the new one replaces it,
+            //so running this again with a duration changes when it runs out
+            PlayerPermissionRow existing = pa.getPlayerDataRow().getPermissionRow(perm);
+            if (existing != null && !existing.isTimed() && seconds == 0) {
                 TranslatableLine.PERMISSIONS_PLAYER_ALREADY_HAS_PERMISSION.setV1(TranslatableLine.ReplacableVar.PERM.eq(perm)).send(commandSender);
+            } else if (seconds > 0) {
+                pa.getPlayerDataRow().addPermission(perm, System.currentTimeMillis() + seconds * 1000L, false);
+                TranslatableLine.PERMISSIONS_PLAYER_ADD_TIMED.setV1(TranslatableLine.ReplacableVar.PERM.eq(perm)).setV2(TranslatableLine.ReplacableVar.PLAYER.eq(p.getName()))
+                        .setV3(TranslatableLine.ReplacableVar.STRING.eq(Format.formatSeconds(seconds))).send(commandSender);
             } else {
                 pa.getPlayerDataRow().addPermission(perm, false);
                 TranslatableLine.PERMISSIONS_PLAYER_ADD.setV1(TranslatableLine.ReplacableVar.PERM.eq(perm)).setV2(TranslatableLine.ReplacableVar.PLAYER.eq(p.getName())).send(commandSender);
