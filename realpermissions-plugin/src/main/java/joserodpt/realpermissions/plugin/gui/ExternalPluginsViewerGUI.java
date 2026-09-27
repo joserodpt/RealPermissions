@@ -45,6 +45,10 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static joserodpt.realpermissions.api.config.TranslatableLine.TranslatableLinePlaceholder.PERM;
+import static joserodpt.realpermissions.api.config.TranslatableLine.TranslatableLinePlaceholder.PLAYER;
+import static joserodpt.realpermissions.api.config.TranslatableLine.TranslatableLinePlaceholder.RANK;
+
 public class ExternalPluginsViewerGUI {
 
     private final ItemStack writeperm = Items.createItem(Material.FILLED_MAP, 1, "&b&lWrite Permission", Collections.singletonList("&FClick to write the permission to add."));
@@ -291,20 +295,20 @@ public class ExternalPluginsViewerGUI {
                                     if (!perm.isEmpty()) {
                                         if (current.rank != null) {
                                             if (current.rank.hasPermission(perm)) {
-                                                TranslatableLine.PERMISSIONS_RANK_ALREADY_HAS_PERMISSION.setV1(TranslatableLine.ReplacableVar.PERM.eq(perm)).send(p);
+                                                TranslatableLine.PERMISSIONS_RANK_ALREADY_HAS_PERMISSION.with(PERM, perm).send(p);
                                             } else {
                                                 current.rank.addPermission(perm);
                                                 current.rp.getRankManagerAPI().refreshPermsAndPlayers();
-                                                TranslatableLine.PERMISSIONS_RANK_PERM_ADD.setV1(TranslatableLine.ReplacableVar.PERM.eq(perm)).setV2(TranslatableLine.ReplacableVar.RANK.eq(current.rank.getPrefix())).send(p);
+                                                TranslatableLine.PERMISSIONS_RANK_PERM_ADD.with(PERM, perm).with(RANK, current.rank.getPrefix()).send(p);
                                             }
                                         }
 
                                         if (current.po != null) {
                                             if (current.po.hasPermission(perm)) {
-                                                TranslatableLine.PERMISSIONS_PLAYER_ALREADY_HAS_PERMISSION.setV1(TranslatableLine.ReplacableVar.PERM.eq(perm)).send(p);
+                                                TranslatableLine.PERMISSIONS_PLAYER_ALREADY_HAS_PERMISSION.with(PERM, perm).send(p);
                                             } else {
                                                 current.po.addPermission(perm, false);
-                                                TranslatableLine.PERMISSIONS_PLAYER_ADD.setV1(TranslatableLine.ReplacableVar.PERM.eq(perm)).setV2(TranslatableLine.ReplacableVar.PLAYER.eq(current.po.getName())).send(p);
+                                                TranslatableLine.PERMISSIONS_PLAYER_ADD.with(PERM, perm).with(PLAYER, current.po.getName()).send(p);
                                             }
                                         }
                                     }

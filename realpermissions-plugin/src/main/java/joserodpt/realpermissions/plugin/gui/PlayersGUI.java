@@ -43,6 +43,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static joserodpt.realpermissions.api.config.TranslatableLine.TranslatableLinePlaceholder.PLAYER;
+
 public class PlayersGUI {
 
     public enum PlayersGUISorter { SU, ON, MOST_PERMS }
@@ -222,12 +224,12 @@ public class PlayersGUI {
                                 case DROP: //delete player
                                     final Runnable delete = () -> {
                                         current.rp.getPlayerManagerAPI().deletePlayer(po);
-                                        TranslatableLine.PERMISSIONS_PLAYER_DELETE.setV1(TranslatableLine.ReplacableVar.PLAYER.eq(po.getName())).send(p);
+                                        TranslatableLine.PERMISSIONS_PLAYER_DELETE.with(PLAYER, po.getName()).send(p);
                                         current.load();
                                     };
                                     //asked first where the server has dialogs: it can't be undone
                                     if (!Dialogs.confirm(p, "&f&lReal&c&lPermissions &8| &fPlayers",
-                                            TranslatableLine.PERMISSIONS_PLAYER_DELETE_CONFIRM.setV1(TranslatableLine.ReplacableVar.PLAYER.eq(po.getName())).get(),
+                                            TranslatableLine.PERMISSIONS_PLAYER_DELETE_CONFIRM.with(PLAYER, po.getName()).get(),
                                             TranslatableLine.SYSTEM_DIALOG_DELETE.get(), null,
                                             () -> {
                                                 delete.run();
@@ -242,11 +244,11 @@ public class PlayersGUI {
                                         //eliminar timed rank
                                         final Runnable remove = () -> {
                                             rp.removeTimedRank();
-                                            TranslatableLine.RANKS_PLAYER_REMOVE_TIMED_RANK.setV1(TranslatableLine.ReplacableVar.PLAYER.eq(po.getName())).send(p);
+                                            TranslatableLine.RANKS_PLAYER_REMOVE_TIMED_RANK.with(PLAYER, po.getName()).send(p);
                                             current.load();
                                         };
                                         if (!Dialogs.confirm(p, "&f&lReal&c&lPermissions &8| &fPlayers",
-                                                TranslatableLine.RANKS_REMOVE_TIMED_RANK_CONFIRM.setV1(TranslatableLine.ReplacableVar.PLAYER.eq(po.getName())).get(),
+                                                TranslatableLine.RANKS_REMOVE_TIMED_RANK_CONFIRM.with(PLAYER, po.getName()).get(),
                                                 TranslatableLine.SYSTEM_DIALOG_REMOVE.get(), null,
                                                 () -> {
                                                     remove.run();

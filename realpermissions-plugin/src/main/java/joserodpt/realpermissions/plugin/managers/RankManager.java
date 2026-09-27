@@ -45,6 +45,9 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static joserodpt.realpermissions.api.config.TranslatableLine.TranslatableLinePlaceholder.RANK;
+import static joserodpt.realpermissions.api.config.TranslatableLine.TranslatableLinePlaceholder.STRING;
+
 public class RankManager extends RankManagerAPI {
 
     private RealPermissionsAPI rp;
@@ -419,9 +422,9 @@ public class RankManager extends RankManagerAPI {
                     EconomyResponse r = rp.getEcon().withdrawPlayer(player.getPlayer(), po.getCost());
                     if(r.transactionSuccess()) {
                         player.setRank(po.getRank());
-                        TranslatableLine.RANKUP_RANKED_UP.setV1(TranslatableLine.ReplacableVar.RANK.eq(po.getRank().getPrefix())).setV2(TranslatableLine.ReplacableVar.STRING.eq(Format.formatCost(po.getCost()))).send(player.getPlayer());
+                        TranslatableLine.RANKUP_RANKED_UP.with(RANK, po.getRank().getPrefix()).with(STRING, Format.formatCost(po.getCost())).send(player.getPlayer());
                     } else {
-                        TranslatableLine.RANKUP_ERROR.setV1(TranslatableLine.ReplacableVar.STRING.eq(r.errorMessage)).send(player.getPlayer());
+                        TranslatableLine.RANKUP_ERROR.with(STRING, r.errorMessage).send(player.getPlayer());
                     }
                 } else {
                     TranslatableLine.RANKUP_INSUFICIENT_FUNDS.send(player.getPlayer());

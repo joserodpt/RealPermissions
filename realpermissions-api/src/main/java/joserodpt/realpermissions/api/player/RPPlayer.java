@@ -39,6 +39,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static joserodpt.realpermissions.api.config.TranslatableLine.TranslatableLinePlaceholder.RANK;
+
 public class RPPlayer {
 
     private final Player p;
@@ -120,7 +122,7 @@ public class RPPlayer {
 
         refreshPlayerPermissions();
 
-        TranslatableLine.RANKS_PLAYER_RANK_UPDATED.setV1(TranslatableLine.ReplacableVar.RANK.eq(this.getRank().getPrefix())).send(this.getPlayer());
+        TranslatableLine.RANKS_PLAYER_RANK_UPDATED.with(RANK, this.getRank().getPrefix()).send(this.getPlayer());
     }
 
     public void refreshPlayerPermissions() {

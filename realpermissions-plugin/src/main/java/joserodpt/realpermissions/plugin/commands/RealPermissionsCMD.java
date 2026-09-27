@@ -53,6 +53,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static joserodpt.realpermissions.api.config.TranslatableLine.TranslatableLinePlaceholder.NAME;
+import static joserodpt.realpermissions.api.config.TranslatableLine.TranslatableLinePlaceholder.PERM;
+import static joserodpt.realpermissions.api.config.TranslatableLine.TranslatableLinePlaceholder.PLAYER;
+import static joserodpt.realpermissions.api.config.TranslatableLine.TranslatableLinePlaceholder.RANK;
+import static joserodpt.realpermissions.api.config.TranslatableLine.TranslatableLinePlaceholder.STRING;
+
 @Command({"realpermissions", "rp"})
 public class RealPermissionsCMD {
 
@@ -112,7 +118,7 @@ public class RealPermissionsCMD {
         if (commandSender instanceof Player) {
             Rank r = rp.getRankManagerAPI().getRank(rank);
             if (r == null) {
-                TranslatableLine.RANKS_NO_RANK_FOUND.setV1(TranslatableLine.ReplacableVar.NAME.eq(rank)).send(commandSender);
+                TranslatableLine.RANKS_NO_RANK_FOUND.with(NAME, rank).send(commandSender);
                 return;
             }
 
@@ -172,7 +178,7 @@ public class RealPermissionsCMD {
         rp.getPlayerManagerAPI().getPlayer(p).setSuperUser(!rp.getPlayerManagerAPI().getPlayer(p).isSuperUser());
 
         //deixar estar quietinho
-        Text.send(commandSender, TranslatableLine.SYSTEM_SUPER_USER_STATE.setV1(TranslatableLine.ReplacableVar.PLAYER.eq(p.getName())).get() + (rp.getPlayerManagerAPI().getPlayer(p).isSuperUser() ? "&aON" : "&cOFF"));
+        Text.send(commandSender, TranslatableLine.SYSTEM_SUPER_USER_STATE.with(PLAYER, p.getName()).get() + (rp.getPlayerManagerAPI().getPlayer(p).isSuperUser() ? "&aON" : "&cOFF"));
     }
 
     @Subcommand({"setrank", "sr"})
@@ -195,10 +201,10 @@ public class RealPermissionsCMD {
 
         Rank r = rp.getRankManagerAPI().getRank(rank);
         if (r == null) {
-            TranslatableLine.RANKS_NO_RANK_FOUND.setV1(TranslatableLine.ReplacableVar.NAME.eq(rank)).send(commandSender);
+            TranslatableLine.RANKS_NO_RANK_FOUND.with(NAME, rank).send(commandSender);
         } else {
             rp.getPlayerManagerAPI().getPlayer(p).setRank(r);
-            TranslatableLine.RANKS_RANK_SET.setV1(TranslatableLine.ReplacableVar.PLAYER.eq(p.getName())).setV2(TranslatableLine.ReplacableVar.RANK.eq(r.getPrefix())).send(commandSender);
+            TranslatableLine.RANKS_RANK_SET.with(PLAYER, p.getName()).with(RANK, r.getPrefix()).send(commandSender);
 
         }
     }
@@ -223,7 +229,7 @@ public class RealPermissionsCMD {
 
         Rank r = rp.getRankManagerAPI().getRank(rank);
         if (r == null) {
-            TranslatableLine.RANKS_NO_RANK_FOUND.setV1(TranslatableLine.ReplacableVar.NAME.eq(rank)).send(commandSender);
+            TranslatableLine.RANKS_NO_RANK_FOUND.with(NAME, rank).send(commandSender);
             return;
         }
 
@@ -233,7 +239,7 @@ public class RealPermissionsCMD {
         }
 
         rp.getPlayerManagerAPI().getPlayer(p).setTimedRank(r, seconds);
-        TranslatableLine.RANKS_TIMED_RANK_SET.setV1(TranslatableLine.ReplacableVar.PLAYER.eq(p.getName())).setV2(TranslatableLine.ReplacableVar.RANK.eq(r.getPrefix())).send(commandSender);
+        TranslatableLine.RANKS_TIMED_RANK_SET.with(PLAYER, p.getName()).with(RANK, r.getPrefix()).send(commandSender);
     }
 
     @Subcommand({"cleartimedrank", "ctr"})
@@ -256,9 +262,9 @@ public class RealPermissionsCMD {
 
         if (rp.getPlayerManagerAPI().getPlayer(p).hasTimedRank()) {
             rp.getPlayerManagerAPI().getPlayer(p).removeTimedRank();
-            TranslatableLine.RANKS_PLAYER_REMOVE_TIMED_RANK.setV1(TranslatableLine.ReplacableVar.PLAYER.eq(p.getName())).send(commandSender);
+            TranslatableLine.RANKS_PLAYER_REMOVE_TIMED_RANK.with(PLAYER, p.getName()).send(commandSender);
         } else {
-            TranslatableLine.RANKS_PLAYER_NO_TIMED_RANK.setV1(TranslatableLine.ReplacableVar.PLAYER.eq(p.getName())).send(commandSender);
+            TranslatableLine.RANKS_PLAYER_NO_TIMED_RANK.with(PLAYER, p.getName()).send(commandSender);
         }
     }
 
@@ -269,7 +275,7 @@ public class RealPermissionsCMD {
     public void renamecmd(final CommandSender commandSender, @SuggestFrom(RPSuggestion.RANKS) @Single final String rank, @Single final String name) {
         Rank r = rp.getRankManagerAPI().getRank(rank);
         if (r == null) {
-            TranslatableLine.RANKS_NO_RANK_FOUND.setV1(TranslatableLine.ReplacableVar.NAME.eq(rank)).send(commandSender);
+            TranslatableLine.RANKS_NO_RANK_FOUND.with(NAME, rank).send(commandSender);
             return;
         }
 
@@ -279,7 +285,7 @@ public class RealPermissionsCMD {
         }
 
         rp.getRankManagerAPI().renameRank(r, name);
-        TranslatableLine.RANKS_NEW_NAME.setV1(TranslatableLine.ReplacableVar.NAME.eq(name)).send(commandSender);
+        TranslatableLine.RANKS_NEW_NAME.with(NAME, name).send(commandSender);
     }
 
     @Subcommand("promote")
@@ -304,7 +310,7 @@ public class RealPermissionsCMD {
     private void moveOnTrack(final CommandSender commandSender, final String player, final String trackName, final boolean up) {
         Track t = rp.getRankManagerAPI().getTrack(trackName);
         if (t == null) {
-            TranslatableLine.TRACKS_NO_TRACK_FOUND.setV1(TranslatableLine.ReplacableVar.NAME.eq(trackName)).send(commandSender);
+            TranslatableLine.TRACKS_NO_TRACK_FOUND.with(NAME, trackName).send(commandSender);
             return;
         }
 
@@ -323,7 +329,7 @@ public class RealPermissionsCMD {
         RPPlayer rpp = rp.getPlayerManagerAPI().getPlayer(p);
         //the timed rank would put the old one back when it runs out, undoing the move
         if (rpp.hasTimedRank()) {
-            TranslatableLine.TRACKS_HAS_TIMED_RANK.setV1(TranslatableLine.ReplacableVar.PLAYER.eq(p.getName())).send(commandSender);
+            TranslatableLine.TRACKS_HAS_TIMED_RANK.with(PLAYER, p.getName()).send(commandSender);
             return;
         }
 
@@ -331,22 +337,22 @@ public class RealPermissionsCMD {
         Rank target = up ? t.next(current) : t.previous(current);
         if (target == null) {
             if (!t.contains(current)) {
-                TranslatableLine.TRACKS_NOT_ON_TRACK.setV1(TranslatableLine.ReplacableVar.PLAYER.eq(p.getName())).setV2(TranslatableLine.ReplacableVar.NAME.eq(t.getName())).send(commandSender);
+                TranslatableLine.TRACKS_NOT_ON_TRACK.with(PLAYER, p.getName()).with(NAME, t.getName()).send(commandSender);
             } else {
-                (up ? TranslatableLine.TRACKS_AT_TOP : TranslatableLine.TRACKS_AT_BOTTOM).setV1(TranslatableLine.ReplacableVar.PLAYER.eq(p.getName())).setV2(TranslatableLine.ReplacableVar.NAME.eq(t.getName())).send(commandSender);
+                (up ? TranslatableLine.TRACKS_AT_TOP : TranslatableLine.TRACKS_AT_BOTTOM).with(PLAYER, p.getName()).with(NAME, t.getName()).send(commandSender);
             }
             return;
         }
 
         rpp.setRank(target);
-        (up ? TranslatableLine.TRACKS_PROMOTED : TranslatableLine.TRACKS_DEMOTED).setV1(TranslatableLine.ReplacableVar.PLAYER.eq(p.getName())).setV2(TranslatableLine.ReplacableVar.RANK.eq(target.getPrefix())).send(commandSender);
+        (up ? TranslatableLine.TRACKS_PROMOTED : TranslatableLine.TRACKS_DEMOTED).with(PLAYER, p.getName()).with(RANK, target.getPrefix()).send(commandSender);
     }
 
     @Subcommand("tracks")
     @CommandPermission("realpermissions.admin")
     @SuppressWarnings("unused")
     public void trackscmd(final CommandSender commandSender) {
-        TranslatableLine.TRACKS_LIST.setV1(TranslatableLine.ReplacableVar.STRING.eq(String.valueOf(rp.getRankManagerAPI().getTracks().size()))).send(commandSender);
+        TranslatableLine.TRACKS_LIST.with(STRING, String.valueOf(rp.getRankManagerAPI().getTracks().size())).send(commandSender);
         rp.getRankManagerAPI().getTracks().values().forEach(t -> commandSender.sendMessage(Text.color("&7 > &b" + t.getName() + "&f: "
                 + t.getRanks().stream().map(Rank::getPrefix).collect(Collectors.joining(" &7> &r")))));
     }
@@ -365,7 +371,7 @@ public class RealPermissionsCMD {
         for (String name : ranks.trim().split("\\s+")) {
             Rank r = rp.getRankManagerAPI().getRank(name);
             if (r == null) {
-                TranslatableLine.RANKS_NO_RANK_FOUND.setV1(TranslatableLine.ReplacableVar.NAME.eq(name)).send(commandSender);
+                TranslatableLine.RANKS_NO_RANK_FOUND.with(NAME, name).send(commandSender);
                 return;
             }
             if (!trackRanks.contains(r)) {
@@ -379,8 +385,7 @@ public class RealPermissionsCMD {
         }
 
         rp.getRankManagerAPI().setTrack(track, trackRanks);
-        TranslatableLine.TRACKS_SET.setV1(TranslatableLine.ReplacableVar.NAME.eq(track)).setV2(TranslatableLine.ReplacableVar.STRING.eq(
-                trackRanks.stream().map(Rank::getPrefix).collect(Collectors.joining(" &7> &r")))).send(commandSender);
+        TranslatableLine.TRACKS_SET.with(NAME, track).with(STRING, trackRanks.stream().map(Rank::getPrefix).collect(Collectors.joining(" &7> &r"))).send(commandSender);
     }
 
     @Subcommand({"deltrack", "dt"})
@@ -395,12 +400,12 @@ public class RealPermissionsCMD {
 
         Track t = rp.getRankManagerAPI().getTrack(track);
         if (t == null) {
-            TranslatableLine.TRACKS_NO_TRACK_FOUND.setV1(TranslatableLine.ReplacableVar.NAME.eq(track)).send(commandSender);
+            TranslatableLine.TRACKS_NO_TRACK_FOUND.with(NAME, track).send(commandSender);
             return;
         }
 
         rp.getRankManagerAPI().deleteTrack(t.getName());
-        TranslatableLine.TRACKS_DELETED.setV1(TranslatableLine.ReplacableVar.NAME.eq(t.getName())).send(commandSender);
+        TranslatableLine.TRACKS_DELETED.with(NAME, t.getName()).send(commandSender);
     }
 
     @Subcommand({"setweight", "sw"})
@@ -410,7 +415,7 @@ public class RealPermissionsCMD {
     public void setweightcmd(final CommandSender commandSender, @SuggestFrom(RPSuggestion.RANKS) @Single final String rank, @Single final String weight) {
         Rank r = rp.getRankManagerAPI().getRank(rank);
         if (r == null) {
-            TranslatableLine.RANKS_NO_RANK_FOUND.setV1(TranslatableLine.ReplacableVar.NAME.eq(rank)).send(commandSender);
+            TranslatableLine.RANKS_NO_RANK_FOUND.with(NAME, rank).send(commandSender);
             return;
         }
 
@@ -427,7 +432,7 @@ public class RealPermissionsCMD {
 
         r.setWeight(w, true);
         TabSorter.refreshAll();
-        TranslatableLine.RANKS_WEIGHT_SET.setV1(TranslatableLine.ReplacableVar.RANK.eq(r.getPrefix())).setV2(TranslatableLine.ReplacableVar.STRING.eq(String.valueOf(r.getWeight()))).send(commandSender);
+        TranslatableLine.RANKS_WEIGHT_SET.with(RANK, r.getPrefix()).with(STRING, String.valueOf(r.getWeight())).send(commandSender);
     }
 
     @Subcommand({"delete", "del"})
@@ -444,7 +449,7 @@ public class RealPermissionsCMD {
 
         Rank r = rp.getRankManagerAPI().getRank(rank);
         if (r == null) {
-            TranslatableLine.RANKS_NO_RANK_FOUND.setV1(TranslatableLine.ReplacableVar.NAME.eq(rank)).send(commandSender);
+            TranslatableLine.RANKS_NO_RANK_FOUND.with(NAME, rank).send(commandSender);
             return;
         }
 
@@ -455,11 +460,11 @@ public class RealPermissionsCMD {
 
         final Runnable delete = () -> {
             rp.getRankManagerAPI().deleteRank(r);
-            TranslatableLine.RANKS_DELETED.setV1(TranslatableLine.ReplacableVar.RANK.eq(r.getPrefix())).send(commandSender);
+            TranslatableLine.RANKS_DELETED.with(RANK, r.getPrefix()).send(commandSender);
         };
         //a player is asked first where the server has dialogs; console, and everyone else, straight away
         if (!(commandSender instanceof Player) || !Dialogs.confirm((Player) commandSender, "&f&lReal&c&lPermissions &8| &fRanks",
-                TranslatableLine.RANKS_DELETE_CONFIRM.setV1(TranslatableLine.ReplacableVar.RANK.eq(r.getPrefix())).get(),
+                TranslatableLine.RANKS_DELETE_CONFIRM.with(RANK, r.getPrefix()).get(),
                 TranslatableLine.SYSTEM_DIALOG_DELETE.get(), null, delete, null)) {
             delete.run();
         }
@@ -491,29 +496,29 @@ public class RealPermissionsCMD {
 
         Rank r = rp.getRankManagerAPI().getRank(rank);
         if (r == null) {
-            TranslatableLine.RANKS_NO_RANK_FOUND.setV1(TranslatableLine.ReplacableVar.NAME.eq(rank)).send(commandSender);
+            TranslatableLine.RANKS_NO_RANK_FOUND.with(NAME, rank).send(commandSender);
             return;
         }
 
         if (add) {
             if (r.hasPermission(perm)) {
-                TranslatableLine.PERMISSIONS_RANK_ALREADY_HAS_PERMISSION.setV1(TranslatableLine.ReplacableVar.PERM.eq(perm)).send(commandSender);
+                TranslatableLine.PERMISSIONS_RANK_ALREADY_HAS_PERMISSION.with(PERM, perm).send(commandSender);
             } else {
                 r.addPermission(perm);
                 rp.getRankManagerAPI().refreshPermsAndPlayers();
-                TranslatableLine.PERMISSIONS_RANK_PERM_ADD.setV1(TranslatableLine.ReplacableVar.PERM.eq(perm)).setV2(TranslatableLine.ReplacableVar.RANK.eq(r.getPrefix())).send(commandSender);
+                TranslatableLine.PERMISSIONS_RANK_PERM_ADD.with(PERM, perm).with(RANK, r.getPrefix()).send(commandSender);
             }
         } else {
             if (!r.hasPermission(perm)) {
-                TranslatableLine.PERMISSIONS_RANK_DOESNT_HAVE_PERMISSION.setV1(TranslatableLine.ReplacableVar.PERM.eq(perm)).send(commandSender);
+                TranslatableLine.PERMISSIONS_RANK_DOESNT_HAVE_PERMISSION.with(PERM, perm).send(commandSender);
             } else {
                 joserodpt.realpermissions.api.permission.Permission p = r.getPermission(perm);
                 if (!p.getAssociatedRankName().equalsIgnoreCase(r.getName())) {
-                    TranslatableLine.PERMISSIONS_PERMISSION_ASSOCIATED_WITH_OTHER_RANK.setV1(TranslatableLine.ReplacableVar.RANK.eq(p.getAssociatedRankName())).send(commandSender);
+                    TranslatableLine.PERMISSIONS_PERMISSION_ASSOCIATED_WITH_OTHER_RANK.with(RANK, p.getAssociatedRankName()).send(commandSender);
                 } else {
                     r.removePermission(perm);
                     rp.getRankManagerAPI().refreshPermsAndPlayers();
-                    TranslatableLine.PERMISSIONS_RANK_PERM_REMOVE.setV1(TranslatableLine.ReplacableVar.PERM.eq(perm)).setV2(TranslatableLine.ReplacableVar.RANK.eq(r.getPrefix())).send(commandSender);
+                    TranslatableLine.PERMISSIONS_RANK_PERM_REMOVE.with(PERM, perm).with(RANK, r.getPrefix()).send(commandSender);
                 }
             }
         }
@@ -565,21 +570,21 @@ public class RealPermissionsCMD {
             //so running this again with a duration changes when it runs out
             PlayerPermissionRow existing = pa.getPlayerDataRow().getPermissionRow(perm);
             if (existing != null && !existing.isTimed() && seconds == 0) {
-                TranslatableLine.PERMISSIONS_PLAYER_ALREADY_HAS_PERMISSION.setV1(TranslatableLine.ReplacableVar.PERM.eq(perm)).send(commandSender);
+                TranslatableLine.PERMISSIONS_PLAYER_ALREADY_HAS_PERMISSION.with(PERM, perm).send(commandSender);
             } else if (seconds > 0) {
                 pa.getPlayerDataRow().addPermission(perm, System.currentTimeMillis() + seconds * 1000L, false);
-                TranslatableLine.PERMISSIONS_PLAYER_ADD_TIMED.setV1(TranslatableLine.ReplacableVar.PERM.eq(perm)).setV2(TranslatableLine.ReplacableVar.PLAYER.eq(p.getName()))
-                        .setV3(TranslatableLine.ReplacableVar.STRING.eq(Format.formatSeconds(seconds))).send(commandSender);
+                TranslatableLine.PERMISSIONS_PLAYER_ADD_TIMED.with(PERM, perm).with(PLAYER, p.getName())
+                        .with(STRING, Format.formatSeconds(seconds)).send(commandSender);
             } else {
                 pa.getPlayerDataRow().addPermission(perm, false);
-                TranslatableLine.PERMISSIONS_PLAYER_ADD.setV1(TranslatableLine.ReplacableVar.PERM.eq(perm)).setV2(TranslatableLine.ReplacableVar.PLAYER.eq(p.getName())).send(commandSender);
+                TranslatableLine.PERMISSIONS_PLAYER_ADD.with(PERM, perm).with(PLAYER, p.getName()).send(commandSender);
             }
         } else {
             if (!pa.getPlayerDataRow().hasPermission(perm)) {
-                TranslatableLine.PERMISSIONS_PLAYER_DOESNT_HAVE_PERMISSION.setV1(TranslatableLine.ReplacableVar.PERM.eq(perm)).send(commandSender);
+                TranslatableLine.PERMISSIONS_PLAYER_DOESNT_HAVE_PERMISSION.with(PERM, perm).send(commandSender);
             } else {
                 pa.getPlayerDataRow().removePermission(perm, false);
-                TranslatableLine.PERMISSIONS_PLAYER_REMOVE.setV1(TranslatableLine.ReplacableVar.PERM.eq(perm)).setV2(TranslatableLine.ReplacableVar.PLAYER.eq(p.getName())).send(commandSender);
+                TranslatableLine.PERMISSIONS_PLAYER_REMOVE.with(PERM, perm).with(PLAYER, p.getName()).send(commandSender);
             }
         }
     }
@@ -634,7 +639,7 @@ public class RealPermissionsCMD {
     @CommandPermission("realpermissions.admin")
     @SuppressWarnings("unused")
     public void hooks(final CommandSender commandSender) {
-        TranslatableLine.SYSTEM_REGISTERED_HOOKS.setV1(TranslatableLine.ReplacableVar.STRING.eq(rp.getHooksAPI().getExternalPluginList().size() + "")).send(commandSender);
+        TranslatableLine.SYSTEM_REGISTERED_HOOKS.with(STRING, rp.getHooksAPI().getExternalPluginList().size() + "").send(commandSender);
 
         for (String pluginName : rp.getHooksAPI().getExternalPluginListSorted()) {
             ExternalPlugin ep = rp.getHooksAPI().getExternalPluginList().get(pluginName);

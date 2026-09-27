@@ -40,6 +40,9 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
 
+import static joserodpt.realpermissions.api.config.TranslatableLine.TranslatableLinePlaceholder.PLAYER;
+import static joserodpt.realpermissions.api.config.TranslatableLine.TranslatableLinePlaceholder.RANK;
+
 public class RanksListGUI {
 
     private static Map<UUID, RanksListGUI> inventories = new HashMap<>();
@@ -258,13 +261,13 @@ public class RanksListGUI {
                                         } else {
                                             final Runnable delete = () -> {
                                                 current.rp.getRankManagerAPI().deleteRank(clickedRank);
-                                                TranslatableLine.RANKS_DELETED.setV1(TranslatableLine.ReplacableVar.RANK.eq(clickedRank.getPrefix())).send(p);
+                                                TranslatableLine.RANKS_DELETED.with(RANK, clickedRank.getPrefix()).send(p);
                                                 current.load();
                                             };
                                             //asked first where the server has dialogs: its players lose the rank. The menu is
                                             //built again after, as the dialog closed this one
                                             if (!Dialogs.confirm(p, "&f&lReal&c&lPermissions &8| &fRanks",
-                                                    TranslatableLine.RANKS_DELETE_CONFIRM.setV1(TranslatableLine.ReplacableVar.RANK.eq(clickedRank.getPrefix())).get(),
+                                                    TranslatableLine.RANKS_DELETE_CONFIRM.with(RANK, clickedRank.getPrefix()).get(),
                                                     TranslatableLine.SYSTEM_DIALOG_DELETE.get(), null,
                                                     () -> {
                                                         delete.run();
@@ -277,7 +280,7 @@ public class RanksListGUI {
                                         break;
                                     case RIGHT:
                                         current.rp.getRankManagerAPI().setDefaultRank(clickedRank);
-                                        TranslatableLine.RANKS_SET_DEFAULT.setV1(TranslatableLine.ReplacableVar.RANK.eq(clickedRank.getPrefix())).send(p);
+                                        TranslatableLine.RANKS_SET_DEFAULT.with(RANK, clickedRank.getPrefix()).send(p);
                                         break;
                                     default:
                                         p.closeInventory();
@@ -289,7 +292,7 @@ public class RanksListGUI {
                                 p.closeInventory();
                                 //assign rank to that player attatchment
                                 current.rp.getPlayerManagerAPI().getPlayer(current.po).setRank(clickedRank);
-                                TranslatableLine.RANKS_RANK_SET.setV1(TranslatableLine.ReplacableVar.PLAYER.eq(current.po.getName())).setV2(TranslatableLine.ReplacableVar.RANK.eq(clickedRank.getPrefix())).send(p);
+                                TranslatableLine.RANKS_RANK_SET.with(PLAYER, current.po.getName()).with(RANK, clickedRank.getPrefix()).send(p);
                                 p.closeInventory();
                                 PlayerPermissionsGUI rv = new PlayerPermissionsGUI(p, current.po, current.rp);
                                 rv.openInventory(p);

@@ -37,6 +37,10 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
 
+import static joserodpt.realpermissions.api.config.TranslatableLine.TranslatableLinePlaceholder.NAME;
+import static joserodpt.realpermissions.api.config.TranslatableLine.TranslatableLinePlaceholder.PERM;
+import static joserodpt.realpermissions.api.config.TranslatableLine.TranslatableLinePlaceholder.RANK;
+
 public class RankPermissionsGUI {
 
     private static Map<UUID, RankPermissionsGUI> inventories = new HashMap<>();
@@ -174,7 +178,7 @@ public class RankPermissionsGUI {
                                 p.closeInventory();
                                 new PlayerInput(p, false, input -> {
                                     current.r.setPrefix(input);
-                                    TranslatableLine.RANKS_PREFIX_SET.setV1(TranslatableLine.ReplacableVar.NAME.eq(input)).send(p);
+                                    TranslatableLine.RANKS_PREFIX_SET.with(NAME, input).send(p);
 
                                     RankPermissionsGUI wv = new RankPermissionsGUI(p, current.r, current.rp);
                                     wv.openInventory(p);
@@ -187,7 +191,7 @@ public class RankPermissionsGUI {
                                 p.closeInventory();
                                 new PlayerInput(p, false, input -> {
                                     current.rp.getRankManagerAPI().renameRank(current.r, input);
-                                    TranslatableLine.RANKS_NAME_SET.setV1(TranslatableLine.ReplacableVar.NAME.eq(input)).send(p);
+                                    TranslatableLine.RANKS_NAME_SET.with(NAME, input).send(p);
 
                                     RankPermissionsGUI wv = new RankPermissionsGUI(p, current.rp.getRankManagerAPI().getRank(input), current.rp);
                                     wv.openInventory(p);
@@ -225,10 +229,10 @@ public class RankPermissionsGUI {
                                 if (perm.getAssociatedRankName().equalsIgnoreCase(current.r.getName())) {
                                     current.r.removePermission(perm);
                                     current.rp.getRankManagerAPI().refreshPermsAndPlayers();
-                                    TranslatableLine.PERMISSIONS_RANK_PERM_REMOVE.setV1(TranslatableLine.ReplacableVar.PERM.eq(perm.getPermissionString())).setV2(TranslatableLine.ReplacableVar.RANK.eq(current.r.getPrefix())).send(p);
+                                    TranslatableLine.PERMISSIONS_RANK_PERM_REMOVE.with(PERM, perm.getPermissionString()).with(RANK, current.r.getPrefix()).send(p);
                                     current.load();
                                 } else {
-                                    TranslatableLine.PERMISSIONS_PERMISSION_ASSOCIATED_WITH_OTHER_RANK.setV1(TranslatableLine.ReplacableVar.RANK.eq(perm.getAssociatedRankName())).send(p);
+                                    TranslatableLine.PERMISSIONS_PERMISSION_ASSOCIATED_WITH_OTHER_RANK.with(RANK, perm.getAssociatedRankName()).send(p);
                                 }
                             } else {
                                 perm.negatePermission();

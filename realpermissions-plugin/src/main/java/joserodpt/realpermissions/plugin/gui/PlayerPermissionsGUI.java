@@ -43,6 +43,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
+import static joserodpt.realpermissions.api.config.TranslatableLine.TranslatableLinePlaceholder.PERM;
+import static joserodpt.realpermissions.api.config.TranslatableLine.TranslatableLinePlaceholder.PLAYER;
+
 public class PlayerPermissionsGUI {
 
     private static Map<UUID, PlayerPermissionsGUI> inventories = new HashMap<>();
@@ -186,7 +189,7 @@ public class PlayerPermissionsGUI {
                             //flip permission
                             if (Objects.requireNonNull(e.getClick()) == ClickType.DROP) {
                                 current.po.removePermission(perm, false);
-                                TranslatableLine.PERMISSIONS_PLAYER_REMOVE.setV1(TranslatableLine.ReplacableVar.PERM.eq(perm.getPermission())).setV2(TranslatableLine.ReplacableVar.PLAYER.eq(current.po.getName())).send(p);
+                                TranslatableLine.PERMISSIONS_PLAYER_REMOVE.with(PERM, perm.getPermission()).with(PLAYER, current.po.getName()).send(p);
                                 current.load();
                             } else {
                                 List<PlayerPermissionRow> perms = new ArrayList<>(current.po.getPlayerRowPermissions());

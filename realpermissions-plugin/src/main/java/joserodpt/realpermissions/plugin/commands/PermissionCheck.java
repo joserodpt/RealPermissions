@@ -26,6 +26,12 @@ import org.bukkit.permissions.PermissionAttachmentInfo;
 import java.util.ArrayList;
 import java.util.List;
 
+import static joserodpt.realpermissions.api.config.TranslatableLine.TranslatableLinePlaceholder.NAME;
+import static joserodpt.realpermissions.api.config.TranslatableLine.TranslatableLinePlaceholder.PERM;
+import static joserodpt.realpermissions.api.config.TranslatableLine.TranslatableLinePlaceholder.PLAYER;
+import static joserodpt.realpermissions.api.config.TranslatableLine.TranslatableLinePlaceholder.RANK;
+import static joserodpt.realpermissions.api.config.TranslatableLine.TranslatableLinePlaceholder.STRING;
+
 /**
  * What {@code /rp check} prints: whether a player has a permission, and each thing that gives it
  * to them or keeps it from them.
@@ -37,7 +43,7 @@ final class PermissionCheck {
 
     static List<String> explain(final RealPermissionsAPI rp, final Player p, final String perm) {
         List<String> lines = new ArrayList<>();
-        lines.add(TranslatableLine.CHECK_HEADER.setV1(TranslatableLine.ReplacableVar.PERM.eq(perm)).setV2(TranslatableLine.ReplacableVar.PLAYER.eq(p.getName())).get());
+        lines.add(TranslatableLine.CHECK_HEADER.with(PERM, perm).with(PLAYER, p.getName()).get());
         lines.add((p.hasPermission(perm) ? TranslatableLine.CHECK_HAS : TranslatableLine.CHECK_HASNT).get());
 
         final RPPlayer rpp = rp.getPlayerManagerAPI().getPlayer(p);
@@ -50,7 +56,7 @@ final class PermissionCheck {
             if (row.isNegated()) {
                 lines.add(TranslatableLine.CHECK_DIRECT_NEGATED.get());
             } else if (row.isTimed()) {
-                lines.add(TranslatableLine.CHECK_DIRECT_TIMED.setV1(TranslatableLine.ReplacableVar.STRING.eq(Format.formatSeconds(row.getSecondsLeft()))).get());
+                lines.add(TranslatableLine.CHECK_DIRECT_TIMED.with(STRING, Format.formatSeconds(row.getSecondsLeft())).get());
                 fromUs = true;
             } else {
                 lines.add(TranslatableLine.CHECK_DIRECT.get());
@@ -63,12 +69,12 @@ final class PermissionCheck {
             if (rankPerm != null) {
                 String owner = prefixOf(rp, rankPerm.getAssociatedRankName());
                 if (rankPerm.isNegated()) {
-                    lines.add(TranslatableLine.CHECK_RANK_NEGATED.setV1(TranslatableLine.ReplacableVar.RANK.eq(owner)).get());
+                    lines.add(TranslatableLine.CHECK_RANK_NEGATED.with(RANK, owner).get());
                 } else if (rankPerm.getAssociatedRankName().equalsIgnoreCase(rank.getName())) {
-                    lines.add(TranslatableLine.CHECK_RANK.setV1(TranslatableLine.ReplacableVar.RANK.eq(rank.getPrefix())).get());
+                    lines.add(TranslatableLine.CHECK_RANK.with(RANK, rank.getPrefix()).get());
                     fromUs = true;
                 } else {
-                    lines.add(TranslatableLine.CHECK_INHERITED.setV1(TranslatableLine.ReplacableVar.RANK.eq(owner)).get());
+                    lines.add(TranslatableLine.CHECK_INHERITED.with(RANK, owner).get());
                     fromUs = true;
                 }
             }
@@ -76,8 +82,8 @@ final class PermissionCheck {
             //RealPermissions' own wildcards: a node ending in * gives everything under it
             for (Permission p2 : rank.getPermissions(false)) {
                 if (wildcardMatches(p2.getPermissionString(), perm)) {
-                    lines.add(TranslatableLine.CHECK_WILDCARD_RANK.setV1(TranslatableLine.ReplacableVar.PERM.eq(p2.getPermissionString()))
-                            .setV2(TranslatableLine.ReplacableVar.RANK.eq(prefixOf(rp, p2.getAssociatedRankName()))).get());
+                    lines.add(TranslatableLine.CHECK_WILDCARD_RANK.with(PERM, p2.getPermissionString())
+                            .with(RANK, prefixOf(rp, p2.getAssociatedRankName())).get());
                     fromUs = true;
                 }
             }
@@ -85,7 +91,7 @@ final class PermissionCheck {
 
         for (PlayerPermissionRow own : rpp.getPlayerDataRow().getPlayerRowPermissions()) {
             if (!own.isNegated() && wildcardMatches(own.getPermission(), perm)) {
-                lines.add(TranslatableLine.CHECK_WILDCARD_PLAYER.setV1(TranslatableLine.ReplacableVar.PERM.eq(own.getPermission())).get());
+                lines.add(TranslatableLine.CHECK_WILDCARD_PLAYER.with(PERM, own.getPermission()).get());
                 fromUs = true;
             }
         }
@@ -102,10 +108,10 @@ final class PermissionCheck {
             }
             String value = String.valueOf(info.getValue());
             if (info.getAttachment() == null) {
-                lines.add(TranslatableLine.CHECK_DEFAULT.setV1(TranslatableLine.ReplacableVar.STRING.eq(value)).get());
+                lines.add(TranslatableLine.CHECK_DEFAULT.with(STRING, value).get());
             } else if (info.getAttachment().getPlugin() != rp.getPlugin()) {
-                lines.add(TranslatableLine.CHECK_PLUGIN.setV1(TranslatableLine.ReplacableVar.NAME.eq(info.getAttachment().getPlugin().getName()))
-                        .setV2(TranslatableLine.ReplacableVar.STRING.eq(value)).get());
+                lines.add(TranslatableLine.CHECK_PLUGIN.with(NAME, info.getAttachment().getPlugin().getName())
+                        .with(STRING, value).get());
             } else if (!fromUs) {
                 lines.add(TranslatableLine.CHECK_CHILD.get());
             }

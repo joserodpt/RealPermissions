@@ -36,6 +36,9 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
+import static joserodpt.realpermissions.api.config.TranslatableLine.TranslatableLinePlaceholder.NAME;
+import static joserodpt.realpermissions.api.config.TranslatableLine.TranslatableLinePlaceholder.STRING;
+
 /**
  * /rp import: brings another permissions plugin's groups, players and tracks over. Run once it
  * shows what it found; with confirm it imports it.
@@ -64,7 +67,7 @@ public final class PermissionImporter {
 
         File file = source.locate();
         if (file == null) {
-            TranslatableLine.IMPORT_NOT_FOUND.setV1(TranslatableLine.ReplacableVar.NAME.eq(source.name())).setV2(TranslatableLine.ReplacableVar.STRING.eq(source.lookedIn())).send(sender);
+            TranslatableLine.IMPORT_NOT_FOUND.with(NAME, source.name()).with(STRING, source.lookedIn()).send(sender);
             return;
         }
 
@@ -73,7 +76,7 @@ public final class PermissionImporter {
             data = source.read(file);
         } catch (Exception e) {
             rp.getLogger().log(Level.WARNING, "Couldn't read " + file + " for the import", e);
-            TranslatableLine.IMPORT_READ_ERROR.setV1(TranslatableLine.ReplacableVar.STRING.eq(file.getName())).setV2(TranslatableLine.ReplacableVar.NAME.eq(String.valueOf(e.getMessage()))).send(sender);
+            TranslatableLine.IMPORT_READ_ERROR.with(STRING, file.getName()).with(NAME, String.valueOf(e.getMessage())).send(sender);
             return;
         }
 
@@ -87,21 +90,21 @@ public final class PermissionImporter {
     private static void preview(final RealPermissionsAPI rp, final CommandSender sender, final ImportSource source, final ImportData data) {
         long newRanks = data.ranks.values().stream().filter(r -> !r.isDefault && find(rp, r.name) == null).count();
 
-        TranslatableLine.IMPORT_PREVIEW.setV1(TranslatableLine.ReplacableVar.STRING.eq(data.file.getPath())).send(sender);
-        sender.sendMessage(TranslatableLine.IMPORT_PREVIEW_RANKS.setV1(TranslatableLine.ReplacableVar.STRING.eq(String.valueOf(data.ranks.size())))
-                .setV2(TranslatableLine.ReplacableVar.NAME.eq(String.valueOf(newRanks))).get());
-        sender.sendMessage(TranslatableLine.IMPORT_PREVIEW_PLAYERS.setV1(TranslatableLine.ReplacableVar.STRING.eq(String.valueOf(data.users.size()))).get());
-        sender.sendMessage(TranslatableLine.IMPORT_PREVIEW_TRACKS.setV1(TranslatableLine.ReplacableVar.STRING.eq(String.valueOf(data.tracks.size()))).get());
+        TranslatableLine.IMPORT_PREVIEW.with(STRING, data.file.getPath()).send(sender);
+        sender.sendMessage(TranslatableLine.IMPORT_PREVIEW_RANKS.with(STRING, String.valueOf(data.ranks.size()))
+                .with(NAME, String.valueOf(newRanks)).get());
+        sender.sendMessage(TranslatableLine.IMPORT_PREVIEW_PLAYERS.with(STRING, String.valueOf(data.users.size())).get());
+        sender.sendMessage(TranslatableLine.IMPORT_PREVIEW_TRACKS.with(STRING, String.valueOf(data.tracks.size())).get());
         skipped(sender, TranslatableLine.IMPORT_SKIPPED_CONTEXTUAL, data.contextual);
         skipped(sender, TranslatableLine.IMPORT_SKIPPED_EXTRA_GROUPS, data.extraGroups);
         skipped(sender, TranslatableLine.IMPORT_SKIPPED_TIMED_GROUPS, data.timedGroups);
         skipped(sender, TranslatableLine.IMPORT_SKIPPED_OTHER, data.other);
-        TranslatableLine.IMPORT_CONFIRM.setV1(TranslatableLine.ReplacableVar.STRING.eq(source.name())).send(sender);
+        TranslatableLine.IMPORT_CONFIRM.with(STRING, source.name()).send(sender);
     }
 
     private static void skipped(CommandSender sender, TranslatableLine line, int count) {
         if (count > 0) {
-            sender.sendMessage(line.setV1(TranslatableLine.ReplacableVar.STRING.eq(String.valueOf(count))).get());
+            sender.sendMessage(line.with(STRING, String.valueOf(count)).get());
         }
     }
 
@@ -173,7 +176,7 @@ public final class PermissionImporter {
         rm.loadRanks();
         rm.refreshPermsAndPlayers();
         TabSorter.refreshAll();
-        TranslatableLine.IMPORT_RANKS_DONE.setV1(TranslatableLine.ReplacableVar.STRING.eq(String.valueOf(resolved.size()))).send(sender);
+        TranslatableLine.IMPORT_RANKS_DONE.with(STRING, String.valueOf(resolved.size())).send(sender);
 
         //possibly thousands of players: written off the main thread, then the online ones refreshed on it
         Bukkit.getScheduler().runTaskAsynchronously(rp.getPlugin(), () -> {
@@ -217,8 +220,8 @@ public final class PermissionImporter {
             Bukkit.getScheduler().runTask(rp.getPlugin(), () -> {
                 changed.forEach(uuid -> rp.getPlayerManagerAPI().updateReference(uuid, db.getPlayerData(uuid)));
                 TabSorter.refreshAll();
-                TranslatableLine.IMPORT_DONE.setV1(TranslatableLine.ReplacableVar.STRING.eq(String.valueOf(changed.size())))
-                        .setV2(TranslatableLine.ReplacableVar.NAME.eq(String.valueOf(left))).send(sender);
+                TranslatableLine.IMPORT_DONE.with(STRING, String.valueOf(changed.size()))
+                        .with(NAME, String.valueOf(left)).send(sender);
             });
         });
     }

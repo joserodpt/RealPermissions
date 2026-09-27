@@ -44,6 +44,10 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static joserodpt.realpermissions.api.config.TranslatableLine.TranslatableLinePlaceholder.PERM;
+import static joserodpt.realpermissions.api.config.TranslatableLine.TranslatableLinePlaceholder.PLAYER;
+import static joserodpt.realpermissions.api.config.TranslatableLine.TranslatableLinePlaceholder.RANK;
+
 public class EPPermissionsViewerGUI {
     private static Map<UUID, EPPermissionsViewerGUI> inventories = new HashMap<>();
     private Inventory inv;
@@ -315,9 +319,9 @@ public class EPPermissionsViewerGUI {
                                 if (current.rank != null) {
                                     if (!current.rank.hasPermission(clickedExtPerm.getPermission())) {
                                         current.rank.addPermission(clickedExtPerm.getPermission());
-                                        TranslatableLine.PERMISSIONS_RANK_PERM_ADD.setV1(TranslatableLine.ReplacableVar.PERM.eq(clickedExtPerm.getPermission())).setV2(TranslatableLine.ReplacableVar.RANK.eq(current.rank.getPrefix())).send(p);
+                                        TranslatableLine.PERMISSIONS_RANK_PERM_ADD.with(PERM, clickedExtPerm.getPermission()).with(RANK, current.rank.getPrefix()).send(p);
                                     } else {
-                                        TranslatableLine.PERMISSIONS_RANK_ALREADY_HAS_PERMISSION.setV1(TranslatableLine.ReplacableVar.PERM.eq(clickedExtPerm.getPermission())).send(p);
+                                        TranslatableLine.PERMISSIONS_RANK_ALREADY_HAS_PERMISSION.with(PERM, clickedExtPerm.getPermission()).send(p);
                                     }
                                     RankPermissionsGUI rg = new RankPermissionsGUI(p, current.rank, current.rp);
                                     rg.openInventory(p);
@@ -325,9 +329,9 @@ public class EPPermissionsViewerGUI {
                                 if (current.po != null) {
                                     if (!current.po.hasPermission(clickedExtPerm.getPermission())) {
                                         current.po.addPermission(clickedExtPerm.getPermission(), false);
-                                        TranslatableLine.PERMISSIONS_PLAYER_ADD.setV1(TranslatableLine.ReplacableVar.PERM.eq(clickedExtPerm.getPermission())).setV2(TranslatableLine.ReplacableVar.PLAYER.eq(p.getName())).send(p);
+                                        TranslatableLine.PERMISSIONS_PLAYER_ADD.with(PERM, clickedExtPerm.getPermission()).with(PLAYER, p.getName()).send(p);
                                     } else {
-                                        TranslatableLine.PERMISSIONS_PLAYER_ALREADY_HAS_PERMISSION_UNDER_PLAYER.setV1(TranslatableLine.ReplacableVar.PERM.eq(clickedExtPerm.getPermission())).send(p);
+                                        TranslatableLine.PERMISSIONS_PLAYER_ALREADY_HAS_PERMISSION_UNDER_PLAYER.with(PERM, clickedExtPerm.getPermission()).send(p);
                                     }
 
                                     PlayerPermissionsGUI ppg = new PlayerPermissionsGUI(p, current.po, current.rp);
