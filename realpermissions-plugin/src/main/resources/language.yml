@@ -73,6 +73,25 @@ Tracks:
   Set: "&fTrack &b%name% &fis now: %string%"
   Deleted: "&fTrack &b%name% &cdeleted."
   Needs-Two-Ranks: "&cA track needs at least two ranks."
+# What /rp check prints: the header and verdict, then one line for each thing that bears on it.
+Check:
+  Header: "&fChecking &b%perm% &ffor &b%player%&f:"
+  Has: " &f> &a✔ They have it."
+  Hasnt: " &f> &c✘ They don't have it."
+  Direct: "   &7- Given to the player directly."
+  Direct-Timed: "   &7- Given to the player directly, for &b%string% &7more."
+  Direct-Negated: "   &7- Negated on the player, so their own permissions don't give it."
+  Rank: "   &7- From their rank, %rank%&7."
+  Inherited: "   &7- From their rank, inherited from %rank%&7."
+  Rank-Negated: "   &7- Negated in %rank%&7, so their rank doesn't give it."
+  Wildcard-Rank: "   &7- Matched by &b%perm% &7from %rank%&7."
+  Wildcard-Player: "   &7- Matched by &b%perm%&7, given to the player directly."
+  Super-User: "   &7- They are a super user."
+  Op: "   &7- They are an operator: permissions that default to op apply to them."
+  Plugin: "   &7- Set to &b%string% &7by &b%name%&7."
+  Default: "   &7- The permission's own default gives &b%string%&7."
+  Child: "   &7- A child of another permission they are given."
+  Nothing: "   &7- Nothing gives it to them."
 Rankup:
   Disabled: "&cRackup is disabled on this server."
   Cant-Rankdown: "&cYou can't rankdown."
@@ -81,4 +100,4 @@ Rankup:
   Error: "&fAn &cerror &foccured: %string%"
   Ranked-Up: "&fYou ranked up to &b%rank% &ffor &b%string% &fcoins."
   Already-Has-Rank: "&cYou already have this rank."
-Version: 7
+Version: 8

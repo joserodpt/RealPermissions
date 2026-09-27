@@ -602,6 +602,20 @@ public class RealPermissionsCMD {
         }
     }
 
+    @Subcommand({"check", "c"})
+    @CommandPermission("realpermissions.admin")
+    @Usage("&c/rp check <player> <permission>")
+    @SuppressWarnings("unused")
+    public void checkcmd(final CommandSender commandSender, @SuggestFrom(RPSuggestion.PLAYERS) @Single final String player, @SuggestFrom(RPSuggestion.PERMISSIONS) @Single final String perm) {
+        final Player p = Bukkit.getPlayerExact(player);
+        if (p == null) {
+            TranslatableLine.SYSTEM_NO_PLAYER_FOUND.send(commandSender);
+            return;
+        }
+
+        PermissionCheck.explain(rp, p, perm).forEach(commandSender::sendMessage);
+    }
+
     @Subcommand({"hooks", "hks"})
     @CommandPermission("realpermissions.admin")
     @SuppressWarnings("unused")
