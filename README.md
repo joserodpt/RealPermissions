@@ -26,6 +26,12 @@
 * Tab and Chat per Rank
 * Rankup Command
 * Plugin Settings via GUI
+* Timed Player Permissions
+* Tab List Sorted by Rank Weight
+* Promote and Demote along Rank Tracks
+* Permission Checks that explain where a permission comes from
+* Vault Permission and Chat Provider
+* Import from LuckPerms, PermissionsEx and GroupManager
 ----
 
 ## Commands
@@ -77,13 +83,33 @@ Description: Deletes the specified rank if it is not the default rank.
 Permission: realpermissions.admin
 Description: Adds or removes the specified permission node to/from the specified rank.
 
-- /realpermissions playerperm (Alias: /rp pperm) - Requires specifying an operation (add/remove), a player name, and a permission node.
+- /realpermissions playerperm (Alias: /rp pperm) - Requires specifying an operation (add/remove), a player name, and a permission node, and optionally a duration.
 Permission: realpermissions.admin
-Description: Adds or removes the specified permission node to/from the specified player.
+Description: Adds or removes the specified permission node to/from the specified player. With a duration (seconds, or e.g. 30m, 12h, 7d, 1d12h) the permission expires after it; adding it again with another duration changes when.
+
+- /realpermissions check (Alias: /rp c) - Requires specifying a player name and a permission node.
+Permission: realpermissions.admin
+Description: Says whether the player has the permission, and what gives it to them or keeps it from them: their own permissions, their rank or one it inherits, a wildcard, super user, op or another plugin.
+
+- /realpermissions setweight (Alias: /rp sw) - Requires specifying a rank name and a weight, or auto.
+Permission: realpermissions.admin
+Description: Sets the rank's weight, which orders the tab list (heaviest first). Auto goes back to the number of ranks it inherits from.
+
+- /realpermissions promote and /realpermissions demote - Require specifying a player name and a track.
+Permission: super user, or realpermissions.track.<track>
+Description: Moves the player one rank up or down the track. Tracks are orders of ranks, lowest first, in ranks.yml.
+
+- /realpermissions tracks, settrack (Alias: /rp st) and deltrack (Alias: /rp dt)
+Permission: realpermissions.admin
+Description: Lists, creates or replaces (e.g. /rp settrack staff Player Moderator Admin), and deletes tracks.
+
+- /realpermissions import - Requires specifying luckperms, pex or groupmanager.
+Permission: super user or the console
+Description: Shows what would be imported from the other plugin's data, and what is left out; add confirm to import it. For LuckPerms, run /lp export first.
 ----
 
 ## Requirements
-RealPermissions softdepends on [Vault](https://www.spigotmc.org/resources/vault.34315/).
+RealPermissions softdepends on [Vault](https://www.spigotmc.org/resources/vault.34315/). With Vault installed it also registers as Vault's permission and chat provider, so other plugins see ranks, permissions and prefixes.
 
 ----
 
