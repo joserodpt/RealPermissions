@@ -60,7 +60,7 @@ import static joserodpt.realpermissions.api.config.TranslatableLine.Translatable
 import static joserodpt.realpermissions.api.config.TranslatableLine.TranslatableLinePlaceholder.RANK;
 import static joserodpt.realpermissions.api.config.TranslatableLine.TranslatableLinePlaceholder.STRING;
 
-@Command({"realpermissions", "rp"})
+@Command({"realpermissions", "rp", "perms", "permissions"})
 public class RealPermissionsCMD {
 
     private final RealPermissionsAPI rp;
